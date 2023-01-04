@@ -1,0 +1,8 @@
+{
+	"AUTH": {
+		"LOGIN": "Login",
+		"REGISTER": "Register"
+	},
+	"SEARCH": "Search",
+	"EDIT_PROFILE": "Edit Profile"
+}
