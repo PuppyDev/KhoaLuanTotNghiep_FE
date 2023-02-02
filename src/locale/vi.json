@@ -1,8 +1,16 @@
 {
 	"AUTH": {
 		"LOGIN": "Đăng nhập",
-		"REGISTER": "Đăng ký"
+		"REGISTER": "Đăng ký",
+		"Not_Have_Account": "Bạn không có tài khoản, đăng ký ngay",
+		"Have_Account": "Bạn đã có tài khoản, đăng nhập ngay",
+		"Password": "Mật khẩu",
+		"Confirm_Pass": "Xác nhận mật khẩu",
+		"Forgot_Your_Pass": "Quên mật khẩu",
+		"Full_Name": "Họ và tên",
+		"Phone": "Số điện thoại"
 	},
 	"SEARCH": "Tìm kiếm",
-	"EDIT_PROFILE": "Chỉnh sửa trang cá nhân"
+	"EDIT_PROFILE": "Chỉnh sửa trang cá nhân",
+	"NOW": "ngay"
 }

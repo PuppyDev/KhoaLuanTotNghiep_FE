@@ -1,8 +1,16 @@
 {
 	"AUTH": {
 		"LOGIN": "Login",
-		"REGISTER": "Register"
+		"REGISTER": "Register",
+		"Not_Have_Account": "You don't have an account, Register now",
+		"Have_Account": "You have an account, Login now",
+		"Password": "Password",
+		"Confirm_Pass": "Confirm password",
+		"Forgot_Your_Pass": "Forgot your password",
+		"Full_Name": "FullName",
+		"Phone": "Phone"
 	},
 	"SEARCH": "Search",
-	"EDIT_PROFILE": "Edit Profile"
+	"EDIT_PROFILE": "Edit Profile",
+	"NOW": "now"
 }
