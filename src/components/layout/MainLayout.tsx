@@ -12,10 +12,12 @@ const MainContent = styled(Box)({
 
 export function MainLayout({ children }: LayoutProps) {
 	return (
-		<React.Fragment>
+		<>
 			<Header />
-			<MainContent>{children}</MainContent>
+			<main style={{ background: '#fafafb' }}>
+				<MainContent>{children}</MainContent>
+			</main>
 			{/* <Footer /> */}
-		</React.Fragment>
+		</>
 	)
 }

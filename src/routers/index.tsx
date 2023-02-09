@@ -1,9 +1,12 @@
+import SignIn from 'pages/auth/SignIn'
+import SignUp from 'pages/auth/SignUp'
+import UpdateId from 'pages/auth/UpdateId'
+import { ProfilePage } from 'pages/user'
+import BookingPage from 'pages/user/BookingPage'
+import WalletPage from 'pages/user/WalletPage'
 import { Route, Routes } from 'react-router-dom'
 import PrivateRoute from './PrivateRoute'
 import RenderRouteHeader from './RenderRouteHeader'
-import SignUp from 'pages/auth/SignUp'
-import SignIn from 'pages/auth/SignIn'
-import { ProfilePage } from 'pages/user'
 
 const mainRoutes = [
 	{
@@ -15,6 +18,21 @@ const mainRoutes = [
 		id: 2,
 		element: <ProfilePage />,
 		pathName: '/profile/:id',
+	},
+	{
+		id: 3,
+		element: <BookingPage />,
+		pathName: '/booking',
+	},
+	{
+		id: 4,
+		element: <WalletPage />,
+		pathName: '/MyWallet',
+	},
+	{
+		id: 5,
+		element: <UpdateId />,
+		pathName: '/registerAuth',
 	},
 ]
 

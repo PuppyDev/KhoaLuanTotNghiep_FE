@@ -1,3 +1,4 @@
+import HeadingTitle from '@/components/common/Heading/HeadingTitle'
 import CheckCircleSharpIcon from '@mui/icons-material/CheckCircleSharp'
 import DoneIcon from '@mui/icons-material/Done'
 import { Avatar, Grid, TextField, Typography } from '@mui/material'
@@ -124,19 +125,7 @@ export const ProfilePage = () => {
 					padding: '0 40px',
 				}}
 			>
-				<Typography
-					variant="h3"
-					color="initial"
-					fontWeight="bold"
-					sx={{
-						borderBottom: '1px solid #E7ECF3',
-						width: '100%',
-						marginBottom: '50px',
-						paddingBottom: '40px',
-					}}
-				>
-					My Profile
-				</Typography>
+				<HeadingTitle>My Profile</HeadingTitle>
 
 				<Box
 					style={{
@@ -183,6 +172,7 @@ export const ProfilePage = () => {
 					<ProfilePage.InputFeild name="Email address" defaultValue="baodakmil123@gmail.com" />
 					<ProfilePage.InputFeild name="Date Of Birth" defaultValue="07.12.1997" />
 					<ProfilePage.InputFeild name="Gender" defaultValue="Male" />
+					<ProfilePage.InputFeild name="ID Number" defaultValue="245422915" />
 				</Grid>
 
 				<Box
