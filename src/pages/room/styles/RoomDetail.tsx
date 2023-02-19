@@ -124,5 +124,3 @@ export const ModalContract = styled(Box)({
 		borderRadius: '6px',
 	},
 })
-
-// export const
