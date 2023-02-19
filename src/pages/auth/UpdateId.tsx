@@ -55,43 +55,43 @@ const UpdateId = () => {
 			</Typography>
 
 			<form onSubmit={sendIDProfile}>
-				<UploadImage
-					addFiles={(file: any) => {
-						setValue('front', file)
-					}}
-					content={
-						<div style={{ textAlign: 'center' }}>
-							<ImageIcon style={{ fontSize: '46px' }} />
-							<br />
-							Mặt Trước CMND/CCCD <br />
-							Kéo vào đây
-						</div>
-					}
-				/>
-				<br />
-				<UploadImage
-					addFiles={(file: any) => {
-						setValue('back', file)
-					}}
-					content={
-						<div style={{ textAlign: 'center' }}>
-							<ImageIcon style={{ fontSize: '46px' }} /> <br />
-							Mặt Sau CMND/CCCD <br />
-							Kéo vào đây
-						</div>
-					}
-				/>
+				<div style={{ display: 'flex', gap: '20px' }}>
+					<UploadImage
+						addFiles={(file: any) => setValue('front', file)}
+						content={
+							<div style={{ textAlign: 'center' }}>
+								<ImageIcon style={{ fontSize: '46px' }} />
+								<br />
+								Mặt Trước CMND/CCCD <br />
+								Kéo vào đây
+							</div>
+						}
+					/>
+					<br />
+					<UploadImage
+						addFiles={(file: any) => setValue('back', file)}
+						content={
+							<div style={{ textAlign: 'center' }}>
+								<ImageIcon style={{ fontSize: '46px' }} /> <br />
+								Mặt Sau CMND/CCCD <br />
+								Kéo vào đây
+							</div>
+						}
+					/>
+				</div>
+
 				<div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
 					<Button
 						style={{
 							outline: 'none',
 							border: 'none',
 							alignItems: 'center',
-							margin: '10px auto',
+							margin: '40px auto',
 							width: '200px',
 							padding: '10px 20px',
 						}}
 						variant="contained"
+						type="submit"
 					>
 						Tiếp Tục
 					</Button>

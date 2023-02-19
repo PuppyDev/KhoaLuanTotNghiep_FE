@@ -26,8 +26,8 @@ const Header = () => {
 					<img style={{ width: 80 }} src={BugHouseLogo} />
 				</Link>
 
-				<NavHeader onClick={(e) => user && handleClick(e)}>
-					{!user ? (
+				<NavHeader onClick={(e) => !user && handleClick(e)}>
+					{user ? (
 						<Avatar sx={{ width: 32, height: 32 }} onClick={() => navigate('/login')} />
 					) : (
 						<>
@@ -56,16 +56,16 @@ const Header = () => {
 				transformOrigin={{ horizontal: 'right', vertical: 'top' }}
 				anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
 			>
-				<MenuItem onClick={() => handleClose('myProfile')}>
+				<MenuItem onClick={() => handleClose('profile/1')}>
 					<AccountCircleOutlined /> <Typography variant="body1"> My Profile </Typography>
 				</MenuItem>
 				<MenuItem onClick={() => handleClose()}>
 					<PersonOutlineOutlined /> Manage account
 				</MenuItem>
-				<MenuItem onClick={() => handleClose()}>
+				<MenuItem onClick={() => handleClose('booking')}>
 					<CreditCard /> Bookings
 				</MenuItem>
-				<MenuItem onClick={() => handleClose()}>
+				<MenuItem onClick={() => handleClose('/mywallet')}>
 					<CreditCard /> My wallate
 				</MenuItem>
 				<MenuItem onClick={() => handleClose()}>

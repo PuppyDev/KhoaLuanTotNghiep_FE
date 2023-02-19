@@ -3,7 +3,7 @@ import HeadingTitle from '@/components/common/Heading/HeadingTitle'
 const BookingPage = () => {
 	return (
 		<>
-			<HeadingTitle>Bookings</HeadingTitle>
+			<HeadingTitle>Phòng đã thuê</HeadingTitle>
 		</>
 	)
 }

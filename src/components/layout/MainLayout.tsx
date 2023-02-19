@@ -17,7 +17,6 @@ export function MainLayout({ children }: LayoutProps) {
 			<main style={{ background: '#fafafb' }}>
 				<MainContent>{children}</MainContent>
 			</main>
-			{/* <Footer /> */}
 		</>
 	)
 }

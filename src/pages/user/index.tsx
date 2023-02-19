@@ -1,7 +1,7 @@
 import HeadingTitle from '@/components/common/Heading/HeadingTitle'
 import CheckCircleSharpIcon from '@mui/icons-material/CheckCircleSharp'
 import DoneIcon from '@mui/icons-material/Done'
-import { Avatar, Grid, TextField, Typography } from '@mui/material'
+import { Avatar, Grid, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 
 export const ProfilePage = () => {
@@ -9,7 +9,7 @@ export const ProfilePage = () => {
 		<Grid container alignItems="flex-start" justifyContent="space-between">
 			<Grid
 				item
-				sm={4}
+				sm={12}
 				md={4}
 				lg={3}
 				container
@@ -118,7 +118,7 @@ export const ProfilePage = () => {
 			<Grid
 				container
 				item
-				sm={8}
+				sm={12}
 				md={8}
 				lg={9}
 				style={{
@@ -159,11 +159,11 @@ export const ProfilePage = () => {
 						Get the best out of BugHouse by adding the remaining details!
 					</Typography>
 
-					<Box sx={{ display: 'flex', gap: '10px' }}>
+					<Grid sx={{ display: 'flex', gap: '10px' }} container>
 						<ProfilePage.CardVerified contentDisplay="Verified Email ID" />
 						<ProfilePage.CardVerified contentDisplay="Verified mobile Number" />
 						<ProfilePage.CardVerified contentDisplay="Complete Basic Info" />
-					</Box>
+					</Grid>
 				</Box>
 
 				<Grid container spacing={5}>
@@ -212,6 +212,7 @@ ProfilePage.CardVerified = ({ contentDisplay }: { contentDisplay: string }) => {
 				fontSize: '14px',
 				background: '#E7ECF3',
 				padding: '10px 25px',
+
 				borderRadius: 30,
 				display: 'flex',
 				alignItems: 'center',
@@ -226,7 +227,7 @@ ProfilePage.CardVerified = ({ contentDisplay }: { contentDisplay: string }) => {
 ProfilePage.InputFeild = ({
 	name,
 	defaultValue,
-	disabled = false,
+	disabled = true,
 }: {
 	name: string
 	defaultValue: string
@@ -255,9 +256,10 @@ ProfilePage.InputFeild = ({
 						border: 'none',
 						padding: '15px 20px',
 						width: '100%',
+						flex: '1 1 0',
 					}}
 					defaultValue={defaultValue}
-					disabled
+					disabled={disabled}
 				/>
 			</div>
 		</Grid>

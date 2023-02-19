@@ -9,7 +9,7 @@ const UploadImage = ({ addFiles, content }: { addFiles: any; content: string | R
 		accept: {
 			'image/*': [],
 		},
-		onDrop: (acceptedFiles) => {
+		onDrop: (acceptedFiles: any) => {
 			addFiles(acceptedFiles)
 			setFiles(
 				// @ts-ignore
