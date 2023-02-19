@@ -13,6 +13,7 @@ import PrivateRoute from './PrivateRoute'
 import RenderRouteHeader from './RenderRouteHeader'
 import AddRoom from 'pages/room/AddRoom'
 import AdminRoute from './AdminRoute'
+import PageNotFound from 'pages/notFoundPage'
 
 const mainRoutes = [
 	{
@@ -76,7 +77,7 @@ const PathRouter = () => {
 				{mainRoutes.map((item) => (
 					<Route path={item.pathName} key={item.id} element={<PrivateRoute>{item.element}</PrivateRoute>} />
 				))}
-				<Route path="*" element={<>Not Found Page</>} />
+				<Route path="*" element={<PageNotFound />} />
 			</Route>
 
 			{/* Logined Router */}
