@@ -22,6 +22,7 @@ import {
 	Box,
 	TextField,
 } from '@mui/material'
+import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined'
 import { MouseEventHandler, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
@@ -97,6 +98,9 @@ const Header = () => {
 				</MenuItem>
 				<MenuItem onClick={() => handleClose('/mywallet')}>
 					<CreditCard /> Ví BugHouse
+				</MenuItem>
+				<MenuItem onClick={() => handleClose('/room/addroom')}>
+					<PostAddOutlinedIcon /> Đăng tin
 				</MenuItem>
 				<MenuItem
 					onClick={() => {

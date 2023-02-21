@@ -42,7 +42,7 @@ const RoomItem = ({ to, isRented, isOwner }: { to: string; isRented?: boolean; i
 					</RoomPreviews>
 				</Box>
 
-				<div style={{ display: 'flex', flexDirection: 'column' }}>
+				{/* <div style={{ display: 'flex', flexDirection: 'column' }}>
 					<span
 						onClick={(e) => {
 							e.preventDefault()
@@ -60,7 +60,7 @@ const RoomItem = ({ to, isRented, isOwner }: { to: string; isRented?: boolean; i
 						Xem hợp đồng
 					</p>
 					<p>Trạng thái: 'Đã thuê'</p>
-				</div>
+				</div> */}
 
 				<RoomPrice>
 					<span>1,5</span>
