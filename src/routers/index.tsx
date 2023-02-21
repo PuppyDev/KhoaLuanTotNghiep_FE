@@ -3,17 +3,18 @@ import Home from 'pages/Home'
 import SignIn from 'pages/auth/SignIn'
 import SignUp from 'pages/auth/SignUp'
 import UpdateId from 'pages/auth/UpdateId'
+import PageNotFound from 'pages/notFoundPage'
 import RoomDetail from 'pages/room'
+import AddRoom from 'pages/room/AddRoom'
 import RoomsLocation from 'pages/room/RoomsLocation'
 import { ProfilePage } from 'pages/user'
 import BookingPage from 'pages/user/BookingPage'
+import MyRoomPage from 'pages/user/MyRoomPage'
 import WalletPage from 'pages/user/WalletPage'
 import { Route, Routes } from 'react-router-dom'
+import AdminRoute from './AdminRoute'
 import PrivateRoute from './PrivateRoute'
 import RenderRouteHeader from './RenderRouteHeader'
-import AddRoom from 'pages/room/AddRoom'
-import AdminRoute from './AdminRoute'
-import PageNotFound from 'pages/notFoundPage'
 
 const mainRoutes = [
 	{
@@ -24,7 +25,7 @@ const mainRoutes = [
 	{
 		id: 3,
 		element: <BookingPage />,
-		pathName: '/booking',
+		pathName: '/room/booking',
 	},
 	{
 		id: 4,
@@ -35,6 +36,11 @@ const mainRoutes = [
 		id: 5,
 		element: <UpdateId />,
 		pathName: '/registerAuth',
+	},
+	{
+		id: 6,
+		element: <MyRoomPage />,
+		pathName: '/room/myRooms',
 	},
 ]
 

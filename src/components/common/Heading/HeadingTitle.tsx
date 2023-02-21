@@ -12,7 +12,7 @@ const HeadingTitle: React.FC<PropsWithChildren> = ({ children }) => {
 				width: '100%',
 				marginBottom: '50px',
 				paddingBottom: '40px',
-				fontFamily: 'monospace',
+				fontFamily: 'Nunito',
 			}}
 		>
 			{children}

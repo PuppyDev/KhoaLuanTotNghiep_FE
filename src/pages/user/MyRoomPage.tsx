@@ -2,10 +2,10 @@ import HeadingTitle from '@/components/common/Heading/HeadingTitle'
 import RoomItem from '@/components/common/Room/RoomItem'
 import { ListRoom } from 'pages/Home/HomeStyles'
 
-const BookingPage = () => {
+const MyRoomPage = () => {
 	return (
 		<>
-			<HeadingTitle>Phòng đã thuê</HeadingTitle>
+			<HeadingTitle>Phòng đã đăng</HeadingTitle>
 
 			<ListRoom>
 				<RoomItem to="/room/1"></RoomItem>
@@ -16,4 +16,4 @@ const BookingPage = () => {
 	)
 }
 
-export default BookingPage
+export default MyRoomPage

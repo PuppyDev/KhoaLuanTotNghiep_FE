@@ -31,3 +31,24 @@ export const signUp = yup
 		confirmPass: yup.string().oneOf([yup.ref('password'), null], 'Passwords must match'),
 	})
 	.required()
+
+export const ResetPassSchema = yup.object({
+	currentPass: yup
+		.string()
+		.required('Vui lòng nhập mật khẩu')
+		.matches(
+			/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/,
+			'Mật khẩu phải chứa từ 8 ký tự và chứa chữ hoa thường và số'
+		),
+	newPass: yup
+		.string()
+		.required('Vui lòng nhập mật khẩu mới')
+		.matches(
+			/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/,
+			'Mật khẩu mới phải chứa từ 8 ký tự và chứa chữ hoa thường và số'
+		),
+	confirmPass: yup
+		.string()
+		.oneOf([yup.ref('newPass'), null], 'Mật khẩu phải giống nhau')
+		.required('Vui lòng xác nhận mật khẩu giống mật khẩu mới'),
+})

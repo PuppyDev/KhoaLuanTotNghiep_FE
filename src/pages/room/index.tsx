@@ -20,6 +20,8 @@ import {
 	RoomDetailContent,
 	RoomDetailGallary,
 	RoomUtiliti,
+	SignName,
+	SignNameItem,
 } from './styles/RoomDetail'
 
 // Import Swiper React components
@@ -32,12 +34,13 @@ import 'swiper/css/pagination'
 export default function RoomDetail() {
 	const [isShowContract, setIsShowContract] = useState(false)
 
-	const [showStep, setShowStep] = useState<'Term' | 'Contract' | 'Pyament'>('Contract')
+	const [showStep, setShowStep] = useState<'Term' | 'Contract' | 'Pyament'>('Term')
 
 	useEffect(() => {
 		window.scrollTo(0, 0)
 	}, [])
 
+	const [isAcceptTerm, setIsAcceptTerm] = useState(false)
 	return (
 		<WrapperBackground>
 			<HomePageContent style={{ paddingTop: '32px' }}>
@@ -152,21 +155,45 @@ export default function RoomDetail() {
 										marginBottom: '-20px',
 									}}
 								>
-									<input type="checkbox" id="term" />
+									<input type="checkbox" id="term" onChange={() => setIsAcceptTerm((pre) => !pre)} />
 									<label style={{ userSelect: 'none' }} htmlFor="term">
 										Chấp nhận điều khoản
 									</label>
-									{/* <button>Tiếp tục</button> */}
+									{isAcceptTerm && <button onClick={() => setShowStep('Contract')}>Tiếp tục</button>}
 								</div>
 							</>
 						)}
 						{showStep === 'Contract' && (
-							<div
-								dangerouslySetInnerHTML={{
-									__html: getContract({ dataRoom: { basePrice: 100000000, deposit: 1000000 } }),
-								}}
-							/>
+							<>
+								<div
+									dangerouslySetInnerHTML={{
+										__html: getContract({ dataRoom: { basePrice: 100000000, deposit: 1000000 } }),
+									}}
+								/>
+								<SignName container>
+									<SignNameItem item xs={6}>
+										<Box className="headingSign">
+											<h6 style={{ fontSize: '20px' }}>BÊN CHO THUÊ</h6>
+											(Ký và ghi rõ họ tên)
+										</Box>
+										<Box className="signContent">
+											<p>Bảo</p>
+											<p>Đoàn Ngọc Quốc Bảo</p>
+										</Box>
+									</SignNameItem>
+
+									<SignNameItem item xs={6}>
+										<Box className="headingSign">
+											<h6 style={{ fontSize: '20px' }}>BÊN THUÊ</h6>
+											(Ký và ghi rõ họ tên)
+										</Box>
+										<p>Bấm vào đây để ký tên</p>
+									</SignNameItem>
+								</SignName>
+							</>
 						)}
+
+						{showStep === 'Pyament' && <div>Payment đây nè</div>}
 
 						{/* Button */}
 					</ModalContract>

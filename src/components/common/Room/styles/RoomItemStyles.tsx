@@ -8,6 +8,7 @@ export const CardRoomItem = styled(Link)({
 	display: 'flex',
 	gap: '16px',
 	textDecoration: 'none',
+	color: 'black',
 
 	'& > .roomItemImage': {
 		width: '216px',
@@ -29,6 +30,19 @@ export const CardRoomItem = styled(Link)({
 		alignItems: 'flex-start',
 		height: '100%',
 		gap: '20px',
+
+		'@media only screen and (max-width: 765px)': {
+			gap: '5px',
+		},
+	},
+
+	'@media only screen and (max-width: 765px)': {
+		flexDirection: 'column',
+
+		'& > .roomItemImage': {
+			width: '100%',
+			height: '250px',
+		},
 	},
 })
 
@@ -46,6 +60,11 @@ export const RoomPreviews = styled(Box)({
 	flexDirection: 'column',
 	color: '#666666',
 	fontSize: '16px',
+	fontWeight: '100',
+
+	'@media only screen and (max-width: 900px)': {
+		gap: '10px',
+	},
 })
 
 export const RoomPreviewItem = styled(Box)({
@@ -53,6 +72,7 @@ export const RoomPreviewItem = styled(Box)({
 	alignItems: 'center',
 	gap: '15px',
 	fontWeight: '600',
+	fontFamily: 'Nunito',
 })
 
 export const RoomPrice = styled(Box)({
@@ -62,4 +82,12 @@ export const RoomPrice = styled(Box)({
 	textAlign: 'center',
 	flexDirection: 'column',
 	justifyContent: 'center',
+
+	'& > span': {
+		fontSize: '48px',
+		lineHeight: '68px',
+		fontWeight: 'bold',
+	},
 })
+
+// export const Modal

@@ -124,3 +124,23 @@ export const ModalContract = styled(Box)({
 		borderRadius: '6px',
 	},
 })
+
+export const SignName = styled(Grid)({
+	width: '100%',
+	textAlign: 'center',
+})
+
+export const SignNameItem = styled(Grid)({
+	'& > .headingSign': {
+		padding: '10px',
+		border: '1pt solid rgb(221, 221, 221)',
+	},
+
+	'&> .signContent': {
+		'& > p:first-of-type': {
+			paddingTop: '10px',
+			color: '#F73486',
+			fontSize: '30px',
+		},
+	},
+})
