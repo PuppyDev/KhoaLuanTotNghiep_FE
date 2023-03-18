@@ -118,21 +118,32 @@ export const SearchResultNoData = styled('div')({
 	justifyContent: 'center',
 })
 
-export const HomePageContent = styled(Box)({
-	width: '1440px',
-	margin: '0 auto',
-	padding: '0 32px',
-	paddingBottom: '50px',
-	fontFamily: 'Nunito',
+export const HomePageContent = styled(Box)`
+	width: 1440px;
+	margin: 0 auto;
+	padding: 0 32px;
+	padding-bottom: 50px;
+	font-family: Nunito;
 
-	'@media only screen and (max-width: 1441px)': {
-		width: '98%',
-	},
-})
+	@media only screen and (max-width: 1441px) {
+		width: 98%;
+	}
 
-export const WrapperBackground = styled('section')({
-	background: '#F6F5F2',
-})
+	& .heading__homepage {
+		text-align: center;
+		font-size: 40px;
+		font-weight: bold;
+		padding: 40px 0;
+	}
+`
+
+export const WrapperBackground = styled('section')`
+	/* background: #f6f5f2; */
+
+	&.min__height90 {
+		min-height: '92vh';
+	}
+`
 
 export const TrendingSearch = styled('section')({})
 

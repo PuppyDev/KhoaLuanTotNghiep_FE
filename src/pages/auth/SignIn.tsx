@@ -1,11 +1,13 @@
 import FormInputText from '@/components/common/Input/FormInputText'
 import { schema } from '@/schemas/Auth'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Grid } from '@mui/material'
+import { CircularProgress, Grid } from '@mui/material'
 import { useForm } from 'react-hook-form'
-import { ButtonAuth, HeaderSignUp, LinkSignIn, Wrapper } from './SignUpStyle'
-import { Link } from 'react-router-dom'
+import { ButtonAuth, HeaderSignUp, LinkSignIn, Wrapper } from './styles'
+import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useState } from 'react'
+import { Circle } from '@mui/icons-material'
 
 type FormValues = {
 	email: string
@@ -25,9 +27,14 @@ const SignIn = () => {
 		resolver: yupResolver(schema),
 	})
 
+	const [isLoading, setisLoading] = useState(false)
+	const navigate = useNavigate()
 	const handleSignIn = handleSubmit((data) => {
+		setisLoading(true)
 		setTimeout(() => {
 			console.log('meomeo')
+			setisLoading(false)
+			// navigate('/')
 		}, 3000)
 	})
 
@@ -87,8 +94,8 @@ const SignIn = () => {
 							{t('AUTH.Forgot_Your_Pass')} ?
 						</Link>
 
-						<ButtonAuth disabled={isSubmitting} type="submit" variant="contained">
-							{t('AUTH.LOGIN')} {t('NOW')}
+						<ButtonAuth disabled={isSubmitting || isLoading} type="submit" variant="contained">
+							{isLoading ? <CircularProgress size={25} /> : t('AUTH.LOGIN') + ' ' + t('NOW')}
 						</ButtonAuth>
 					</form>
 				</Grid>

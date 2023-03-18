@@ -5,7 +5,15 @@ import { Button, Grid, TextField, Typography } from '@mui/material'
 import { ReactNode, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { ButtonAuth, HeaderSignUp, LinkSignIn, Wrapper } from './SignUpStyle'
+import {
+	ButtonAuth,
+	HeaderSignUp,
+	LinkSignIn,
+	StyledButton,
+	StyledGroupButton,
+	StyledTypography,
+	Wrapper,
+} from './styles'
 import { Box } from '@mui/system'
 
 type FormValues = {
@@ -105,28 +113,22 @@ const SignUp = () => {
 					)}
 
 					{otp && (
-						<form
-							onSubmit={handleSignUp}
-							style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', gap: '20px' }}
-						>
-							<Typography variant="body1" color="initial" textAlign="center">
-								Chúng tôi đã gửi về số điện thoại <span style={{ fontWeight: 'bold' }}>0911336236</span>{' '}
-								một mã OTP. Vui lòng nhập mã OTP để hoàn tất việc đăng ký
-							</Typography>
+						<form onSubmit={handleSignUp} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+							<StyledTypography>{t('AUTH.SEND_OTP')}</StyledTypography>
 
-							<TextField label="Mã OTP" />
+							<TextField label="Mã OTP" variant="standard" />
 
-							<Box>
-								<Button type="submit" variant="contained">
-									Xác thực OTP
-								</Button>
-								<Button variant="contained" onClick={handleReSendOTP}>
-									Gửi lại OTP
-								</Button>
-								<Button variant="contained" onClick={() => setOtp(false)}>
-									Quay lại
-								</Button>
-							</Box>
+							<StyledGroupButton>
+								<StyledButton type="submit" variant="outlined">
+									{t('AUTH.CONFIRM_OTP')}
+								</StyledButton>
+								<StyledButton variant="outlined" onClick={handleReSendOTP}>
+									{t('AUTH.RE_SENT_OTP')}
+								</StyledButton>
+								<StyledButton variant="outlined" onClick={() => setOtp(false)}>
+									{t('GO_BACK')}
+								</StyledButton>
+							</StyledGroupButton>
 						</form>
 					)}
 				</Grid>

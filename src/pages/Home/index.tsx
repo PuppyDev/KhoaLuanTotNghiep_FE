@@ -1,10 +1,14 @@
 import RoomItem from '@/components/common/Room/RoomItem'
+import { randomId } from '@/utils/index'
+import { encode } from '@/utils/super-function'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser'
 import { Grid } from '@mui/material'
 import Typography from '@mui/material/Typography'
 import { Box } from '@mui/system'
+import { debounce } from 'lodash'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import {
 	ContentBanner,
@@ -29,10 +33,6 @@ import {
 	WrapperBackground,
 	WrapperBanner,
 } from './HomeStyles'
-import { debounce } from 'lodash'
-import { decode } from '@/utils/super-function'
-import { encode } from '@/utils/super-function'
-import { randomId } from '@/utils/index'
 
 const Home = () => {
 	const [searchKeyWord, setSearchKeyWord] = useState('')
@@ -46,14 +46,14 @@ const Home = () => {
 		}
 	}, [searchKeyWord])
 
+	const { t } = useTranslation()
+
 	return (
 		<>
 			<HomeBanner>
 				<WrapperBanner>
 					<ContentBanner>
-						<HeadingBanner>
-							Ứng dụng tìm kiếm phòng trọ miễn phí cho người đi thuê hàng đầu Việt Nam
-						</HeadingBanner>
+						<HeadingBanner>{t('Home.solgan')}</HeadingBanner>
 
 						<SearchBanner>
 							<SearchLocation>
@@ -62,7 +62,9 @@ const Home = () => {
 							</SearchLocation>
 
 							<SearchFeature
-								placeholder="Tìm kiếm theo địa điểm, quận, tên đường,..."
+								placeholder={
+									t('Home.search_placeholder') || 'Tìm kiếm theo địa điểm, quận, tên đường,...'
+								}
 								onChange={debounce((e) => {
 									setSearchKeyWord(e.target.value)
 								}, 500)}
@@ -76,7 +78,7 @@ const Home = () => {
 										</SearchResultItem>
 									))}
 								{resultSearch.length === 0 && searchKeyWord.trim().length > 0 && (
-									<SearchResultNoData>Không tìm thấy kết quả.</SearchResultNoData>
+									<SearchResultNoData>{t('Home.search_result')}</SearchResultNoData>
 								)}
 							</SearchResult>
 						</SearchBanner>
@@ -87,25 +89,25 @@ const Home = () => {
 			<WrapperBackground>
 				<HomePageContent>
 					<TrendingSearch>
-						<TrendingHeader>Xu hướng tìm kiếm</TrendingHeader>
+						<TrendingHeader>{t('Home.search_trends')}</TrendingHeader>
 						<TrendingList>
 							<TrendingItem>
-								<Link to={encode('binhthanh')}>Bình Thạnh</Link>
+								<Link to={'/search/' + encode('binhthanh')}>Bình Thạnh</Link>
 							</TrendingItem>
 							<TrendingItem>
-								<Link to={encode('quan10')}>Quận 10</Link>
+								<Link to={'/search/' + encode('quan10')}>Quận 10</Link>
 							</TrendingItem>
 							<TrendingItem>
-								<Link to={encode('quan1')}>Quận 1</Link>
+								<Link to={'/search/' + encode('quan1')}>Quận 1</Link>
 							</TrendingItem>
 							<TrendingItem>
-								<Link to={encode('quan7')}>Quận 7</Link>
+								<Link to={'/search/' + encode('quan7')}>Quận 7</Link>
 							</TrendingItem>
 							<TrendingItem>
-								<Link to={encode('thuduc')}>Thủ Đức</Link>
+								<Link to={'/search/' + encode('thuduc')}>Thủ Đức</Link>
 							</TrendingItem>
 							<TrendingItem>
-								<Link to={encode('quan3')}>Quận 3</Link>
+								<Link to={'/search/' + encode('quan3')}>Quận 3</Link>
 							</TrendingItem>
 						</TrendingList>
 					</TrendingSearch>
@@ -113,7 +115,7 @@ const Home = () => {
 					<RoomSection container spacing="40px">
 						<Grid item xs={12} md={8}>
 							<NewRoom>
-								<Typography className="heading">Phòng mới nhất</Typography>
+								<Typography className="heading">{t('Home.new_room')}</Typography>
 
 								<ListRoom>
 									<RoomItem to="/room/1"></RoomItem>
@@ -136,7 +138,7 @@ const Home = () => {
 											fontWeight: '600',
 										}}
 									>
-										Xem tất cả
+										{t('Home.see_all')}
 									</Link>
 								</Box>
 							</NewRoom>
@@ -146,7 +148,7 @@ const Home = () => {
 							<VerifiAccount>
 								<div className="heading">
 									<VerifiedUserIcon style={{ fontSize: '32px', color: 'rgb(72, 119, 248)' }} />
-									Đã xác thực
+									{t('Home.verified')}
 								</div>
 
 								<Box className="verifiContent">
@@ -171,7 +173,7 @@ const Home = () => {
 									>
 										<span>Quận thủ đức</span>
 
-										<span style={{ fontSize: '16px', color: '#F73486' }}>1,5 tr/người</span>
+										<span style={{ fontSize: '16px', color: '#F73486' }}>1,5 tr/{t('person')}</span>
 									</Box>
 								</Box>
 							</VerifiAccount>

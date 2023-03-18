@@ -1,29 +1,19 @@
 import React from 'react'
 import Lottie from 'react-lottie-player'
 import loadingJson from '@/common/Json/36395-lonely-404.json'
+import { StyledWrapNotFound } from './styles'
+import { useTranslation } from 'react-i18next'
 
 const PageNotFound = () => {
+	const { t } = useTranslation()
 	return (
-		<div
-			style={{
-				width: '100%',
-				height: '80vh',
-				display: 'flex',
-				alignItems: 'center',
-				justifyContent: 'center',
-				flexDirection: 'column',
-				textAlign: 'center',
-				fontSize: '18px',
-				fontWeight: '500',
-				fontFamily: 'Nunito',
-			}}
-		>
-			<Lottie loop animationData={loadingJson} play style={{ width: '30vw' }} />
+		<StyledWrapNotFound>
+			<Lottie loop animationData={loadingJson} play className="pageNotFound_animation" />
 			<p>
-				Có vẻ như trang bạn đang tìm kiếm đã được thay thế <br />
-				hoặc ở đâu đó chúng tôi không thể tìm thấy.
+				{t('NOT_FOUND_PAGE.TOP')} <br />
+				{t('NOT_FOUND_PAGE.BOTTOM')}
 			</p>
-		</div>
+		</StyledWrapNotFound>
 	)
 }
 

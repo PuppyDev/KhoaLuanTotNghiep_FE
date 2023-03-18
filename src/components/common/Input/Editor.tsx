@@ -54,7 +54,6 @@ const EditorBase = (props: IProps) => {
 						id={!!props?.id ? props?.id : 'editor'}
 						onInit={(evt, editor) => (editorRef.current = editor)}
 						initialValue={initialValue}
-						// onChange={onChange}
 						disabled={disabled}
 						value={value}
 						onEditorChange={(values) => onChange(values)}
@@ -78,6 +77,7 @@ const EditorBase = (props: IProps) => {
 							/* and here's our custom image picker*/
 							...customFieldProps,
 						}}
+						apiKey={import.meta.env.VITE_TINY_API}
 					/>
 				</div>
 			)}

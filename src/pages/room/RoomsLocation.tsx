@@ -7,17 +7,33 @@ import { Grid, Box, Pagination } from '@mui/material'
 import Card from '@/components/common/Card'
 import RoomItem from '@/components/common/Room/RoomItem'
 import Typography from '@mui/material/Typography/Typography'
-import { decode } from '@/utils/super-function'
+import { decode, encode } from '@/utils/super-function'
+import { useTranslation } from 'react-i18next'
+import qs from 'query-string'
 
 const RoomsLocation = () => {
 	const location = useLocation()
 
 	const [dataSearch, setdataSearch] = useState<null>(null)
-	const [searchFilter, setSearchFilter] = useState()
+
+	const [searchFilter, setSearchFilter] = useState({
+		range: {
+			form: 0,
+			to: 100,
+		},
+		Utilities: {},
+		typeRoom: '',
+		gender: '',
+		page: 1,
+	})
+
+	const { t } = useTranslation()
 
 	useEffect(() => {
 		const keySearch = decode(getPathNameAfterSlah(location.pathname))
 		console.log('🚀 ~ file: RoomsLocation.tsx:20 ~ useEffect ~ keySearch', keySearch)
+
+		const querySearch = location.search
 	}, [location, searchFilter])
 
 	useEffect(() => {
@@ -48,7 +64,7 @@ const RoomsLocation = () => {
 										color: '#333333',
 									}}
 								>
-									Kết quả
+									{t('Room.Results')}
 								</Typography>
 								<ListRoom>
 									<RoomItem to="/room/1"></RoomItem>
@@ -63,7 +79,7 @@ const RoomsLocation = () => {
 										justifyContent: 'center',
 									}}
 								>
-									<Pagination count={10} color="secondary" />
+									<Pagination count={10} />
 								</Box>
 							</Card>
 						</Grid>

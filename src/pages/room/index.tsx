@@ -1,5 +1,6 @@
 import Card from '@/components/common/Card'
 import RoomDetailInfo from '@/components/common/Room/RoomDetailInfo'
+import { StyledInfoOfOwner } from '@/components/common/Room/styles/RoomItemStyles'
 import { getContract, getContractTerm } from '@/utils/contract'
 import { getIcon } from '@/utils/icon'
 import { itemData, randomId } from '@/utils/index'
@@ -7,10 +8,14 @@ import CottageOutlinedIcon from '@mui/icons-material/CottageOutlined'
 import DeckIcon from '@mui/icons-material/Deck'
 import ErrorIcon from '@mui/icons-material/Error'
 import PersonIcon from '@mui/icons-material/Person'
-import { Box, Fade, Grid, Modal, Typography } from '@mui/material'
+import { Box, Button, Fade, Grid, Modal, TextField, Typography } from '@mui/material'
 import { HomePageContent, WrapperBackground } from 'pages/Home/HomeStyles'
-import { useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Autoplay, EffectCoverflow, Pagination } from 'swiper'
+import 'swiper/css'
+import 'swiper/css/pagination'
+import { Swiper, SwiperSlide } from 'swiper/react'
 import {
 	ButtonRent,
 	DetailRoom,
@@ -22,35 +27,51 @@ import {
 	RoomUtiliti,
 	SignName,
 	SignNameItem,
+	StyledAcceptTerm,
+	StyledButtonAcceptTerm,
+	StyledCheckBox,
+	StyledHeadingPayment,
+	StyledItemListPayment,
+	StyledLabelAcceptTerm,
+	StyledListPayment,
+	StyledModalPayment,
 } from './styles/RoomDetail'
-
-// Import Swiper React components
-import { Swiper, SwiperSlide } from 'swiper/react'
-
-// Import Swiper styles
-import 'swiper/css'
-import 'swiper/css/pagination'
 
 export default function RoomDetail() {
 	const [isShowContract, setIsShowContract] = useState(false)
 
 	const [showStep, setShowStep] = useState<'Term' | 'Contract' | 'Pyament'>('Term')
-
+	const { t } = useTranslation()
+	const [isSign, setIsSign] = useState(false)
+	const [showModalOTP, setShowModalOTP] = useState(false)
 	useEffect(() => {
 		window.scrollTo(0, 0)
 	}, [])
+
+	const handleComfirmOTP = async () => {
+		try {
+			setShowModalOTP(false)
+			setIsSign(true)
+			setShowStep('Pyament')
+			setIsShowContract(false)
+		} catch (error) {}
+	}
+
+	const handleClosePayment = () => {
+		setShowStep('Term')
+	}
 
 	const [isAcceptTerm, setIsAcceptTerm] = useState(false)
 	return (
 		<WrapperBackground>
 			<HomePageContent style={{ paddingTop: '32px' }}>
 				<RoomDetailGallary>
-					<RoomDetail.Carousel />
+					<RoomDetail.Carousel itemData={itemData || []} />
 				</RoomDetailGallary>
 
 				<HeadingRoomBlock>
 					<Typography className="headingRoom">Room for rent Hoàng Hoa Thám, Quận Bình Thạnh</Typography>
-					<ButtonRent onClick={() => setIsShowContract(true)}>Thuê ngay</ButtonRent>
+					<ButtonRent onClick={() => setIsShowContract(true)}>{t('Room.Rent')}</ButtonRent>
 				</HeadingRoomBlock>
 
 				<DetailRoom container spacing="32px">
@@ -61,23 +82,23 @@ export default function RoomDetail() {
 									<CottageOutlinedIcon
 										style={{ fontSize: '32px', color: 'rgb(247, 52, 134)', fontWeight: 'bold' }}
 									/>
-									Thông tin phòng
+									{t('Room.room_info')}
 								</HeadingCardDetail>
 								<RoomDetailContent container spacing="20px">
 									<RoomDetailInfo
-										label="Trạng Thái"
+										label={t('Room.status')}
 										value="Hết phòng"
 										xs={4}
 										md={3}
 										highlight="unactive"
 									/>
-									<RoomDetailInfo label="GIÁ PHÒNG" value="1,500,000 đồng" xs={4} md={3} />
-									<RoomDetailInfo label="DIỆN TÍCH" value="30 mét vuông" xs={4} md={3} />
-									<RoomDetailInfo label="ĐẶT CỌC" value="1 tháng" xs={4} md={3} />
-									<RoomDetailInfo label="SỨC CHỨA" value="8 Nam hoặc Nữ" xs={4} md={3} />
-									<RoomDetailInfo label="ĐIỆN" value="500,000 đồng" xs={4} md={3} />
+									<RoomDetailInfo label={t('Room.room_rates')} value="1,500,000 đồng" xs={4} md={3} />
+									<RoomDetailInfo label={t('Room.acreage')} value="30 mét vuông" xs={4} md={3} />
+									<RoomDetailInfo label={t('Room.deposit')} value="1 tháng" xs={4} md={3} />
+									<RoomDetailInfo label={t('Room.capacity')} value="8 Nam hoặc Nữ" xs={4} md={3} />
+									<RoomDetailInfo label={t('Room.electricity')} value="500,000 đồng" xs={4} md={3} />
 									<RoomDetailInfo
-										label="ĐIẠ CHỈ"
+										label={t('Room.address')}
 										value="214B Nguyễn Trãi, Phường Nguyễn Cư Trinh, Quận 1, Hồ Chí Minh"
 									/>
 								</RoomDetailContent>
@@ -88,7 +109,7 @@ export default function RoomDetail() {
 									<DeckIcon
 										style={{ fontSize: '32px', color: 'rgb(13, 191, 226)', fontWeight: 'bold' }}
 									/>
-									Tiện ích
+									{t('Room.utilities')}
 								</HeadingCardDetail>
 
 								<RoomDetailContent
@@ -110,7 +131,7 @@ export default function RoomDetail() {
 									<ErrorIcon
 										style={{ fontSize: '32px', color: 'rgb(139, 87, 42)', fontWeight: 'bold' }}
 									/>
-									Mô tả thêm
+									{t('Room.More_description')}
 								</HeadingCardDetail>
 								<p style={{ paddingTop: '10px' }}>
 									Chính chủ cho thuê phòng dịch vụ đường Hoàng Hoa Thám kv Bình Thạnh. Giá 3,5tr - 5tr
@@ -137,7 +158,7 @@ export default function RoomDetail() {
 				closeAfterTransition
 			>
 				<Fade in={isShowContract}>
-					<ModalContract>
+					<ModalContract className="parent">
 						{showStep === 'Term' && (
 							<>
 								<div
@@ -146,21 +167,26 @@ export default function RoomDetail() {
 									}}
 									style={{ padding: '40px 20px' }}
 								/>
-								<div
-									style={{
-										display: 'flex',
-										alignItems: 'center',
-										justifyContent: 'center',
-										gap: '10px',
-										marginBottom: '-20px',
-									}}
-								>
-									<input type="checkbox" id="term" onChange={() => setIsAcceptTerm((pre) => !pre)} />
-									<label style={{ userSelect: 'none' }} htmlFor="term">
-										Chấp nhận điều khoản
-									</label>
-									{isAcceptTerm && <button onClick={() => setShowStep('Contract')}>Tiếp tục</button>}
-								</div>
+								<StyledAcceptTerm>
+									<StyledCheckBox
+										type="checkbox"
+										id="term"
+										checked={isAcceptTerm}
+										onChange={() => setIsAcceptTerm((pre) => !pre)}
+									/>
+									<StyledLabelAcceptTerm htmlFor="term">
+										{t('Room.Accept_terms')}
+									</StyledLabelAcceptTerm>
+
+									{isAcceptTerm && (
+										<StyledButtonAcceptTerm
+											variant="contained"
+											onClick={() => setShowStep('Contract')}
+										>
+											{t('Room.Continue')}
+										</StyledButtonAcceptTerm>
+									)}
+								</StyledAcceptTerm>
 							</>
 						)}
 						{showStep === 'Contract' && (
@@ -187,7 +213,18 @@ export default function RoomDetail() {
 											<h6 style={{ fontSize: '20px' }}>BÊN THUÊ</h6>
 											(Ký và ghi rõ họ tên)
 										</Box>
-										<p>Bấm vào đây để ký tên</p>
+										<Box className="signContent">
+											{isSign ? (
+												<>
+													<p>Bảo</p>
+													<p>Đoàn Ngọc Quốc Bảo</p>
+												</>
+											) : (
+												<button onClick={() => setShowModalOTP(true)}>
+													Bấm vào đây để ký tên
+												</button>
+											)}
+										</Box>
 									</SignNameItem>
 								</SignName>
 							</>
@@ -195,9 +232,58 @@ export default function RoomDetail() {
 
 						{showStep === 'Pyament' && <div>Payment đây nè</div>}
 
-						{/* Button */}
+						<Modal open={showModalOTP} onClose={() => setShowModalOTP(false)}>
+							<ModalContract
+								style={{
+									width: 400,
+									background: 'white',
+									textAlign: 'center',
+									height: 'auto',
+									paddingBottom: 20,
+								}}
+							>
+								<h3>Xác thực OTP!</h3>
+								<p style={{ fontSize: 14 }}> Chúng tôi đã gửi 1 mã OTP đến mail của bạn !!! </p>
+								<TextField style={{ width: '100%', margin: '20px 0' }} label="Mã OTP" />
+								<Button variant="outlined" style={{ marginRight: 10 }}>
+									Gửi lại OTP
+								</Button>
+								<Button variant="outlined" onClick={handleComfirmOTP}>
+									Xác nhận
+								</Button>
+							</ModalContract>
+						</Modal>
 					</ModalContract>
 				</Fade>
+			</Modal>
+
+			<Modal open={showStep === 'Pyament'} onClose={handleClosePayment}>
+				<StyledModalPayment>
+					<StyledHeadingPayment>Chọn phương thức thanh toán</StyledHeadingPayment>
+
+					<StyledListPayment>
+						<StyledItemListPayment>
+							<span className="item-left">
+								<img
+									src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Icon-VNPAY-QR.png"
+									alt="logo vnpay"
+								/>
+								Ví Bughouse
+							</span>
+						</StyledItemListPayment>
+						<StyledItemListPayment>
+							<span className="item-left">
+								<img
+									src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Icon-VNPAY-QR.png"
+									alt="logo vnpay"
+								/>
+								VNPay
+							</span>
+						</StyledItemListPayment>
+					</StyledListPayment>
+
+					<Button>Thanh toán</Button>
+				</StyledModalPayment>
 			</Modal>
 		</WrapperBackground>
 	)
@@ -220,28 +306,22 @@ RoomDetail.Utiliti = ({ label, xs = 4, md = 3, icon }: IProps) => {
 }
 
 RoomDetail.InfoOfMaster = () => {
+	const { t } = useTranslation()
+
 	return (
 		<Card>
 			<HeadingCardDetail>
 				<PersonIcon style={{ fontSize: '32px', color: 'rgb(72, 119, 248)', fontWeight: 'bold' }} />
-				Thông tin chủ phòng
+				{t('Room.room_owner_information')}
 			</HeadingCardDetail>
 
-			<Box style={{ marginTop: '24px', gap: '8px', display: 'flex', alignItems: 'flex-end' }}>
-				<img
-					style={{
-						width: '60px',
-						height: '60px',
-						objectFit: 'cover',
-						borderRadius: '30px',
-					}}
-					src="https://s120-ava-talk.zadn.vn/b/0/e/1/3/120/0b5ff51a67c76afa07881797aa577241.jpg"
-				/>
+			<StyledInfoOfOwner>
+				<img src="https://s120-ava-talk.zadn.vn/b/0/e/1/3/120/0b5ff51a67c76afa07881797aa577241.jpg" />
 
-				<div style={{ borderRight: '1px solid #CDCDCD', paddingRight: '24px' }}>
+				<div className="main-content">
 					<p>Thanh Quang</p>
 					<p>
-						SĐT: <span>0344333145 </span>
+						{t('Room.Phone')}: <span>0344333145 </span>
 					</p>
 				</div>
 
@@ -250,15 +330,14 @@ RoomDetail.InfoOfMaster = () => {
 						paddingLeft: '24px',
 					}}
 				>
-					Ngày đăng:
-					<p>10-02-2023</p>
+					{t('Room.Date_post')}:<p>10-02-2023</p>
 				</div>
-			</Box>
+			</StyledInfoOfOwner>
 		</Card>
 	)
 }
 
-RoomDetail.Carousel = () => {
+RoomDetail.Carousel = memo(({ itemData }: { itemData: { img: string; title: string }[] }) => {
 	return (
 		<Swiper
 			modules={[Autoplay, Pagination, EffectCoverflow]}
@@ -284,4 +363,4 @@ RoomDetail.Carousel = () => {
 			))}
 		</Swiper>
 	)
-}
+})

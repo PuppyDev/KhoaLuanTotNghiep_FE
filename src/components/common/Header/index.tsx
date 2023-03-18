@@ -7,38 +7,50 @@ import {
 	LockOpenOutlined,
 	Logout,
 	PersonOutlineOutlined,
+	LanguageOutlined,
 } from '@mui/icons-material'
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'
+import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined'
 import {
 	Avatar,
+	Badge,
+	Box,
 	Button,
+	Drawer,
 	FormControl,
-	FormHelperText,
-	Input,
-	InputLabel,
 	Menu,
 	MenuItem,
-	Typography,
 	Modal,
-	Box,
 	TextField,
+	Typography,
 } from '@mui/material'
-import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined'
-import { MouseEventHandler, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
-import { HeaderContainer, NavHeader, paperProps } from './HeaderStyle'
-
-import { yupResolver } from '@hookform/resolvers/yup'
-import * as yup from 'yup'
+import {
+	HeaderContainer,
+	NavHeader,
+	paperProps,
+	StyledContentDrawer,
+	StyledNotificationItem,
+	StyledWrapHeader,
+	StyledWrapModal,
+} from './HeaderStyle'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import WarningAmberIcon from '@mui/icons-material/WarningAmber'
+import DoneIcon from '@mui/icons-material/Done'
 import { ResetPassSchema } from '@/schemas/Auth'
 import ShowNostis from '@/utils/show-noti'
-
+import { formatDate } from '@/utils/time'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useTranslation } from 'react-i18next'
 const Header = () => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 	const navigate = useNavigate()
 	const open = Boolean(anchorEl)
 
 	const { user } = useAuth()
+	const [openDrawer, setOpenDrawer] = useState(false)
 
 	const handleClick = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget)
 
@@ -47,8 +59,14 @@ const Header = () => {
 		if (callBack) callBack()
 		setAnchorEl(null)
 	}
-
+	const { t, i18n } = useTranslation()
 	const [isOpen, setIsOpen] = useState(false)
+
+	const handleChangeLang = () => {
+		const lang = i18n.language === 'en' ? 'vi' : 'en'
+		i18n.changeLanguage(lang)
+		localStorage.setItem('lang', lang)
+	}
 
 	return (
 		<>
@@ -56,26 +74,70 @@ const Header = () => {
 				<Link to={'/'}>
 					<img style={{ width: 80 }} src={BugHouseLogo} />
 				</Link>
-
-				<NavHeader onClick={(e) => !user && handleClick(e)}>
-					{user ? (
-						<Avatar sx={{ width: 32, height: 32 }} onClick={() => navigate('/login')} />
-					) : (
-						<>
-							<Avatar
-								sx={{ width: 32, height: 32 }}
-								srcSet="https://mui.com/static/images/avatar/1.jpg"
-							/>
-
-							<Typography variant="body1" sx={{ fontWeight: '600', fontSize: 14, marginRight: 2 }}>
-								Delowar
-							</Typography>
-
-							<ExpandMore />
-						</>
-					)}
-				</NavHeader>
+				<StyledWrapHeader>
+					<Badge badgeContent={4} color="secondary">
+						<NotificationsNoneIcon className="icon_notification" onClick={() => setOpenDrawer(true)} />
+					</Badge>
+					<NavHeader onClick={(e) => !user && handleClick(e)}>
+						{user ? (
+							<Avatar className="avatar" onClick={() => navigate('/login')} />
+						) : (
+							<>
+								<Avatar
+									className="avatar"
+									srcSet="https://scontent.fsgn2-7.fna.fbcdn.net/v/t39.30808-6/326706851_905071507593208_1684832252594277761_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=FVDo1ljBqpAAX9L_Ibl&_nc_ht=scontent.fsgn2-7.fna&oh=00_AfDit6WnL3XB4EBzCoNr-HFO14fEDcUsOJJE9QxxE0D0rQ&oe=6419E0FF"
+								/>
+								<span className="name_heading">Yone Doan</span>
+								<ExpandMore />
+							</>
+						)}
+					</NavHeader>
+				</StyledWrapHeader>
 			</HeaderContainer>
+
+			<Drawer anchor="left" open={openDrawer} onClose={() => setOpenDrawer(false)}>
+				<StyledContentDrawer>
+					<p className="Heading">{t('Header.Notifications')}</p>
+					<StyledNotificationItem className="error">
+						<InfoOutlinedIcon fontSize="large" color="error" />
+						<Box>
+							<p className="headingNotification">Thanh toán hợp đồng không thành công</p>
+							<p style={{ margin: '10px 0' }}>
+								Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam corrupti
+							</p>
+							<p>
+								<span style={{ fontWeight: 'bold' }}> Thời gian </span> : {formatDate(new Date())}
+							</p>
+						</Box>
+					</StyledNotificationItem>
+
+					<StyledNotificationItem className="warning">
+						<WarningAmberIcon fontSize="large" color="warning" />
+						<Box>
+							<p className="headingNotification">Thanh toán hợp đồng thành công</p>
+							<p style={{ margin: '10px 0' }}>
+								Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam corrupti
+							</p>
+							<p>
+								<span style={{ fontWeight: 'bold' }}> Thời gian </span> : {formatDate(new Date())}
+							</p>
+						</Box>
+					</StyledNotificationItem>
+
+					<StyledNotificationItem className="success">
+						<DoneIcon fontSize="large" color="success" />
+						<Box>
+							<p className="headingNotification">Thanh toán hợp đồng thành công</p>
+							<p style={{ margin: '10px 0' }}>
+								Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam corrupti
+							</p>
+							<p>
+								<span style={{ fontWeight: 'bold' }}> Thời gian </span> : {formatDate(new Date())}
+							</p>
+						</Box>
+					</StyledNotificationItem>
+				</StyledContentDrawer>
+			</Drawer>
 
 			<Menu
 				anchorEl={anchorEl}
@@ -87,20 +149,20 @@ const Header = () => {
 				transformOrigin={{ horizontal: 'right', vertical: 'top' }}
 				anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
 			>
-				<MenuItem onClick={() => handleClose('profile/1')}>
-					<AccountCircleOutlined /> <Typography variant="body1"> Tài khoản của tôi </Typography>
+				<MenuItem onClick={() => handleClose('/profile/1')}>
+					<AccountCircleOutlined /> <Typography variant="body1"> {t('Header.My_account')} </Typography>
 				</MenuItem>
-				<MenuItem onClick={() => handleClose()}>
-					<PersonOutlineOutlined /> Manage account
+				<MenuItem onClick={() => handleClose('/room/myRooms')}>
+					<PersonOutlineOutlined /> {t('Header.Room_for_rent')}
 				</MenuItem>
-				<MenuItem onClick={() => handleClose('room/booking')}>
-					<CreditCard /> Phòng đã thuê
+				<MenuItem onClick={() => handleClose('/room/rented')}>
+					<CreditCard /> {t('Header.Room_rented')}
 				</MenuItem>
 				<MenuItem onClick={() => handleClose('/mywallet')}>
-					<CreditCard /> Ví BugHouse
+					<CreditCard /> {t('Header.Wallet')}
 				</MenuItem>
 				<MenuItem onClick={() => handleClose('/room/addroom')}>
-					<PostAddOutlinedIcon /> Đăng tin
+					<PostAddOutlinedIcon /> {t('Header.Post')}
 				</MenuItem>
 				<MenuItem
 					onClick={() => {
@@ -108,10 +170,13 @@ const Header = () => {
 						handleClose()
 					}}
 				>
-					<LockOpenOutlined /> <p> Đổi mật khẩu</p>
+					<LockOpenOutlined /> <p> {t('Header.Change_password')}</p>
+				</MenuItem>
+				<MenuItem onClick={handleChangeLang}>
+					<LanguageOutlined /> <p> {t('Header.Change_lang')}</p>
 				</MenuItem>
 				<MenuItem onClick={() => handleClose()}>
-					<Logout /> Đăng xuất
+					<Logout /> {t('Header.Logout')}
 				</MenuItem>
 			</Menu>
 
@@ -128,6 +193,7 @@ Header.ChangePasswordForm = ({ isOpen, handleClose }: { isOpen: boolean; handleC
 	} = useForm({
 		resolver: yupResolver(ResetPassSchema),
 	})
+	const { t } = useTranslation()
 	const handleChangePass = async (data: any) => {
 		try {
 			handleClose()
@@ -140,37 +206,17 @@ Header.ChangePasswordForm = ({ isOpen, handleClose }: { isOpen: boolean; handleC
 	return (
 		<>
 			<Modal open={isOpen} onClose={handleClose}>
-				<Box
-					sx={{
-						borderRadius: '8px',
-						position: 'absolute',
-						top: '50%',
-						left: '50%',
-						transform: 'translate(-50%, -50%)',
-						width: 450,
-						boxShadow: 24,
-						background: 'white',
-						padding: '40px 25px 10px 25px',
-					}}
-				>
-					<p
-						style={{
-							textAlign: 'center',
-							fontSize: '30px',
-							fontWeight: '600',
-							marginBottom: '10px',
-						}}
-					>
-						Đổi mật khẩu
-					</p>
+				<StyledWrapModal>
+					<p className="heading_changepassword">{t('Header.Change_password')}</p>
 					<form className="form" onSubmit={handleSubmit(handleChangePass)}>
 						<FormControl fullWidth margin="dense">
 							<TextField
 								label={
-									errors.currentPass ? (errors.currentPass?.message as string) : 'Mật khẩu hiện tại '
+									errors.currentPass
+										? (errors.currentPass?.message as string)
+										: t('Header.Current_pass')
 								}
 								variant="standard"
-								id="password-current"
 								type="password"
 								{...register('currentPass')}
 								error={Boolean(errors.currentPass)}
@@ -178,9 +224,8 @@ Header.ChangePasswordForm = ({ isOpen, handleClose }: { isOpen: boolean; handleC
 						</FormControl>
 						<FormControl fullWidth margin="dense" error={Boolean(errors.newPass)}>
 							<TextField
-								label={errors.newPass ? (errors.newPass?.message as string) : 'Mật Khẩu mới'}
+								label={errors.newPass ? (errors.newPass?.message as string) : t('Header.New_pass')}
 								variant="standard"
-								id="password-new"
 								type="password"
 								{...register('newPass')}
 								error={Boolean(errors.newPass)}
@@ -189,10 +234,11 @@ Header.ChangePasswordForm = ({ isOpen, handleClose }: { isOpen: boolean; handleC
 						<FormControl fullWidth margin="dense" error={Boolean(errors.confirmPass)}>
 							<TextField
 								label={
-									errors.confirmPass ? (errors.confirmPass?.message as string) : 'Xác nhận mật khẩu'
+									errors.confirmPass
+										? (errors.confirmPass?.message as string)
+										: t('Header.Confirm_pass')
 								}
 								variant="standard"
-								id="password-confirm"
 								type="password"
 								{...register('confirmPass')}
 								error={Boolean(errors.confirmPass)}
@@ -212,11 +258,11 @@ Header.ChangePasswordForm = ({ isOpen, handleClose }: { isOpen: boolean; handleC
 								disabled={Boolean(isSubmitting)}
 								style={{ margin: '16px auto', textTransform: 'none' }}
 							>
-								Thay Đổi
+								{t('Header.Change')}
 							</Button>
 						</div>
 					</form>
-				</Box>
+				</StyledWrapModal>
 			</Modal>
 		</>
 	)

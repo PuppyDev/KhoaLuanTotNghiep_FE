@@ -1,16 +1,19 @@
-import { Grid, Box, Select, MenuItem, TextField, ListItemIcon, Checkbox, ListItemText } from '@mui/material'
-import Typography from '@mui/material/Typography/Typography'
-import { HomePageContent, WrapperBackground } from 'pages/Home/HomeStyles'
-import { PropsWithChildren, useCallback, useState } from 'react'
-import { useForm, Controller } from 'react-hook-form'
-import { useDropzone } from 'react-dropzone'
-import { DisplayResultImages, FileManager, GroupButton } from './styles/AddRoomStyle'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { schemaFormCreateRoom } from '@/schemas/form'
 import EditorBase from '@/components/common/Input/Editor'
-import { getContract } from '@/utils/contract'
 import { typeGender, typeOfRoom } from '@/constants/room'
-import { randomId } from '@/utils/index'
+import { getContract } from '@/utils/contract'
+import { getPathNameAfterSlah, randomId } from '@/utils/index'
+import ShowNostis from '@/utils/show-noti'
+import { decode } from '@/utils/super-function'
+import { Box, Checkbox, Grid, ListItemIcon, ListItemText, MenuItem, Select, TextField } from '@mui/material'
+import Typography from '@mui/material/Typography/Typography'
+import { Editor } from '@tinymce/tinymce-react'
+import { HomePageContent, WrapperBackground } from 'pages/Home/HomeStyles'
+import { PropsWithChildren, useCallback, useEffect, useState } from 'react'
+import { useDropzone } from 'react-dropzone'
+import { Controller, useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
+import { useLocation, useSearchParams } from 'react-router-dom'
+import { DisplayResultImages, FileManager, GroupButton } from './styles/AddRoomStyle'
 
 export type FormValues = {
 	name?: string
@@ -27,6 +30,7 @@ export type FormValues = {
 	waterPrice?: number
 	gender?: string
 	nbCurrentPeople?: number
+	plusContract?: string
 }
 
 const AddRoom = () => {
@@ -45,55 +49,64 @@ const AddRoom = () => {
 		},
 		// resolver: yupResolver(schemaFormCreateRoom),
 	})
+	const [isEdit, setIsEdit] = useState(false)
+	const location = useLocation()
+	const [searchParams] = useSearchParams()
+	const { t } = useTranslation()
+
+	useEffect(() => {
+		// Edit Room handle here
+		if (location.pathname !== '/room/addroom') {
+			const keySearch = decode(getPathNameAfterSlah(location.pathname))
+			setIsEdit(true)
+			getInfoOfRoom()
+		}
+	}, [location])
+
+	const getInfoOfRoom = async () => {
+		try {
+			console.log('dang fetch data .... ')
+		} catch (error) {
+			ShowNostis.error('Có lỗi gì đó gòi bạn êy')
+		}
+	}
 
 	const onDrop = useCallback((acceptedFiles: any) => {
-		console.log('🚀 ~ file: AddRoom.tsx:27 ~ onDrop ~ acceptedFiles', acceptedFiles)
 		setValue('images', acceptedFiles)
 		// Do something with the files
 	}, [])
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
 
-	const handleAddNewRoom = (values: any) => {
-		console.log('🚀 ~ file: AddRoom.tsx:14 ~ handleAddNewRoom ~ values', values)
-	}
+	const handelSubmitRoom = (values: any) => {}
 
 	return (
-		<WrapperBackground style={{ minHeight: '92vh' }}>
+		<WrapperBackground className="min__height90">
 			<HomePageContent>
-				<Typography
-					style={{
-						textAlign: 'center',
-						fontSize: '40px',
-						fontWeight: 'bold',
-						padding: '40px 0',
-					}}
-				>
-					Tạo phòng cho căn hộ
-				</Typography>
+				<p className="heading__homepage">{isEdit ? t('Room.Upadate_info') : t('Room.Create_room')}</p>
 
-				<form onSubmit={handleSubmit(handleAddNewRoom)}>
+				<form onSubmit={handleSubmit(handelSubmitRoom)}>
 					<Grid container spacing={2}>
 						<Grid item xs={12} container spacing={2}>
 							<AddRoom.InputFeild
-								label="Tiêu đề phòng"
+								label={t('Room.Title_room')}
 								name="name"
 								control={control}
 								error={errors.name?.message || null}
 							/>
 							<AddRoom.InputFeild
-								label="Diện tích phòng"
+								label={t('Room.Acreage')}
 								name="acreage"
 								control={control}
 								error={errors.acreage?.message || null}
 							/>
 							<AddRoom.InputFeild
-								label="Giá phòng"
+								label={t('Room.Room_price')}
 								name="basePrice"
 								control={control}
 								error={errors.basePrice?.message || null}
 							/>
 							<AddRoom.InputFeild
-								label="Tiền đặt cọc (VND)"
+								label={t('Room.Deposit')}
 								name="deposit"
 								control={control}
 								error={errors.deposit?.message || null}
@@ -102,7 +115,7 @@ const AddRoom = () => {
 
 						<Grid item xs={12} container spacing={2}>
 							<AddRoom.InputFeild
-								label="Tiền Điện"
+								label={t('Room.electricity_bill')}
 								name="roomElectric"
 								control={control}
 								error={errors.roomElectric?.message || null}
@@ -110,10 +123,10 @@ const AddRoom = () => {
 							/>
 
 							<AddRoom.InputFeild
-								label="Tiền nước"
+								label={t('Room.water_money')}
 								name="waterPrice"
 								control={control}
-								// error={errors.address?.message || null}
+								error={errors.waterPrice?.message || null}
 								md={4}
 							/>
 
@@ -121,16 +134,14 @@ const AddRoom = () => {
 								control={control}
 								defaultValue="1"
 								name="period"
-								label="Kì hạn thuê (Tháng)"
+								label={t('Room.Period')}
 								md={4}
 							>
-								{[...Array(24).keys()].map((item, index) => {
-									return (
-										<MenuItem value={item + 1} key={randomId()}>
-											{item + 1}
-										</MenuItem>
-									)
-								})}
+								{[...Array(24).keys()].map((item) => (
+									<MenuItem value={item + 1} key={randomId()}>
+										{item + 1}
+									</MenuItem>
+								))}
 							</AddRoom.SelectList>
 						</Grid>
 
@@ -138,39 +149,35 @@ const AddRoom = () => {
 							control={control}
 							defaultValue="1"
 							name="totalNbPeople"
-							label="Số người/Phòng"
+							label={t('Room.Total_people')}
 							md={4}
 						>
-							{[...Array(10).keys()].map((item, index) => {
-								return (
-									<MenuItem value={item + 1} key={randomId()}>
-										{item + 1}
-									</MenuItem>
-								)
-							})}
+							{[...Array(10).keys()].map((item) => (
+								<MenuItem value={item + 1} key={randomId()}>
+									{item + 1}
+								</MenuItem>
+							))}
 						</AddRoom.SelectList>
 
 						<AddRoom.SelectList
 							control={control}
 							defaultValue="1"
 							name="nbCurrentPeople"
-							label="Số người hiện đang ở trong phòng"
+							label={t('Room.Current_people')}
 							md={4}
 						>
-							{[...Array(10).keys()].map((item, index) => {
-								return (
-									<MenuItem value={item + 1} key={randomId()}>
-										{item + 1}
-									</MenuItem>
-								)
-							})}
+							{[...Array(10).keys()].map((item) => (
+								<MenuItem value={item + 1} key={randomId()}>
+									{item + 1}
+								</MenuItem>
+							))}
 						</AddRoom.SelectList>
 
 						<AddRoom.MultipleSelect
 							control={control}
 							defaultValue="1"
 							name="amentilities"
-							label="Tiện ích"
+							label={t('Room.Amentilities')}
 							md={4}
 							setValue={(amentilitieValue: string[]) => {
 								setValue('amentilities', amentilitieValue)
@@ -182,12 +189,17 @@ const AddRoom = () => {
 							control={control}
 							defaultValue="Hồ Chí Minh"
 							name="cityName"
-							label="Thành phố"
+							label={t('USER.City')}
 						>
 							<MenuItem value="Hồ Chí Minh">Hồ Chí Minh</MenuItem>
 						</AddRoom.SelectList>
 
-						<AddRoom.SelectList control={control} defaultValue="0" name="ditrictName" label="Quận">
+						<AddRoom.SelectList
+							control={control}
+							defaultValue="0"
+							name="ditrictName"
+							label={t('Room.Distric')}
+						>
 							{['Tất cả', 'Nam', 'Nữ'].map((item, index) => {
 								return (
 									<MenuItem value={index} key={randomId()}>
@@ -217,14 +229,19 @@ const AddRoom = () => {
 							})}
 						</AddRoom.SelectList>
 
-						<AddRoom.InputFeild label="Số nhà" name="addressDetail" control={control} md={4} />
+						<AddRoom.InputFeild
+							label={t('Room.apartment_number')}
+							name="addressDetail"
+							control={control}
+							md={4}
+						/>
 
 						{/* Sex  */}
 						<AddRoom.SelectList
 							control={control}
 							defaultValue={typeGender[0].value}
 							name="gender"
-							label="Giới tính"
+							label={t('USER.Gender')}
 							md={4}
 						>
 							{typeGender.map((item) => (
@@ -239,7 +256,7 @@ const AddRoom = () => {
 							control={control}
 							defaultValue="ROOM_FOR_RENT"
 							name="typeRoom"
-							label="Kiểu phòng"
+							label={t('Room.TypeRoom')}
 							md={4}
 						>
 							{typeOfRoom.map((room) => (
@@ -251,7 +268,13 @@ const AddRoom = () => {
 
 						{/* Image Room  */}
 						<Grid item xs={12} container spacing={2}>
-							<AddRoom.FilesMange label="Thêm Ảnh" name="images" md={6} xs={12} control={control}>
+							<AddRoom.FilesMange
+								label={t('Room.add_images')}
+								name="images"
+								md={6}
+								xs={12}
+								control={control}
+							>
 								<FileManager className={`${isDragActive && 'active'}`} {...getRootProps()}>
 									<input
 										type="file"
@@ -263,12 +286,15 @@ const AddRoom = () => {
 									/>
 
 									{isDragActive ? (
-										<p>Thả hình ngay đây ...</p>
+										<p>{t('Room.post_images')}</p>
 									) : (
 										<>
-											<p>Kéo hình vô đây hoặc click vào để chọn nhiều hình</p>
+											<p>{t('Room.drag_click_images')}</p>
 											{getValues('images')?.length > 0 && (
-												<p> Đã chọn {getValues('images')?.length} tấm hình </p>
+												<p>
+													{t('Room.selected')} {getValues('images')?.length}{' '}
+													{t('Room.images')}{' '}
+												</p>
 											)}
 										</>
 									)}
@@ -276,7 +302,7 @@ const AddRoom = () => {
 							</AddRoom.FilesMange>
 
 							<AddRoom.TextArea
-								label="Mô tả chi tiết"
+								label={t('Room.details_description')}
 								name="description"
 								md={6}
 								xs={12}
@@ -290,10 +316,18 @@ const AddRoom = () => {
 						</Grid>
 					</Grid>
 
-					<EditorBase control={control} name="contract" />
+					<EditorBase disabled control={control} name="contract" />
+
+					<Editor
+						id={randomId()}
+						initialValue="Thêm Điều Khoản"
+						onEditorChange={(values) => setValue('plusContract', values)}
+						disabled={!!searchParams.get('isRented')}
+						apiKey={import.meta.env.VITE_TINY_API}
+					/>
 
 					<GroupButton>
-						<button type="submit">Tạo phòng</button>
+						<button type="submit"> {isEdit ? t('Room.update_room') : t('Room.create_room')}</button>
 					</GroupButton>
 				</form>
 			</HomePageContent>

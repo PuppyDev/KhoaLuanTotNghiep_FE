@@ -36,17 +36,16 @@ export const FilterItem = styled('div')({
 	},
 })
 
-export const ButtonFilter = styled('button')({
-	textAlign: 'center',
-	padding: '20px 0',
-	background: '#fff',
-	display: 'block',
-
-	width: '100%',
-	border: 'none',
-	outline: 'none',
-	color: '#4877F8',
-
-	fontSize: '16px',
-	lineHeight: '24px',
-})
+export const ButtonFilter = styled('button')`
+	text-align: center;
+	padding: 20px 0;
+	background-color: #fff;
+	display: block;
+	width: 100%;
+	border: none;
+	outline: none;
+	color: #4877f8;
+	font-size: 16px;
+	line-height: 24px;
+	cursor: pointer;
+`

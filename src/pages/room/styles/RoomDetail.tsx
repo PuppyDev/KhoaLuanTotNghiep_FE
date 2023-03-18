@@ -1,5 +1,4 @@
-import { Grid, Typography, Button, Box } from '@mui/material'
-import { styled } from '@mui/system'
+import { Grid, Typography, Button, Box, styled } from '@mui/material'
 
 export const RoomDetailContent = styled(Grid)({
 	marginTop: '10px',
@@ -110,18 +109,20 @@ export const ModalContract = styled(Box)({
 	overflowY: 'scroll',
 	height: '90vh',
 
-	'&::-webkit-scrollbar-track': {
-		backgroundColor: '#f5f5f5',
-	},
+	'&.parent': {
+		'&::-webkit-scrollbar-track': {
+			backgroundColor: '#f5f5f5',
+		},
 
-	'&::-webkit-scrollbar': {
-		width: '5px',
-		backgroundColor: '#f6f5f2',
-	},
+		'&::-webkit-scrollbar': {
+			width: '5px',
+			backgroundColor: '#f6f5f2',
+		},
 
-	'&::-webkit-scrollbar-thumb': {
-		backgroundColor: '#ccc',
-		borderRadius: '6px',
+		'&::-webkit-scrollbar-thumb': {
+			backgroundColor: '#ccc',
+			borderRadius: '6px',
+		},
 	},
 })
 
@@ -144,3 +145,70 @@ export const SignNameItem = styled(Grid)({
 		},
 	},
 })
+
+export const StyledAcceptTerm = styled(Box)`
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	user-select: none;
+	margin-bottom: '-20px';
+`
+
+export const StyledLabelAcceptTerm = styled('label')`
+	user-select: none;
+`
+
+export const StyledButtonAcceptTerm = styled(Button)`
+	text-transform: none;
+	background-color: #f73486;
+	transition: all 0.4s;
+	height: 30px;
+	user-select: 'none';
+
+	&:hover {
+		background-color: #f73486;
+		opacity: 0.8;
+	}
+`
+
+export const StyledCheckBox = styled('input')``
+
+export const StyledModalPayment = styled(Box)`
+	width: 500px;
+	transform: translate(-50%, -50%);
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	background: white;
+	border-radius: 6px;
+	height: 300px;
+	padding: 20px;
+`
+
+export const StyledHeadingPayment = styled(Typography)`
+	font-size: 30px;
+	text-align: center;
+`
+
+export const StyledListPayment = styled('ul')`
+	list-style: none;
+`
+export const StyledItemListPayment = styled('li')`
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	& .item-left {
+		display: flex;
+		align-items: center;
+		font-size: 18px;
+		font-weight: bold;
+		gap: 10px;
+
+		img {
+			width: 100%;
+			height: 50px;
+		}
+	}
+`

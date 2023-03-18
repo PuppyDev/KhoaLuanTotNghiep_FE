@@ -1,5 +1,7 @@
 export const getPathNameAfterSlah = (pathName: string) => {
-	return pathName.split('/').join('')
+	const arrayPath = pathName.split('/')
+
+	return arrayPath[arrayPath.length - 1]
 }
 
 export const randomId = () => {
@@ -35,3 +37,14 @@ export const itemData = [
 		rows: 2,
 	},
 ]
+
+export const ArrayFrom = (to: number) => {
+	return Array.from(Array(to).keys())
+}
+
+export function maskEmail(email: string): string {
+	const [username, domain] = email.split('@')
+	const maskedUsername = `${username.charAt(0)}${'*'.repeat(username.length - 2)}${username.slice(-1)}`
+	const maskedDomain = `${domain.charAt(0)}${'*'.repeat(domain.length - 2)}${domain.slice(-1)}`
+	return `${maskedUsername}@${maskedDomain}`
+}

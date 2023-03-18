@@ -44,3 +44,87 @@ export const paperProps = {
 		},
 	},
 }
+
+export const StyledNotificationItem = styled(Box)`
+	padding: 20px 25px;
+	display: flex;
+	border-radius: 10px;
+
+	gap: 20px;
+	margin-bottom: 10px;
+	box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+	transition: all 0.3s;
+	background-color: #f0f0f0;
+
+	& .headingNotification {
+		font-weight: bold;
+	}
+
+	&:hover {
+		cursor: pointer;
+		background-color: white;
+		box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+	}
+
+	&.success {
+	}
+
+	&.warning {
+	}
+
+	&.error {
+	}
+`
+
+export const StyledContentDrawer = styled(Box)`
+	width: 400px;
+	padding: 10px;
+
+	.Heading {
+		text-align: center;
+		padding: 20px;
+		font-weight: bold;
+		font-size: 24px;
+	}
+`
+
+export const StyledWrapHeader = styled(Box)`
+	display: flex;
+	align-items: center;
+	gap: 20px;
+
+	& .avatar {
+		width: 32px;
+		height: 32px;
+	}
+
+	& .icon_notification {
+		font-size: 30px;
+		cursor: pointer;
+	}
+
+	& .name_heading {
+		font-weight: 600;
+		font-size: 14px;
+		margin-right: 2px;
+	}
+`
+
+export const StyledWrapModal = styled(Box)`
+	border-radius: 8px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 450px;
+	box-shadow: 24px 24px 0 rgba(0, 0, 0, 0.2);
+	background: white;
+	padding: 40px 25px 10px 25px;
+
+	& .heading_changepassword {
+		text-align: center;
+		font-size: 30px;
+		font-weight: 600;
+		margin-bottom: 10px;
+	}
+`

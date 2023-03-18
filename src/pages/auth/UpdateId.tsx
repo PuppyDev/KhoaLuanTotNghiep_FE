@@ -3,6 +3,8 @@ import { Box, Button, Typography } from '@mui/material'
 import axios from 'axios'
 import { useForm } from 'react-hook-form'
 import ImageIcon from '@mui/icons-material/Image'
+import { StyledButtonUpdateId, StyledMiddle, StyledWrapUpdateID } from './styles'
+import { useTranslation } from 'react-i18next'
 type FormValues = {
 	front: any
 	back: any
@@ -24,7 +26,7 @@ const UpdateId = () => {
 		axios
 			.post('https://api.fpt.ai/vision/idr/vnm', formData, {
 				headers: {
-					'api-key': 'BPvjWWHEc8t448vSTEgfpovF4fYQ1aC4',
+					'api-key': import.meta.env.VITE_API_FPTAI_ID,
 				},
 			})
 			.then((response) => {
@@ -35,24 +37,15 @@ const UpdateId = () => {
 			})
 	})
 
-	return (
-		<Box
-			style={{
-				display: 'flex',
-				alignItems: 'center',
-				justifyContent: 'center',
-				minHeight: '90vh',
-				flexDirection: 'column',
-			}}
-		>
-			<Typography variant="h5" fontWeight="bold">
-				Thêm Thông Tin
-			</Typography>
+	const { t } = useTranslation()
 
-			<Typography align="center" style={{ color: 'red', fontWeight: 'bold', fontSize: '18px', margin: '20px 0' }}>
-				Chúng tôi cần thêm thông tin về CMND/CCCD của bạn để hoàn tất đăng ký. <br /> Vui lòng thêm ảnh vào bên
-				dưới
-			</Typography>
+	return (
+		<StyledWrapUpdateID>
+			<p className="heading">{t('Update_id.More_info')}</p>
+
+			<p className="description_updateId">
+				{t('Update_id.Description_info')} <br /> {t('Update_id.Description_info2')}
+			</p>
 
 			<form onSubmit={sendIDProfile}>
 				<div style={{ display: 'flex', gap: '20px' }}>
@@ -62,8 +55,9 @@ const UpdateId = () => {
 							<div style={{ textAlign: 'center' }}>
 								<ImageIcon style={{ fontSize: '46px' }} />
 								<br />
-								Mặt Trước CMND/CCCD <br />
-								Kéo vào đây
+								{t('Update_id.Front_of_ID')}
+								<br />
+								{t('Update_id.Drag_here')}
 							</div>
 						}
 					/>
@@ -73,31 +67,20 @@ const UpdateId = () => {
 						content={
 							<div style={{ textAlign: 'center' }}>
 								<ImageIcon style={{ fontSize: '46px' }} /> <br />
-								Mặt Sau CMND/CCCD <br />
-								Kéo vào đây
+								{t('Update_id.Back_of_ID')} <br />
+								{t('Update_id.Drag_here')}
 							</div>
 						}
 					/>
 				</div>
 
-				<div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-					<Button
-						style={{
-							outline: 'none',
-							border: 'none',
-							alignItems: 'center',
-							margin: '40px auto',
-							width: '200px',
-							padding: '10px 20px',
-						}}
-						variant="contained"
-						type="submit"
-					>
-						Tiếp Tục
-					</Button>
-				</div>
+				<StyledMiddle>
+					<StyledButtonUpdateId variant="contained" type="submit">
+						{t('Continue')}
+					</StyledButtonUpdateId>
+				</StyledMiddle>
 			</form>
-		</Box>
+		</StyledWrapUpdateID>
 	)
 }
 

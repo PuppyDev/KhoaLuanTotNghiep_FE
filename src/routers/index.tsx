@@ -15,6 +15,9 @@ import { Route, Routes } from 'react-router-dom'
 import AdminRoute from './AdminRoute'
 import PrivateRoute from './PrivateRoute'
 import RenderRouteHeader from './RenderRouteHeader'
+import { randomId } from '../utils'
+import AuthenPage from 'pages/auth/AuthenPage'
+import ForgotPassPage from 'pages/auth/ForgotPassPage'
 
 const mainRoutes = [
 	{
@@ -25,7 +28,7 @@ const mainRoutes = [
 	{
 		id: 3,
 		element: <BookingPage />,
-		pathName: '/room/booking',
+		pathName: '/room/rented',
 	},
 	{
 		id: 4,
@@ -58,12 +61,17 @@ const RoutesHomeLayout = [
 	{
 		id: 3,
 		element: <RoomsLocation />,
-		pathName: '/:location',
+		pathName: '/search/:location',
 	},
 	{
 		id: 4,
 		element: <AddRoom />,
 		pathName: '/room/addRoom',
+	},
+	{
+		id: 5,
+		element: <AddRoom />,
+		pathName: '/room/addRoom/:id',
 	},
 ]
 
@@ -72,6 +80,25 @@ const AdminRoutesLayout = [
 		id: 1,
 		element: 'Admin Page',
 		pathName: '/',
+	},
+]
+
+const AuthRoutes = [
+	{
+		element: <SignIn />,
+		pathName: '/login',
+	},
+	{
+		element: <SignUp />,
+		pathName: '/register',
+	},
+	{
+		element: <AuthenPage />,
+		pathName: '/authOtp',
+	},
+	{
+		element: <ForgotPassPage />,
+		pathName: '/forgot-password',
 	},
 ]
 
@@ -100,8 +127,9 @@ const PathRouter = () => {
 				/>
 			))}
 
-			<Route path="/login" element={<SignIn />} />
-			<Route path="/register" element={<SignUp />} />
+			{AuthRoutes.map((route) => (
+				<Route path={route.pathName} key={randomId()} element={route.element} />
+			))}
 		</Routes>
 	)
 }

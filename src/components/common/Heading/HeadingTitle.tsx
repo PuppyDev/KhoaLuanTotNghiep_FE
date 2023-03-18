@@ -4,14 +4,14 @@ import React, { PropsWithChildren } from 'react'
 const HeadingTitle: React.FC<PropsWithChildren> = ({ children }) => {
 	return (
 		<Typography
-			variant="h3"
+			variant="h4"
 			color="initial"
 			fontWeight="bold"
 			sx={{
 				borderBottom: '1px solid #E7ECF3',
 				width: '100%',
 				marginBottom: '50px',
-				paddingBottom: '40px',
+				paddingBottom: '30px',
 				fontFamily: 'Nunito',
 			}}
 		>

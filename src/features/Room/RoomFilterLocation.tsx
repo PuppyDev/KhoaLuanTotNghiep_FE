@@ -2,8 +2,9 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, Checkbox, FormControlLabel, Icon, Slider, Typography } from '@mui/material'
 import { pink } from '@mui/material/colors'
 import { options } from 'pages/room/AddRoom'
-import React, { MouseEventHandler, PropsWithChildren } from 'react'
+import React, { memo, MouseEventHandler, PropsWithChildren } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { ButtonFilter, FilterItem, ListFilters } from './styles/RoomFilterLocationStyle'
 
 interface IProps {
@@ -13,46 +14,54 @@ interface IProps {
 const optionTypeRoom = [
 	{
 		label: 'Phòng cho thuê',
-		value: 1,
+		value: 'Phòng cho thuê',
 	},
 	{
 		label: 'Phòng ở ghép',
-		value: 2,
+		value: 'Phòng ở ghép',
 	},
 	{
 		label: 'Kí túc xá',
-		value: 3,
+		value: 'Kí túc xá',
 	},
 	{
 		label: 'Nhà nguyên căn',
-		value: 4,
+		value: 'Nhà nguyên căn',
 	},
 	{
 		label: 'Căn hộ',
-		value: 5,
+		value: 'Căn hộ',
 	},
 ]
 
 const optionSex = [
 	{
 		label: 'Nam',
-		value: 1,
+		value: 'Nam',
 	},
 	{
 		label: 'Nữ',
-		value: 0,
+		value: 'Nữ',
 	},
 ]
 type FormValues = {
 	prices: number[]
+	utilities: string[]
+	typeRoom: string[]
+	gender: string[]
 }
 
 const RoomFilterLocation = ({ onApply }: IProps) => {
 	const [expanded, setExpanded] = React.useState<string | null>(null)
 
-	const { handleSubmit, control, setValue } = useForm<FormValues>({
+	const { t } = useTranslation()
+
+	const { handleSubmit, control, setValue, register, getValues } = useForm<FormValues>({
 		defaultValues: {
 			prices: [0, 9000000],
+			utilities: [],
+			typeRoom: [],
+			gender: [],
 		},
 	})
 
@@ -67,14 +76,14 @@ const RoomFilterLocation = ({ onApply }: IProps) => {
 	return (
 		<Box>
 			<Typography style={{ margin: 0, fontSize: '24px', color: '#333333', fontWeight: 'bold', padding: '32px' }}>
-				Bộ Lọc
+				{t('Room.Filters')}
 			</Typography>
 
 			<ListFilters onSubmit={handleSubmit(filterRoom)}>
 				<RoomFilterLocation.FilterItem
 					panel="panel1"
 					activeTab={expanded}
-					label="Giá"
+					label={t('Room.Prices')}
 					onClick={() => handleChange('panel1')}
 				>
 					<Controller
@@ -99,33 +108,41 @@ const RoomFilterLocation = ({ onApply }: IProps) => {
 				<RoomFilterLocation.FilterItem
 					panel="panel2"
 					activeTab={expanded}
-					label="Tiện ích"
+					label={t('Room.utilities')}
 					onClick={() => handleChange('panel2')}
 				>
-					{options.map((item) => (
-						<FormControlLabel
-							style={{ width: '100%', paddingLeft: '20px' }}
-							control={
-								<Checkbox
-									sx={{
-										color: pink[300],
-										'&.Mui-checked': {
-											color: pink[600],
-										},
-									}}
-									value={item}
-								/>
-							}
-							key={Date.now() + Math.random() * 10000}
-							label={item}
-						/>
-					))}
+					{options.map((item) => {
+						console.log('🚀 ~ file: RoomFilterLocation.tsx:115 ~ {options.map ~ item:', item)
+
+						return (
+							<FormControlLabel
+								style={{ width: '100%', paddingLeft: '20px' }}
+								control={
+									<Checkbox
+										sx={{
+											color: pink[300],
+											'&.Mui-checked': {
+												color: pink[600],
+											},
+										}}
+										value={item}
+										{...register('utilities')}
+										defaultChecked={
+											getValues('utilities').findIndex((itemCheck) => itemCheck === item) !== -1
+										}
+									/>
+								}
+								key={Date.now() + Math.random() * 10000}
+								label={item}
+							/>
+						)
+					})}
 				</RoomFilterLocation.FilterItem>
 
 				<RoomFilterLocation.FilterItem
 					panel="panel3"
 					activeTab={expanded}
-					label="Loại phòng"
+					label={t('Room.TypeRoom')}
 					onClick={() => handleChange('panel3')}
 				>
 					{optionTypeRoom.map((item) => (
@@ -144,6 +161,7 @@ const RoomFilterLocation = ({ onApply }: IProps) => {
 							}
 							key={Date.now() + Math.random() * 10000}
 							label={item.label}
+							{...register('typeRoom')}
 						/>
 					))}
 				</RoomFilterLocation.FilterItem>
@@ -151,7 +169,7 @@ const RoomFilterLocation = ({ onApply }: IProps) => {
 				<RoomFilterLocation.FilterItem
 					panel="panel4"
 					activeTab={expanded}
-					label="Giới tính"
+					label={t('Room.Sex')}
 					onClick={() => handleChange('panel4')}
 				>
 					{optionSex.map((item) => (
@@ -170,18 +188,19 @@ const RoomFilterLocation = ({ onApply }: IProps) => {
 							}
 							key={Date.now() + Math.random() * 10000}
 							label={item.label}
+							{...register('gender')}
 						/>
 					))}
 				</RoomFilterLocation.FilterItem>
 				<ButtonFilter type="submit" onClick={() => onApply(123)}>
-					Áp dụng
+					{t('Room.Apply')}
 				</ButtonFilter>
 			</ListFilters>
 		</Box>
 	)
 }
 
-export default RoomFilterLocation
+export default memo(RoomFilterLocation)
 
 interface IPropLocation extends PropsWithChildren {
 	onClick: MouseEventHandler

@@ -3,76 +3,41 @@ import CheckCircleSharpIcon from '@mui/icons-material/CheckCircleSharp'
 import DoneIcon from '@mui/icons-material/Done'
 import { Avatar, Grid, Typography } from '@mui/material'
 import { Box } from '@mui/system'
+import { useTranslation } from 'react-i18next'
+import {
+	StyledButtonEdit,
+	StyledCardVerified,
+	StyledGridLayout,
+	StyledWrapButtonBottom,
+	StyledWrapDetailInfo,
+	StyledWrapIndentity,
+	StyledWrapInfoUser,
+	StyledWrapStepCompleted,
+} from './style'
 
 export const ProfilePage = () => {
+	const { t } = useTranslation()
+
 	return (
 		<Grid container alignItems="flex-start" justifyContent="space-between">
-			<Grid
-				item
-				sm={12}
-				md={4}
-				lg={3}
-				container
-				alignItems="center"
-				direction="column"
-				sx={{
-					border: '1px solid #E7ECF3',
-					padding: '25px 30px ',
-					borderRadius: '10px',
-				}}
-			>
-				<Box
-					sx={{
-						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'center',
-						flexDirection: 'column',
-						borderBottom: '1px solid #F5F6F7',
-						gap: '25px',
-						width: '100%',
-						paddingBottom: '20px',
-					}}
-				>
-					<Avatar sx={{ width: 170, height: 170 }} srcSet="https://mui.com/static/images/avatar/1.jpg" />
+			<StyledGridLayout item sm={12} md={4} lg={3} container>
+				<StyledWrapInfoUser>
+					<Avatar
+						sx={{ width: 170, height: 170 }}
+						srcSet="https://scontent.fsgn2-7.fna.fbcdn.net/v/t39.30808-6/326706851_905071507593208_1684832252594277761_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=FVDo1ljBqpAAX9L_Ibl&_nc_ht=scontent.fsgn2-7.fna&oh=00_AfDit6WnL3XB4EBzCoNr-HFO14fEDcUsOJJE9QxxE0D0rQ&oe=6419E0FF"
+					/>
 					<Typography sx={{ fontSize: 34 }} fontWeight="bold">
-						Jonathan Due
+						Yone Doan
 					</Typography>
-					<Box
-						sx={{
-							display: 'flex',
-							alignItems: 'center',
-							borderRadius: '32px',
-							padding: '10px 25px',
-							gap: '10px',
-							background: '#F4F5F6',
-							color: '#777E90',
-						}}
-					>
-						<DoneIcon fontSize="small" /> Indentity verified
-					</Box>
-				</Box>
+					<StyledWrapIndentity>
+						<DoneIcon fontSize="small" /> {t('USER.IDVerified')}
+					</StyledWrapIndentity>
+				</StyledWrapInfoUser>
 
-				<Box
-					sx={{
-						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'center',
-						flexDirection: 'column',
-						gap: '25px',
-						width: '100%',
-						padding: '25px 0',
-					}}
-				>
-					<Box
-						style={{
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'space-between',
-							width: '100%',
-						}}
-					>
+				<StyledWrapDetailInfo>
+					<Box className="DetailInfo__content">
 						<Typography variant="body2" fontSize={14} color="initial" fontWeight="bold">
-							From
+							{t('USER.From')}
 						</Typography>
 
 						<Typography variant="body1" fontSize={14} color="#84878B">
@@ -80,40 +45,18 @@ export const ProfilePage = () => {
 						</Typography>
 					</Box>
 
-					<Box
-						style={{
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'space-between',
-							width: '100%',
-						}}
-					>
+					<Box className="DetailInfo__content">
 						<Typography variant="body2" fontSize={14} color="initial" fontWeight="bold">
-							Member Since
+							{t('USER.Member_Since')}
 						</Typography>
 						<Typography variant="body1" fontSize={14} color="#84878B">
 							05.06.1996
 						</Typography>
 					</Box>
 
-					<button
-						style={{
-							width: '100%',
-							background: '#878CFF',
-							borderRadius: '20px',
-							padding: '15px 0',
-							color: 'white',
-							border: 'none',
-							outline: 'none',
-							cursor: 'pointer',
-							marginTop: '20px',
-							fontWeight: '500',
-						}}
-					>
-						Edit My Data
-					</button>
-				</Box>
-			</Grid>
+					<StyledButtonEdit>{t('USER.Edit_My_Data')}</StyledButtonEdit>
+				</StyledWrapDetailInfo>
+			</StyledGridLayout>
 
 			<Grid
 				container
@@ -125,80 +68,36 @@ export const ProfilePage = () => {
 					padding: '0 40px',
 				}}
 			>
-				<HeadingTitle>My Profile</HeadingTitle>
+				<HeadingTitle>{t('USER.My_profile')}</HeadingTitle>
 
-				<Box
-					style={{
-						width: '100%',
-						borderRadius: '20px',
-						padding: '20px 30px',
-						background: '#FFFFFF',
-						border: '1px solid #f3f3f3',
-						boxShadow: '0px 10px 24px -15px rgba(27, 27, 27, 0.12)',
-						display: 'flex',
-						flexDirection: 'column',
-						gap: '15px',
-						marginBottom: '40px',
-					}}
-				>
+				<StyledWrapStepCompleted>
 					<Typography variant="body2" color="initial" sx={{ fontSize: '22px', fontWeight: '600' }}>
-						Complete your Profile
+						{t('USER.Complete_your_Profile')}
 					</Typography>
 
-					<Typography
-						variant="body1"
-						color="#3B3E44"
-						sx={{
-							fontFamily: 'Poppins',
-							fontStyle: 'normal',
-							fontWeight: '400',
-							fontSize: '14px',
-							lineHeight: '24px',
-						}}
-					>
-						Get the best out of BugHouse by adding the remaining details!
+					<Typography variant="body1" color="#3B3E44" className="heading__completed">
+						{t('USER.Sub_Complete_your_Profile')}
 					</Typography>
 
 					<Grid sx={{ display: 'flex', gap: '10px' }} container>
-						<ProfilePage.CardVerified contentDisplay="Verified Email ID" />
-						<ProfilePage.CardVerified contentDisplay="Verified mobile Number" />
-						<ProfilePage.CardVerified contentDisplay="Complete Basic Info" />
+						<ProfilePage.CardVerified contentDisplay={t('USER.Verified_Email_ID')} />
+						<ProfilePage.CardVerified contentDisplay={t('USER.Verified_mobile_Number')} />
+						<ProfilePage.CardVerified contentDisplay={t('USER.Complete_Basic_Info')} />
 					</Grid>
-				</Box>
+				</StyledWrapStepCompleted>
 
-				<Grid container spacing={5}>
-					<ProfilePage.InputFeild name="City" defaultValue="ZuiChi" />
-					<ProfilePage.InputFeild name="Street address" defaultValue="ZuiChi" />
-					<ProfilePage.InputFeild name="Email address" defaultValue="baodakmil123@gmail.com" />
-					<ProfilePage.InputFeild name="Date Of Birth" defaultValue="07.12.1997" />
-					<ProfilePage.InputFeild name="Gender" defaultValue="Male" />
-					<ProfilePage.InputFeild name="ID Number" defaultValue="245422915" />
+				<Grid container spacing={3}>
+					<ProfilePage.InputFeild name={t('USER.City')} defaultValue="ZuiChi" />
+					<ProfilePage.InputFeild name={t('USER.Street_address')} defaultValue="ZuiChi" />
+					<ProfilePage.InputFeild name={t('USER.Email_address')} defaultValue="baodakmil123@gmail.com" />
+					<ProfilePage.InputFeild name={t('USER.Date_Of_Birth')} defaultValue="07.12.1997" />
+					<ProfilePage.InputFeild name={t('USER.Gender')} defaultValue="Male" />
+					<ProfilePage.InputFeild name={t('USER.ID_Number')} defaultValue="245422915" />
 				</Grid>
 
-				<Box
-					sx={{
-						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'center',
-						width: '100%',
-						marginTop: '40px',
-					}}
-				>
-					<button
-						style={{
-							background: '#878CFF',
-							borderRadius: '20px',
-							padding: '15px 40px',
-							color: 'white',
-							border: 'none',
-							outline: 'none',
-							cursor: 'pointer',
-							fontWeight: '500',
-						}}
-					>
-						Edit My Data
-					</button>
-				</Box>
+				<StyledWrapButtonBottom>
+					<StyledButtonEdit className="w-inline">{t('USER.Edit_My_Data')}</StyledButtonEdit>
+				</StyledWrapButtonBottom>
 			</Grid>
 		</Grid>
 	)
@@ -206,21 +105,9 @@ export const ProfilePage = () => {
 
 ProfilePage.CardVerified = ({ contentDisplay }: { contentDisplay: string }) => {
 	return (
-		<span
-			style={{
-				color: 'black',
-				fontSize: '14px',
-				background: '#E7ECF3',
-				padding: '10px 25px',
-
-				borderRadius: 30,
-				display: 'flex',
-				alignItems: 'center',
-				gap: 10,
-			}}
-		>
+		<StyledCardVerified>
 			<CheckCircleSharpIcon sx={{ color: '#145CE6' }} /> {contentDisplay}
-		</span>
+		</StyledCardVerified>
 	)
 }
 
@@ -245,7 +132,7 @@ ProfilePage.InputFeild = ({
 					border: '1px solid #DEDFE1',
 					borderRadius: 10,
 					overflow: 'hidden',
-					marginTop: '10px',
+					marginTop: '5px',
 				}}
 			>
 				<input

@@ -2,15 +2,49 @@ import HeadingTitle from '@/components/common/Heading/HeadingTitle'
 import { Button, Grid, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { useState } from 'react'
-
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance'
+
+//@ts-ignore
+import Swal from 'sweetalert2/dist/sweetalert2.js'
+import {
+	IconItemTransaction,
+	ListItemTransaction,
+	StyledButtonFilterWallet,
+	StyledButtonWallet,
+	StyledWalletCard,
+	StyledWrapButtonGroupWallet,
+	StyledWrapRightWallet,
+} from './style'
+import { useTranslation } from 'react-i18next'
 
 const WalletPage = () => {
 	const [filterTransaction, setfilterTransaction] = useState('all')
 
+	const { t } = useTranslation()
+
+	const handleTopUp = () => {
+		Swal.fire({
+			title: 'Số tiền muốn nạp vào ví',
+			input: 'text',
+			inputAttributes: {
+				autocapitalize: 'off',
+			},
+			showCancelButton: true,
+			confirmButtonText: 'Nạp',
+			cancelButtonText: 'Huỷ',
+			showLoaderOnConfirm: true,
+			preConfirm: (values: string | number) => {
+				console.log('🚀 ~ file: WalletPage.tsx:38 ~ handleTopUp ~ values:', values)
+			},
+			allowOutsideClick: () => !Swal.isLoading(),
+		}).then((result: any) => {
+			console.log('🚀 ~ file: WalletPage.tsx:30 ~ handleTopUp ~ result:', result)
+		})
+	}
+
 	return (
 		<>
-			<HeadingTitle>Wallet BugHouse</HeadingTitle>
+			<HeadingTitle>{t('Wallet.Heading')}</HeadingTitle>
 
 			<Grid container justifyContent="space-between" spacing={3}>
 				<Grid item xs={4} style={{ paddingTop: 0 }}>
@@ -19,105 +53,54 @@ const WalletPage = () => {
 							overflow: 'hidden',
 						}}
 					>
-						<Box
-							sx={{
-								height: 130,
-								alignItems: 'center',
-								display: 'flex',
-								justifyContent: 'center',
-								flexDirection: 'column',
-								background: '#3B71FE',
-								color: 'white',
-								borderRadius: '12px',
-							}}
-						>
-							<Typography
-								variant="h2"
-								style={{ fontSize: 30, fontWeight: 'medium', fontFamily: 'monospace' }}
-							>
-								10.000.000 vnđ
-							</Typography>
+						<StyledWalletCard>
+							<p className="textBlance">10.000.000 vnđ</p>
 							<Typography
 								variant="body1"
 								color="inherit"
 								style={{ fontSize: 18, fontFamily: 'monospace' }}
 							>
-								Số dư ví
+								{t('Wallet.Balance')}
 							</Typography>
-						</Box>
-						<Button>Nạp tiền vào ví</Button>
-						<Button>Rút Tiền</Button>
+						</StyledWalletCard>
+						<StyledButtonWallet onClick={handleTopUp}>{t('Wallet.Top_up')}</StyledButtonWallet>
+						<StyledButtonWallet>{t('Wallet.WithDraw')}</StyledButtonWallet>
 					</Box>
 				</Grid>
 
-				<Grid item xs={8} style={{ paddingTop: 0 }}>
-					<Box
-						sx={{
-							background: '#fff',
-							boxShadow: '0px 32px 60px #d3d3d31F',
-							height: '600px',
-							borderRadius: '20px',
-							overflow: 'hidden',
-						}}
-					>
+				<Grid item xs={8} style={{ paddingTop: 0, paddingBottom: 40 }}>
+					<StyledWrapRightWallet>
 						<Box style={{ height: '30%', paddingBottom: '40px', borderBottom: '1px solid #E7ECF3' }}>
-							<Typography
-								variant="h4"
-								color="initial"
-								style={{
-									fontFamily: 'monospace',
-									fontWeight: 'bold',
-									fontSize: '34px',
-									padding: '40px 30px 0 ',
-								}}
-							>
-								Wallet Transactions
-							</Typography>
+							<p className="headingWallet">{t('Wallet.Transactions')}</p>
 
-							<Box
-								sx={{
-									marginTop: '30px',
-									display: 'flex',
-									gap: '10px',
-									padding: '0 30px',
-								}}
-							>
-								<Button
-									variant={filterTransaction === 'all' ? 'contained' : 'outlined'}
+							<StyledWrapButtonGroupWallet>
+								<StyledButtonFilterWallet
+									className={`${filterTransaction === 'all' && 'active'}`}
 									onClick={() => setfilterTransaction('all')}
 								>
-									ALL
-								</Button>
-								<Button
-									variant={filterTransaction === 'napTien' ? 'contained' : 'outlined'}
+									{t('Wallet.All')}
+								</StyledButtonFilterWallet>
+								<StyledButtonFilterWallet
+									className={`${filterTransaction === 'napTien' && 'active'}`}
 									onClick={() => setfilterTransaction('napTien')}
 								>
-									Nạp Tiền
-								</Button>
-								<Button
-									variant={filterTransaction === 'rutTien' ? 'contained' : 'outlined'}
+									{t('Wallet.Top_up')}
+								</StyledButtonFilterWallet>
+								<StyledButtonFilterWallet
+									className={`${filterTransaction === 'rutTien' && 'active'}`}
 									onClick={() => setfilterTransaction('rutTien')}
 								>
-									Rút Tiền
-								</Button>
-							</Box>
+									{t('Wallet.WithDraw')}
+								</StyledButtonFilterWallet>
+							</StyledWrapButtonGroupWallet>
 						</Box>
 
-						<Box
-							sx={{
-								height: '70%',
-								overflow: 'auto',
-								padding: '20px 30px 0',
-								display: 'flex',
-								flexDirection: 'column',
-								gap: '25px',
-							}}
-						>
+						<ListItemTransaction>
 							<WalletPage.ItemTransaction />
 							<WalletPage.ItemTransaction />
 							<WalletPage.ItemTransaction />
-						</Box>
-					</Box>
+						</ListItemTransaction>
+					</StyledWrapRightWallet>
 				</Grid>
 			</Grid>
 		</>
@@ -128,20 +111,9 @@ WalletPage.ItemTransaction = () => {
 	return (
 		<Grid container alignItems="center" spacing={2}>
 			<Grid item xs={1.5} alignItems="center" container justifyContent="center">
-				<Box
-					sx={{
-						width: '50px',
-						height: '50px',
-						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'center',
-						borderRadius: '50%',
-						background: '#3B71FE1F',
-						color: '#145CE6',
-					}}
-				>
+				<IconItemTransaction>
 					<AccountBalanceIcon />
-				</Box>
+				</IconItemTransaction>
 			</Grid>
 
 			<Grid item xs>

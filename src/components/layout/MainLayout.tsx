@@ -7,6 +7,7 @@ const MainContent = styled(Box)({
 	width: '80%',
 	margin: '0 auto',
 	minHeight: '92vh',
+	maxWidth: '1500px',
 	paddingTop: 20,
 })
 
