@@ -48,6 +48,7 @@ export const StyledMainOtp = styled(Box)`
 		text-align: center;
 
 		color: #001f1c;
+		margin-bottom: 10px;
 	}
 
 	.content {

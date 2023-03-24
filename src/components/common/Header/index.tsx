@@ -44,6 +44,8 @@ import ShowNostis from '@/utils/show-noti'
 import { formatDate } from '@/utils/time'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useTranslation } from 'react-i18next'
+import { useAppDispatch } from '@/app/hook'
+import { setUserInfo } from '@/app/authSlice'
 const Header = () => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 	const navigate = useNavigate()
@@ -67,6 +69,8 @@ const Header = () => {
 		i18n.changeLanguage(lang)
 		localStorage.setItem('lang', lang)
 	}
+
+	const dispatch = useAppDispatch()
 
 	return (
 		<>
@@ -175,7 +179,15 @@ const Header = () => {
 				<MenuItem onClick={handleChangeLang}>
 					<LanguageOutlined /> <p> {t('Header.Change_lang')}</p>
 				</MenuItem>
-				<MenuItem onClick={() => handleClose()}>
+				<MenuItem
+					onClick={() =>
+						handleClose('/login', () => {
+							localStorage.removeItem('dataUser')
+							ShowNostis.success('Logout success !!!')
+							dispatch(setUserInfo(null))
+						})
+					}
+				>
 					<Logout /> {t('Header.Logout')}
 				</MenuItem>
 			</Menu>

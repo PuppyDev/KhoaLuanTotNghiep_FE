@@ -5,12 +5,18 @@ import 'react-toastify/dist/ReactToastify.css'
 import { ToastContainer, toast } from 'react-toastify'
 import './app.css'
 import 'sweetalert2/src/sweetalert2.scss'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+// Create a client
+const queryClient = new QueryClient()
 
 function App() {
 	return (
 		<Suspense fallback={<CircularProgress />}>
-			<PathRouter />
-			<ToastContainer />
+			<QueryClientProvider client={queryClient}>
+				<PathRouter />
+				<ToastContainer />
+			</QueryClientProvider>
 		</Suspense>
 	)
 }

@@ -1,12 +1,20 @@
+import { addressApi } from '@/api/addressApi'
+import { commonApi } from '@/api/index'
+import { roomApi } from '@/api/roomApi'
 import EditorBase from '@/components/common/Input/Editor'
 import { typeGender, typeOfRoom } from '@/constants/room'
+import { schemaFormCreateRoom } from '@/schemas/form'
 import { getContract } from '@/utils/contract'
 import { getPathNameAfterSlah, randomId } from '@/utils/index'
 import ShowNostis from '@/utils/show-noti'
 import { decode } from '@/utils/super-function'
-import { Box, Checkbox, Grid, ListItemIcon, ListItemText, MenuItem, Select, TextField } from '@mui/material'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { LoadingButton } from '@mui/lab'
+import { Box, Button, Checkbox, Grid, ListItemIcon, ListItemText, MenuItem, Select, TextField } from '@mui/material'
 import Typography from '@mui/material/Typography/Typography'
+import { useQuery } from '@tanstack/react-query'
 import { Editor } from '@tinymce/tinymce-react'
+import axios, { AxiosResponse } from 'axios'
 import { HomePageContent, WrapperBackground } from 'pages/Home/HomeStyles'
 import { PropsWithChildren, useCallback, useEffect, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
@@ -31,6 +39,16 @@ export type FormValues = {
 	gender?: string
 	nbCurrentPeople?: number
 	plusContract?: string
+	ditrictName?: string
+	cityName?: string
+	typeRoom: string
+	addressDetail: string
+	internetCost: string
+	wardName: string
+	streetName: string
+	roomAttachment?: {
+		url: string
+	}
 }
 
 const AddRoom = () => {
@@ -39,17 +57,25 @@ const AddRoom = () => {
 		control,
 		setValue,
 		getValues,
-		formState: { errors },
+		formState: { errors, isValid },
 	} = useForm<FormValues>({
 		defaultValues: {
 			totalNbPeople: 1,
 			period: 1,
 			amentilities: [],
 			contract: getContract({}),
+			ditrictName: 'Quận 1',
+			cityName: 'Hồ Chí Minh',
+			gender: 'All',
+			typeRoom: 'ROOM_FOR_RENT',
+			nbCurrentPeople: 0,
+			wardName: '',
+			streetName: '',
 		},
-		// resolver: yupResolver(schemaFormCreateRoom),
+		resolver: yupResolver(schemaFormCreateRoom),
 	})
 	const [isEdit, setIsEdit] = useState(false)
+	const [isLoading, setIsLoading] = useState(false)
 	const location = useLocation()
 	const [searchParams] = useSearchParams()
 	const { t } = useTranslation()
@@ -71,13 +97,88 @@ const AddRoom = () => {
 		}
 	}
 
+	const { data: dataDistric } = useQuery({
+		queryKey: ['getAllDistrics'],
+		queryFn: () => addressApi.getAllDistrics(),
+		staleTime: Infinity,
+	})
+
+	const [districtName, setDistrictName] = useState(getValues('ditrictName') || 'Quận 1')
+	const { data: dataWards } = useQuery({
+		queryKey: ['getAllWards', districtName],
+		queryFn: () => addressApi.getAllWards(districtName || 'Quận 1'),
+		staleTime: Infinity,
+	})
+	const { data: dataNameDistricts } = useQuery({
+		queryKey: ['getAllNameDistricts', districtName],
+		queryFn: () => addressApi.getAllStreets(districtName || 'Quận 1'),
+		staleTime: Infinity,
+	})
+
 	const onDrop = useCallback((acceptedFiles: any) => {
 		setValue('images', acceptedFiles)
 		// Do something with the files
 	}, [])
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
 
-	const handelSubmitRoom = (values: any) => {}
+	const handelSubmitRoom = async (values: any) => {
+		setIsLoading(true)
+		try {
+			const { images } = values
+
+			const formData = new FormData()
+			for (let i = 0; i < images?.length; i++) {
+				formData.append('images', images[i])
+			}
+
+			if (images && images?.length > 0) {
+				const response = await axios.post('http://localhost:8000/bh/images/upload', formData)
+				handleCreateRoom(values, response)
+			} else {
+				handleCreateRoom(values, { data: { imageLinks: [''] } })
+			}
+		} catch (error) {
+			console.log(error)
+			setIsLoading(false)
+		}
+	}
+
+	const handleCreateRoom = async (values: any, response: any) => {
+		values.roomAttachment = { url: response?.data.imageLinks }
+		values.contract = ''
+		values.services = [
+			{
+				name: 'internet cost',
+				description: 'internet, wifi cost per month',
+				basePrice: values.internetCost,
+				unitName: 'person(s)/month',
+			},
+			{
+				name: 'electricity cost',
+				description: 'power cost per month',
+				basePrice: values.roomElectric,
+				unitName: 'kWh',
+			},
+			{
+				name: 'water cost',
+				description: 'water cost per month',
+				basePrice: values.waterPrice,
+				unitName: 'person(s)/month',
+			},
+		]
+
+		try {
+			const response = await roomApi.createRoom(values)
+			console.log('🚀 ~ file: AddRoom.tsx:139 ~ handleCreateRoom ~ response:', response)
+
+			ShowNostis.success('Create a room successfully!!!')
+
+			setIsLoading(false)
+		} catch (error) {
+			console.log(error)
+			setIsLoading(false)
+		}
+	}
 
 	return (
 		<WrapperBackground className="min__height90">
@@ -119,7 +220,13 @@ const AddRoom = () => {
 								name="roomElectric"
 								control={control}
 								error={errors.roomElectric?.message || null}
-								md={4}
+							/>
+
+							<AddRoom.InputFeild
+								label={t('Room.internetCost')}
+								name="internetCost"
+								control={control}
+								error={errors.roomElectric?.message || null}
 							/>
 
 							<AddRoom.InputFeild
@@ -127,7 +234,6 @@ const AddRoom = () => {
 								name="waterPrice"
 								control={control}
 								error={errors.waterPrice?.message || null}
-								md={4}
 							/>
 
 							<AddRoom.SelectList
@@ -135,7 +241,6 @@ const AddRoom = () => {
 								defaultValue="1"
 								name="period"
 								label={t('Room.Period')}
-								md={4}
 							>
 								{[...Array(24).keys()].map((item) => (
 									<MenuItem value={item + 1} key={randomId()}>
@@ -161,21 +266,19 @@ const AddRoom = () => {
 
 						<AddRoom.SelectList
 							control={control}
-							defaultValue="1"
 							name="nbCurrentPeople"
 							label={t('Room.Current_people')}
 							md={4}
 						>
 							{[...Array(10).keys()].map((item) => (
-								<MenuItem value={item + 1} key={randomId()}>
-									{item + 1}
+								<MenuItem value={item} key={randomId()}>
+									{item}
 								</MenuItem>
 							))}
 						</AddRoom.SelectList>
 
 						<AddRoom.MultipleSelect
 							control={control}
-							defaultValue="1"
 							name="amentilities"
 							label={t('Room.Amentilities')}
 							md={4}
@@ -185,48 +288,56 @@ const AddRoom = () => {
 						/>
 
 						{/* Address Street */}
-						<AddRoom.SelectList
-							control={control}
-							defaultValue="Hồ Chí Minh"
-							name="cityName"
-							label={t('USER.City')}
-						>
+						<AddRoom.SelectList control={control} name="cityName" label={t('USER.City')}>
 							<MenuItem value="Hồ Chí Minh">Hồ Chí Minh</MenuItem>
 						</AddRoom.SelectList>
 
-						<AddRoom.SelectList
-							control={control}
-							defaultValue="0"
-							name="ditrictName"
-							label={t('Room.Distric')}
-						>
-							{['Tất cả', 'Nam', 'Nữ'].map((item, index) => {
-								return (
-									<MenuItem value={index} key={randomId()}>
+						<AddRoom.SelectList control={control} name="ditrictName" label={t('Room.Distric')}>
+							{dataDistric &&
+							dataDistric.data &&
+							dataDistric.data.listDitrict &&
+							dataDistric.data.listDitrict.length > 0 ? (
+								dataDistric?.data.listDitrict.map((item) => (
+									<MenuItem value={item} key={randomId()} onClick={() => setDistrictName(item)}>
 										{item}
 									</MenuItem>
-								)
-							})}
+								))
+							) : (
+								<MenuItem value={'Quận 1'} key={randomId()}>
+									Quận 1
+								</MenuItem>
+							)}
 						</AddRoom.SelectList>
 
-						<AddRoom.SelectList control={control} defaultValue="0" name="wardName" label="Phường/ Ấp">
-							{['Tất cả', 'Nam', 'Nữ'].map((item, index) => {
-								return (
-									<MenuItem value={index} key={randomId()}>
+						<AddRoom.SelectList control={control} name="wardName" label="Phường/ Ấp">
+							{dataWards && dataWards.data && dataWards.data.wards && dataWards.data.wards.length > 0 ? (
+								dataWards?.data.wards.map((item) => (
+									<MenuItem value={item} key={randomId()}>
 										{item}
 									</MenuItem>
-								)
-							})}
+								))
+							) : (
+								<MenuItem value={'Phường 1'} key={randomId()}>
+									Phường 1
+								</MenuItem>
+							)}
 						</AddRoom.SelectList>
 
-						<AddRoom.SelectList control={control} defaultValue="0" name="streetName" label="Tên đường">
-							{['Tất cả', 'Nam', 'Nữ'].map((item, index) => {
-								return (
-									<MenuItem value={index} key={randomId()}>
+						<AddRoom.SelectList control={control} name="streetName" label="Tên đường">
+							{dataNameDistricts &&
+							dataNameDistricts.data &&
+							dataNameDistricts.data.streets &&
+							dataNameDistricts.data.streets.length > 0 ? (
+								dataNameDistricts?.data.streets.map((item) => (
+									<MenuItem value={item} key={randomId()}>
 										{item}
 									</MenuItem>
-								)
-							})}
+								))
+							) : (
+								<MenuItem value={'Phường 1'} key={randomId()}>
+									Phường 1
+								</MenuItem>
+							)}
 						</AddRoom.SelectList>
 
 						<AddRoom.InputFeild
@@ -234,16 +345,11 @@ const AddRoom = () => {
 							name="addressDetail"
 							control={control}
 							md={4}
+							error={errors.addressDetail?.message || null}
 						/>
 
 						{/* Sex  */}
-						<AddRoom.SelectList
-							control={control}
-							defaultValue={typeGender[0].value}
-							name="gender"
-							label={t('USER.Gender')}
-							md={4}
-						>
+						<AddRoom.SelectList control={control} name="gender" label={t('USER.Gender')} md={4}>
 							{typeGender.map((item) => (
 								<MenuItem value={item.value} key={randomId()}>
 									{item.label}
@@ -252,13 +358,7 @@ const AddRoom = () => {
 						</AddRoom.SelectList>
 
 						{/* Type Of Room   */}
-						<AddRoom.SelectList
-							control={control}
-							defaultValue="ROOM_FOR_RENT"
-							name="typeRoom"
-							label={t('Room.TypeRoom')}
-							md={4}
-						>
+						<AddRoom.SelectList control={control} name="typeRoom" label={t('Room.TypeRoom')} md={4}>
 							{typeOfRoom.map((room) => (
 								<MenuItem value={room.value} key={randomId()}>
 									{room.label}
@@ -327,7 +427,9 @@ const AddRoom = () => {
 					/>
 
 					<GroupButton>
-						<button type="submit"> {isEdit ? t('Room.update_room') : t('Room.create_room')}</button>
+						<LoadingButton loading={isLoading} disabled={isLoading} variant="contained" type="submit">
+							{isEdit ? t('Room.update_room') : t('Room.create_room')}
+						</LoadingButton>
 					</GroupButton>
 				</form>
 			</HomePageContent>
@@ -403,10 +505,9 @@ AddRoom.SelectList = (props: IProps) => {
 			<Controller
 				control={control}
 				name={name}
-				render={({ field: { onChange, onBlur } }) => (
+				render={({ field }) => (
 					<Select
-						onChange={onChange}
-						onBlur={onBlur}
+						{...field}
 						sx={{
 							width: '100%',
 							height: '50px',

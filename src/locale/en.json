@@ -7,7 +7,7 @@
 		"Password": "Password",
 		"Confirm_Pass": "Confirm password",
 		"Forgot_Your_Pass": "Forgot your password",
-		"Full_Name": "FullName",
+		"Full_Name": "Username",
 		"Phone": "Phone",
 		"SEND_OTP": "We have sent the OTP to your phone, please check and enter the OTP to complete the Registration",
 		"OtpCode": "OTP code",
@@ -114,6 +114,7 @@
 		"Phone": "Phone",
 		"Date_post": "Date post",
 		"Rent": "Rent now",
+		"internetCost": "Internet Cost",
 
 		"Results": "Results",
 		"Filters": "Filters",

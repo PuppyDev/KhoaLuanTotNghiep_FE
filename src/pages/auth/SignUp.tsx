@@ -1,56 +1,55 @@
+import { authApi } from '@/api/authApi'
 import FormInputText from '@/components/common/Input/FormInputText'
+import { FormValuesSignUp } from '@/models/auth'
 import { signUp } from '@/schemas/Auth'
+import { convertPhone84 } from '@/utils/index'
+import ShowNostis from '@/utils/show-noti'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Button, Grid, TextField, Typography } from '@mui/material'
-import { ReactNode, useState } from 'react'
+import { Grid } from '@mui/material'
+import { ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import {
-	ButtonAuth,
-	HeaderSignUp,
-	LinkSignIn,
-	StyledButton,
-	StyledGroupButton,
-	StyledTypography,
-	Wrapper,
-} from './styles'
-import { Box } from '@mui/system'
+import { useNavigate } from 'react-router-dom'
+import { ButtonAuth, HeaderSignUp, LinkSignIn, Wrapper } from './styles'
 
-type FormValues = {
-	name: string
-	email: string
-	phone: string
-	password: string
-	confirmPass: string
+const defaultValues = {
+	username: '',
+	email: '',
+	contactInfo: '',
+	password: '',
+	confirmPass: '',
 }
 
 const SignUp = () => {
+	const { t } = useTranslation()
+
 	const {
 		control,
 		handleSubmit,
-		formState: { errors, isSubmitting },
-	} = useForm<FormValues>({
-		defaultValues: {
-			name: '',
-			email: '',
-			phone: '',
-			password: '',
-			confirmPass: '',
-		},
+		formState: { errors, isSubmitting, isValid },
+	} = useForm<FormValuesSignUp>({
+		defaultValues,
 		resolver: yupResolver(signUp),
 	})
 
-	const [otp, setOtp] = useState<boolean>(false)
+	const navigate = useNavigate()
 
-	const handleSignUp = handleSubmit((data) => {
-		if (otp) console.log('🚀 ~ file: SignUp.tsx:38 ~ handleSignUp ~ data', data)
-		if (!otp) setOtp(true)
-	})
+	const handleSignUp = async (data: any) => {
+		const dataRegister = { ...data, contactInfo: convertPhone84(data.contactInfo) }
+		try {
+			const response = await authApi.register(dataRegister)
 
-	const { t } = useTranslation()
+			if (response) {
+				ShowNostis.success('Create Successfully!!!!, we will redirect you to login page in 5s')
 
-	const handleReSendOTP = () => {
-		console.log('vo')
+				setTimeout(() => {
+					navigate('/login')
+				}, 5000)
+			}
+		} catch (error: any) {
+			const { username, email, contactInfo } = error?.data?.message
+			ShowNostis.error(username || email || contactInfo || 'Something went wrong !!!')
+		}
 	}
 
 	return (
@@ -73,64 +72,48 @@ const SignUp = () => {
 					xs={6}
 					style={{ padding: '0 60px' }}
 				>
-					{!otp && (
-						<form
-							onSubmit={handleSignUp}
-							style={{ gap: 7, display: 'flex', flexDirection: 'column', width: '100%' }}
+					<form
+						onSubmit={handleSubmit(handleSignUp)}
+						style={{ gap: 7, display: 'flex', flexDirection: 'column', width: '100%' }}
+					>
+						<HeaderSignUp variant="h2">{t('AUTH.REGISTER')}</HeaderSignUp>
+						<FormInputText
+							control={control}
+							name="username"
+							label={t('AUTH.Full_Name')}
+							error={errors.username?.message}
+						/>
+						<FormInputText control={control} name="email" label="Email" error={errors.email?.message} />
+						<FormInputText
+							control={control}
+							name="contactInfo"
+							label={t('AUTH.Phone')}
+							error={errors.contactInfo?.message}
+						/>
+						<FormInputText
+							control={control}
+							type="password"
+							name="password"
+							label={t('AUTH.Password')}
+							error={errors.password?.message}
+						/>
+						<FormInputText
+							control={control}
+							type="password"
+							name="confirmPass"
+							label={t('AUTH.Confirm_Pass')}
+							error={errors.confirmPass?.message}
+						/>
+						<ButtonAuth
+							style={{ marginTop: 20 }}
+							disabled={!isValid || isSubmitting}
+							type="submit"
+							variant="contained"
+							loading={isSubmitting}
 						>
-							<HeaderSignUp variant="h2">{t('AUTH.REGISTER')}</HeaderSignUp>
-							<FormInputText
-								control={control}
-								name="name"
-								label={t('AUTH.Full_Name')}
-								error={errors.name?.message}
-							/>
-							<FormInputText control={control} name="email" label="Email" error={errors.email?.message} />
-							<FormInputText
-								control={control}
-								name="phone"
-								label={t('AUTH.Phone')}
-								error={errors.phone?.message}
-							/>
-							<FormInputText
-								control={control}
-								type="password"
-								name="password"
-								label={t('AUTH.Password')}
-								error={errors.password?.message}
-							/>
-							<FormInputText
-								control={control}
-								type="password"
-								name="confirmPass"
-								label={t('AUTH.Confirm_Pass')}
-								error={errors.confirmPass?.message}
-							/>
-							<ButtonAuth style={{ marginTop: 20 }} type="submit" variant="contained">
-								{t('AUTH.REGISTER')}
-							</ButtonAuth>
-						</form>
-					)}
-
-					{otp && (
-						<form onSubmit={handleSignUp} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-							<StyledTypography>{t('AUTH.SEND_OTP')}</StyledTypography>
-
-							<TextField label="Mã OTP" variant="standard" />
-
-							<StyledGroupButton>
-								<StyledButton type="submit" variant="outlined">
-									{t('AUTH.CONFIRM_OTP')}
-								</StyledButton>
-								<StyledButton variant="outlined" onClick={handleReSendOTP}>
-									{t('AUTH.RE_SENT_OTP')}
-								</StyledButton>
-								<StyledButton variant="outlined" onClick={() => setOtp(false)}>
-									{t('GO_BACK')}
-								</StyledButton>
-							</StyledGroupButton>
-						</form>
-					)}
+							{t('AUTH.REGISTER')}
+						</ButtonAuth>
+					</form>
 				</Grid>
 				<Grid container item direction="column" alignContent="center" justifyContent="center" xs={6} gap={7}>
 					<img src="https://colorlib.com/etc/regform/colorlib-regform-7/images/signup-image.jpg" />

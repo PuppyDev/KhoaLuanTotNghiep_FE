@@ -1,58 +1,66 @@
+import { LogError, LogRequest, LogResponse } from './../utils/logs'
+import ShowNostis from '@/utils/show-noti'
 import { NOT_AUTHORIZED } from '@/constants/index'
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
+import { ResponseSignIn } from '@/models/auth'
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios'
 import queryString from 'query-string'
 
 const createAxiosInstance = () => {
-	const axiosInstance = axios.create({
-		baseURL: '/api',
+	const axiosInstance: AxiosInstance = axios.create({
+		baseURL: import.meta.env.VITE_BASEURL,
 		headers: {
 			'Content-Type': 'application/json',
 		},
 		paramsSerializer: {
-			encode: (params) => {
-				console.log('params =>', params)
-				return queryString.stringify(params)
-			},
+			serialize: (params) => queryString.stringify(params),
 		},
 	})
 
 	axiosInstance.interceptors.response.use(
-		(response: AxiosResponse) => {
+		(response) => {
+			LogResponse(response)
+
 			if (response && response.data) {
 				return response.data
 			}
 
 			return response
 		},
-		(error) => {
+		(error: AxiosError<unknown>) => {
+			LogError(error)
+
 			if (error.response?.status === NOT_AUTHORIZED) {
 				deleteToken()
-				showNotify()
 			}
 
-			throw error
+			return Promise.reject<{ data: { message: string } }>(error.response)
 		}
 	)
 
 	axiosInstance.interceptors.request.use(
 		function (config: AxiosRequestConfig) {
 			// Do something before request is sent
+			LogRequest(config)
+			const loginData = localStorage.getItem('dataUser')
+			if (loginData) {
+				const data = JSON.parse(loginData) as ResponseSignIn
+				// @ts-ignore
+				config.headers = { ...config.headers, Authorization: data.accessToken }
+			}
 			return config
 		},
 		function (error) {
+			LogError(error)
 			// Do something with request error
 			return Promise.reject(error)
 		}
 	)
+
 	return axiosInstance
 }
-
 const deleteToken = () => {
-	// return axios.post(`/api/auth/logout`);
+	localStorage.removeItem('dataUser')
+	ShowNostis.error('Login expired !!! ')
 }
 
-const showNotify = () => {
-	// store.dispatch(setDisableUser(true));
-}
-
-export default createAxiosInstance
+export default createAxiosInstance()

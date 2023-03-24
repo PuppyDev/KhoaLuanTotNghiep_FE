@@ -1,11 +1,14 @@
+import { typeOfRoom } from '@/constants/room'
+import { room } from '@/models/room'
 import { getContract } from '@/utils/contract'
 import { randomId } from '@/utils/index'
+import { convertMoneyToVndText } from '@/utils/money'
 import CottageOutlinedIcon from '@mui/icons-material/CottageOutlined'
 import DeleteIcon from '@mui/icons-material/Delete'
 import FmdGoodOutlinedIcon from '@mui/icons-material/FmdGoodOutlined'
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined'
 import StraightenOutlinedIcon from '@mui/icons-material/StraightenOutlined'
-import { Button, Drawer, FormControl, InputLabel, MenuItem, Modal, Select, TextField } from '@mui/material'
+import { Button, Drawer, FormControl, InputLabel, MenuItem, Modal, Select, Skeleton, TextField } from '@mui/material'
 import { Box } from '@mui/system'
 import classNames from 'classnames'
 import { Fragment, useState } from 'react'
@@ -14,6 +17,7 @@ import { useTranslation } from 'react-i18next'
 import Swal from 'sweetalert2'
 import {
 	CardRoomItem,
+	CardRoomSkeleton,
 	RoomItemHeading,
 	RoomPreviewItem,
 	RoomPreviews,
@@ -29,7 +33,15 @@ import {
 	StyledWrapServices,
 } from './styles/RoomItemStyles'
 
-const RoomItem = ({ to, isRented, isOwner }: { to: string; isRented?: boolean; isOwner?: boolean }) => {
+interface IProps {
+	to: string
+	isRented?: boolean
+	isOwner?: boolean
+	roomItem: room
+}
+
+const RoomItem = (props: IProps) => {
+	const { to, isRented, isOwner, roomItem } = props
 	const { register, setValue } = useForm({})
 	const { t } = useTranslation()
 
@@ -85,26 +97,32 @@ const RoomItem = ({ to, isRented, isOwner }: { to: string; isRented?: boolean; i
 		<Fragment>
 			<CardRoomItem to={to}>
 				<Box className="roomItemImage">
-					<img src="https://bayleaf.s3.ap-southeast-1.amazonaws.com/property-images/fa7d4c8e-692e-4cc7-bf85-0fcad740b16c/2b271aa2-779e-4bb3-b9dc-0a730084fc22-46325561_1975119655915194_6045991570992267264_n.jpg" />
+					<img
+						src={
+							roomItem.roomAttachment.url[0] ||
+							'https://bayleaf.s3.ap-southeast-1.amazonaws.com/property-images/fa7d4c8e-692e-4cc7-bf85-0fcad740b16c/2b271aa2-779e-4bb3-b9dc-0a730084fc22-46325561_1975119655915194_6045991570992267264_n.jpg'
+						}
+						alt="banner image room"
+					/>
 				</Box>
 
 				<Box className="roomItemContent">
-					<RoomItemHeading>Ký túc xá quận Thủ Đức</RoomItemHeading>
+					<RoomItemHeading>{roomItem?.name || 'Name room error'}</RoomItemHeading>
 
 					<RoomPreviews>
 						<RoomPreviewItem>
 							<CottageOutlinedIcon style={{ fontSize: '24px' }} />
-							Ký túc xá
+							{typeOfRoom.find((type) => type.value === roomItem?.typeRoom)?.label || 'Phòng cho thuê'}
 						</RoomPreviewItem>
 						<RoomPreviewItem>
 							<PersonOutlineOutlinedIcon style={{ fontSize: '24px' }} />
-							<div>{t('Room.gender')}</div>
+							<div>{roomItem?.gender === 'All' ? t('Room.gender') : t(`Room.${roomItem?.gender}`)}</div>
 							<StraightenOutlinedIcon style={{ fontSize: '24px' }} />
-							30m2
+							{roomItem?.acreage}m2
 						</RoomPreviewItem>
 						<RoomPreviewItem>
 							<FmdGoodOutlinedIcon style={{ fontSize: '24px' }} />
-							10 Đường sô 4, Phường Hiệp Bình
+							{roomItem?.address?.fullText || 'Updating...'}
 						</RoomPreviewItem>
 					</RoomPreviews>
 				</Box>
@@ -128,8 +146,8 @@ const RoomItem = ({ to, isRented, isOwner }: { to: string; isRented?: boolean; i
 				)}
 
 				<RoomPrice>
-					<span>1,5</span>
-					tr/{t('Room.person')}
+					<span> {convertMoneyToVndText(roomItem.basePrice)}</span>
+					vnđ / {t('Room.person')}
 				</RoomPrice>
 			</CardRoomItem>
 
@@ -139,7 +157,7 @@ const RoomItem = ({ to, isRented, isOwner }: { to: string; isRented?: boolean; i
 						<StyledCloseButton onClick={() => setIsOpenContract(false)}>X</StyledCloseButton>
 						<div
 							dangerouslySetInnerHTML={{
-								__html: getContract({ dataRoom: { basePrice: 100000000, deposit: 1000000 } }),
+								__html: getContract({}),
 							}}
 						/>
 
@@ -313,6 +331,31 @@ RoomItem.Service = ({
 				</Box>
 			)}
 		</StyledWrapMoreService>
+	)
+}
+
+RoomItem.Skeleton = () => {
+	return (
+		<CardRoomSkeleton>
+			<Box className="roomItemImage">
+				<Skeleton variant="rectangular" width="100%" height="100%" />
+			</Box>
+
+			<Box className="roomItemContent">
+				<Skeleton variant="text" sx={{ fontSize: '1rem', width: '60%' }} />
+
+				<RoomPreviews>
+					<Skeleton variant="rectangular" sx={{ width: '100%' }} />
+					<Skeleton variant="rectangular" sx={{ width: '100%' }} />
+					<Skeleton variant="rectangular" sx={{ width: '100%' }} />
+				</RoomPreviews>
+			</Box>
+
+			<RoomPrice>
+				<Skeleton variant="rectangular" width={80} height={60} />
+				<Skeleton variant="text" sx={{ fontSize: '12px', width: '100%' }} />
+			</RoomPrice>
+		</CardRoomSkeleton>
 	)
 }
 

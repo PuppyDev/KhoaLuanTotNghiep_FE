@@ -5,7 +5,11 @@ const initialState = {}
 export const globalSice = createSlice({
 	name: 'global',
 	initialState,
-	reducers: {},
+	reducers: {
+		reset: (state) => {
+			return initialState
+		},
+	},
 })
 
 export default globalSice.reducer

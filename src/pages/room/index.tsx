@@ -1,17 +1,23 @@
+import { roomApi } from '@/api/roomApi'
 import Card from '@/components/common/Card'
 import RoomDetailInfo from '@/components/common/Room/RoomDetailInfo'
 import { StyledInfoOfOwner } from '@/components/common/Room/styles/RoomItemStyles'
+import { typeOfRoom } from '@/constants/room'
+import { IpropsRoomMaster } from '@/models/room'
+import { IOwnerInfo } from '@/models/user'
 import { getContract, getContractTerm } from '@/utils/contract'
 import { getIcon } from '@/utils/icon'
-import { itemData, randomId } from '@/utils/index'
+import { randomId } from '@/utils/index'
 import CottageOutlinedIcon from '@mui/icons-material/CottageOutlined'
 import DeckIcon from '@mui/icons-material/Deck'
 import ErrorIcon from '@mui/icons-material/Error'
 import PersonIcon from '@mui/icons-material/Person'
 import { Box, Button, Fade, Grid, Modal, TextField, Typography } from '@mui/material'
+import { useQuery } from '@tanstack/react-query'
 import { HomePageContent, WrapperBackground } from 'pages/Home/HomeStyles'
 import { memo, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useParams } from 'react-router-dom'
 import { Autoplay, EffectCoverflow, Pagination } from 'swiper'
 import 'swiper/css'
 import 'swiper/css/pagination'
@@ -44,9 +50,21 @@ export default function RoomDetail() {
 	const { t } = useTranslation()
 	const [isSign, setIsSign] = useState(false)
 	const [showModalOTP, setShowModalOTP] = useState(false)
+	const { roomid } = useParams()
+
 	useEffect(() => {
 		window.scrollTo(0, 0)
 	}, [])
+
+	// i will add loading after
+	const { data: RoomData, isLoading } = useQuery({
+		queryKey: ['getDetailsRoom', roomid],
+		queryFn: () => {
+			if (roomid) return roomApi.getDetailRoom(roomid)
+			return
+		},
+		staleTime: Infinity,
+	})
 
 	const handleComfirmOTP = async () => {
 		try {
@@ -62,15 +80,18 @@ export default function RoomDetail() {
 	}
 
 	const [isAcceptTerm, setIsAcceptTerm] = useState(false)
+
+	// const roomStatus = RoomData?.data.
+
 	return (
 		<WrapperBackground>
 			<HomePageContent style={{ paddingTop: '32px' }}>
 				<RoomDetailGallary>
-					<RoomDetail.Carousel itemData={itemData || []} />
+					<RoomDetail.Carousel itemData={RoomData?.data.roomAttachment.url || []} />
 				</RoomDetailGallary>
 
 				<HeadingRoomBlock>
-					<Typography className="headingRoom">Room for rent Hoàng Hoa Thám, Quận Bình Thạnh</Typography>
+					<Typography className="headingRoom">{RoomData?.data.name || 'tên đang cập nhập'}</Typography>
 					<ButtonRent onClick={() => setIsShowContract(true)}>{t('Room.Rent')}</ButtonRent>
 				</HeadingRoomBlock>
 
@@ -92,14 +113,47 @@ export default function RoomDetail() {
 										md={3}
 										highlight="unactive"
 									/>
-									<RoomDetailInfo label={t('Room.room_rates')} value="1,500,000 đồng" xs={4} md={3} />
-									<RoomDetailInfo label={t('Room.acreage')} value="30 mét vuông" xs={4} md={3} />
-									<RoomDetailInfo label={t('Room.deposit')} value="1 tháng" xs={4} md={3} />
-									<RoomDetailInfo label={t('Room.capacity')} value="8 Nam hoặc Nữ" xs={4} md={3} />
+									<RoomDetailInfo
+										label={t('Room.room_rates')}
+										value={RoomData?.data.basePrice.toLocaleString() + ' đồng'}
+										xs={4}
+										md={3}
+									/>
+									<RoomDetailInfo
+										label={t('Room.acreage')}
+										value={RoomData?.data.acreage + ' mét vuông'}
+										xs={4}
+										md={3}
+									/>
+									<RoomDetailInfo
+										label={t('Room.deposit')}
+										value={RoomData?.data.deposit.toLocaleString() + ' đồng' || 'Đang cập nhập'}
+										xs={4}
+										md={3}
+									/>
+									<RoomDetailInfo
+										label={t('Room.capacity')}
+										value={
+											RoomData?.data.totalNbPeople +
+											' ' +
+											(RoomData?.data.gender === 'All' ? ' Nam hoặc Nữ' : RoomData?.data.gender)
+										}
+										xs={4}
+										md={3}
+									/>
 									<RoomDetailInfo label={t('Room.electricity')} value="500,000 đồng" xs={4} md={3} />
 									<RoomDetailInfo
+										label={t('Room.electricity')}
+										value={
+											typeOfRoom.find((item) => item.value === RoomData?.data.typeRoom)?.label ||
+											'Phòng cho thuê'
+										}
+										xs={4}
+										md={3}
+									/>
+									<RoomDetailInfo
 										label={t('Room.address')}
-										value="214B Nguyễn Trãi, Phường Nguyễn Cư Trinh, Quận 1, Hồ Chí Minh"
+										value={RoomData?.data.address.fullText || 'Upadating...'}
 									/>
 								</RoomDetailContent>
 							</Card>
@@ -117,12 +171,9 @@ export default function RoomDetail() {
 									style={{ fontSize: '16px', color: '#333333', fontWeight: 'normal' }}
 									spacing="24px"
 								>
-									<RoomDetail.Utiliti label="Máy lạnh" icon={getIcon('Máy lạnh')} />
-									<RoomDetail.Utiliti label="Chỗ để xe" icon={getIcon('Chỗ để xe')} />
-									<RoomDetail.Utiliti label="Wifi" icon={getIcon('Wifi')} />
-									<RoomDetail.Utiliti label="Tự do" icon={getIcon('Tự do')} />
-									<RoomDetail.Utiliti label="Chủ riêng" icon={getIcon('Chủ riêng')} />
-									<RoomDetail.Utiliti label="Tủ lạnh" icon={getIcon('Tủ lạnh')} />
+									{RoomData?.data.amentilities.map((item) => (
+										<RoomDetail.Utiliti key={item} label={item} icon={getIcon(item)} />
+									))}
 								</RoomDetailContent>
 							</Card>
 
@@ -133,20 +184,18 @@ export default function RoomDetail() {
 									/>
 									{t('Room.More_description')}
 								</HeadingCardDetail>
-								<p style={{ paddingTop: '10px' }}>
-									Chính chủ cho thuê phòng dịch vụ đường Hoàng Hoa Thám kv Bình Thạnh. Giá 3,5tr - 5tr
-									Tiện nghi: Có máy giặt, máy lạnh, máy nước nóng lạnh, tủ, bếp từ, giường niệm, bàn
-									ghế làm việc, tủ lạnh, bồn tắm rất sạch sẽ. Phòng có cửa sổ rất thoáng mát. Thuận
-									tiện: gần hàng xanh, trường đại học Hurtech, Hồng Bàng, bv Ung Bướu, gia định.. xung
-									quanh có nhiều quán cf, quán ăn, Trung tâm thể dục, công viên, cty.... Đi ra Quận 1,
-									gò Vấp, Phú Nhuận chỉ 5 phút. Hình thật.
-								</p>
+								<p
+									style={{ paddingTop: '10px' }}
+									dangerouslySetInnerHTML={{
+										__html: RoomData?.data.description || 'Không có mô tả',
+									}}
+								/>
 							</Card>
 						</Box>
 					</Grid>
 
 					<Grid item xs={12} md={5}>
-						<RoomDetail.InfoOfMaster />
+						<RoomDetail.InfoOfMaster dataOwner={RoomData?.data.owner} postDate={RoomData?.data.createdAt} />
 					</Grid>
 				</DetailRoom>
 			</HomePageContent>
@@ -189,13 +238,15 @@ export default function RoomDetail() {
 								</StyledAcceptTerm>
 							</>
 						)}
+
 						{showStep === 'Contract' && (
 							<>
 								<div
 									dangerouslySetInnerHTML={{
-										__html: getContract({ dataRoom: { basePrice: 100000000, deposit: 1000000 } }),
+										__html: getContract({}),
 									}}
 								/>
+
 								<SignName container>
 									<SignNameItem item xs={6}>
 										<Box className="headingSign">
@@ -229,8 +280,6 @@ export default function RoomDetail() {
 								</SignName>
 							</>
 						)}
-
-						{showStep === 'Pyament' && <div>Payment đây nè</div>}
 
 						<Modal open={showModalOTP} onClose={() => setShowModalOTP(false)}>
 							<ModalContract
@@ -305,7 +354,7 @@ RoomDetail.Utiliti = ({ label, xs = 4, md = 3, icon }: IProps) => {
 	)
 }
 
-RoomDetail.InfoOfMaster = () => {
+RoomDetail.InfoOfMaster = ({ dataOwner, postDate }: IpropsRoomMaster) => {
 	const { t } = useTranslation()
 
 	return (
@@ -316,28 +365,28 @@ RoomDetail.InfoOfMaster = () => {
 			</HeadingCardDetail>
 
 			<StyledInfoOfOwner>
-				<img src="https://s120-ava-talk.zadn.vn/b/0/e/1/3/120/0b5ff51a67c76afa07881797aa577241.jpg" />
-
+				<div className="img">
+					<img src={`https://api.multiavatar.com/${randomId()}.png`} />
+				</div>
 				<div className="main-content">
-					<p>Thanh Quang</p>
+					<p>{dataOwner?.name || 'Đang cập nhập'}</p>
 					<p>
-						{t('Room.Phone')}: <span>0344333145 </span>
+						<span> {dataOwner?.phone || '+84911336236'} </span>
 					</p>
 				</div>
-
 				<div
 					style={{
 						paddingLeft: '24px',
 					}}
 				>
-					{t('Room.Date_post')}:<p>10-02-2023</p>
+					{t('Room.Date_post')}:<p>{new Date(postDate || '')?.toLocaleDateString() || ''}</p>
 				</div>
 			</StyledInfoOfOwner>
 		</Card>
 	)
 }
 
-RoomDetail.Carousel = memo(({ itemData }: { itemData: { img: string; title: string }[] }) => {
+RoomDetail.Carousel = memo(({ itemData }: { itemData: string[] }) => {
 	return (
 		<Swiper
 			modules={[Autoplay, Pagination, EffectCoverflow]}
@@ -358,7 +407,7 @@ RoomDetail.Carousel = memo(({ itemData }: { itemData: { img: string; title: stri
 					key={randomId()}
 					style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
 				>
-					<img src={item.img} alt={item.title} />
+					<img src={item} alt={item} />
 				</SwiperSlide>
 			))}
 		</Swiper>

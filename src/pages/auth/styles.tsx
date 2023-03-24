@@ -80,7 +80,7 @@ export const StyledWrapUpdateID = styled(Box)`
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	min-height: 85vh;
+	min-height: 100vh;
 	flex-direction: column;
 
 	& .description_updateId {

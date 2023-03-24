@@ -1,47 +1,65 @@
-import RoomFilterLocation from '@/features/Room/RoomFilterLocation'
-import { getPathNameAfterSlah } from '@/utils/index'
-import { HomePageContent, ListRoom, WrapperBackground } from 'pages/Home/HomeStyles'
-import { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
-import { Grid, Box, Pagination } from '@mui/material'
+import { roomApi } from '@/api/roomApi'
 import Card from '@/components/common/Card'
 import RoomItem from '@/components/common/Room/RoomItem'
+import RoomFilterLocation from '@/features/Room/RoomFilterLocation'
+import { ArrayFrom, getPathNameAfterSlah, itemData, randomId } from '@/utils/index'
+import { decode } from '@/utils/super-function'
+import { Box, Grid, Pagination } from '@mui/material'
 import Typography from '@mui/material/Typography/Typography'
-import { decode, encode } from '@/utils/super-function'
+import { useQuery } from '@tanstack/react-query'
+import { HomePageContent, ListRoom, WrapperBackground } from 'pages/Home/HomeStyles'
+import { useEffect, useState } from 'react'
+import { IParamsGetRoom } from '@/models/room'
 import { useTranslation } from 'react-i18next'
-import qs from 'query-string'
+import { useLocation, useNavigate } from 'react-router-dom'
+import queryString from 'query-string'
+const _page = 1
+const _limit = 10
 
 const RoomsLocation = () => {
 	const location = useLocation()
-
-	const [dataSearch, setdataSearch] = useState<null>(null)
-
-	const [searchFilter, setSearchFilter] = useState({
-		range: {
-			form: 0,
-			to: 100,
-		},
-		Utilities: {},
-		typeRoom: '',
-		gender: '',
-		page: 1,
+	const [searchFilter, setSearchFilter] = useState<IParamsGetRoom>({
+		page: _page,
+		limit: _limit,
 	})
 
 	const { t } = useTranslation()
+	const navigate = useNavigate()
 
 	useEffect(() => {
-		const keySearch = decode(getPathNameAfterSlah(location.pathname))
-		console.log('🚀 ~ file: RoomsLocation.tsx:20 ~ useEffect ~ keySearch', keySearch)
-
-		const querySearch = location.search
+		getRoomFromURL()
 	}, [location, searchFilter])
+
+	const getRoomFromURL = () => {
+		try {
+			const keySearch = decode(getPathNameAfterSlah(location.pathname))
+			console.log('🚀 ~ file: RoomsLocation.tsx:20 ~ useEffect ~ keySearch', keySearch)
+			if (keySearch === '/all') {
+			}
+			// const querySearch = location.search
+		} catch (error) {
+			navigate('/notFound')
+		}
+	}
+
+	const {
+		data: roomData,
+		isLoading,
+		isError,
+	} = useQuery({
+		queryKey: ['getAllNewRoom', searchFilter],
+		queryFn: () => roomApi.getAllRoom(searchFilter),
+		staleTime: 60 * 1000,
+	})
 
 	useEffect(() => {
 		window.scrollTo(0, 0)
-	}, [])
+	}, [searchFilter])
 
 	const handleApplySearchFilter = (dataSearchFilter: any) => {
-		setSearchFilter(dataSearchFilter)
+		const search = queryString.stringify(dataSearchFilter)
+		console.log('search', search)
+		console.log('decode', queryString.parse(search))
 	}
 
 	return (
@@ -67,9 +85,19 @@ const RoomsLocation = () => {
 									{t('Room.Results')}
 								</Typography>
 								<ListRoom>
-									<RoomItem to="/room/1"></RoomItem>
-									<RoomItem to="/room/12"></RoomItem>
-									<RoomItem to="/room/13"></RoomItem>
+									{isLoading && ArrayFrom(10).map(() => <RoomItem.Skeleton key={randomId()} />)}
+
+									{roomData &&
+										roomData.data &&
+										roomData.data.items &&
+										roomData.data.items.length > 0 &&
+										roomData.data.items.map((room) => (
+											<RoomItem
+												key={room._id}
+												to={`/room/${room._id}`}
+												roomItem={room}
+											></RoomItem>
+										))}
 								</ListRoom>
 								<Box
 									style={{
@@ -79,14 +107,18 @@ const RoomsLocation = () => {
 										justifyContent: 'center',
 									}}
 								>
-									<Pagination count={10} />
+									{!isLoading && (
+										<Pagination
+											onChange={(_, page) => setSearchFilter((pre) => ({ ...pre, page }))}
+											count={roomData?.data?.totalPages || 0}
+											page={searchFilter.page}
+										/>
+									)}
 								</Box>
 							</Card>
 						</Grid>
 					</Grid>
 				</Box>
-
-				{/* <CircularProgress style={{ color: '#F73486' }} /> */}
 			</HomePageContent>
 		</WrapperBackground>
 	)

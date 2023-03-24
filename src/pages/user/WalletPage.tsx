@@ -1,10 +1,14 @@
 import HeadingTitle from '@/components/common/Heading/HeadingTitle'
-import { Button, Grid, Typography } from '@mui/material'
+import { convertMoneyToVndText, convertVNDtoUSD } from '@/utils/money'
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance'
+import { CircularProgress, Grid, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { useState } from 'react'
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance'
 
 //@ts-ignore
+import { userApi } from '@/api/userApi'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 import {
 	IconItemTransaction,
@@ -15,12 +19,12 @@ import {
 	StyledWrapButtonGroupWallet,
 	StyledWrapRightWallet,
 } from './style'
-import { useTranslation } from 'react-i18next'
+import { IUserWallet } from '@/models/user'
 
 const WalletPage = () => {
 	const [filterTransaction, setfilterTransaction] = useState('all')
 
-	const { t } = useTranslation()
+	const { t, i18n } = useTranslation()
 
 	const handleTopUp = () => {
 		Swal.fire({
@@ -33,13 +37,46 @@ const WalletPage = () => {
 			confirmButtonText: 'Nạp',
 			cancelButtonText: 'Huỷ',
 			showLoaderOnConfirm: true,
-			preConfirm: (values: string | number) => {
-				console.log('🚀 ~ file: WalletPage.tsx:38 ~ handleTopUp ~ values:', values)
-			},
+			preConfirm: (values: number) => handleTopupWallet(values),
 			allowOutsideClick: () => !Swal.isLoading(),
 		}).then((result: any) => {
-			console.log('🚀 ~ file: WalletPage.tsx:30 ~ handleTopUp ~ result:', result)
+			console.log('🚀 ~ file: WalletPage.tsx:43 ~ handleTopUp ~ result:', result)
+			// handleTopupWallet(result)
 		})
+	}
+
+	const { data: walletData, isLoading } = useQuery({
+		queryKey: ['getWalletInfo'],
+		queryFn: () => userApi.getWalletInfo(),
+		staleTime: 60 * 1000 * 5,
+	})
+
+	const mutation = useMutation({
+		mutationFn: ({ walletAddress, amount }: IUserWallet) => {
+			return userApi.topupMoney({
+				walletAddress,
+				amount,
+			})
+		},
+		onSuccess: (response: any) => {
+			window.open(response?.paymentUrl, '_blank')
+		},
+		onError: (error) => {
+			console.log('🚀 ~ file: WalletPage.tsx:68 ~ WalletPage ~ error:', error)
+		},
+	})
+
+	const handleTopupWallet = async (moneyTopup: any) => {
+		if (!walletData?.data.walletAddress) return
+		try {
+			const response = mutation.mutate({
+				walletAddress: walletData?.data.walletAddress,
+				amount: moneyTopup,
+			})
+			return response
+		} catch (error) {
+			console.log('error', error)
+		}
 	}
 
 	return (
@@ -54,14 +91,24 @@ const WalletPage = () => {
 						}}
 					>
 						<StyledWalletCard>
-							<p className="textBlance">10.000.000 vnđ</p>
-							<Typography
-								variant="body1"
-								color="inherit"
-								style={{ fontSize: 18, fontFamily: 'monospace' }}
-							>
-								{t('Wallet.Balance')}
-							</Typography>
+							{!isLoading && (
+								<>
+									<p className="textBlance">
+										{i18n.language === 'en'
+											? convertVNDtoUSD(Number(walletData?.data?.balance) || 0)
+											: convertMoneyToVndText(Number(walletData?.data.balance) || 0)}
+									</p>
+									<Typography
+										variant="body1"
+										color="inherit"
+										style={{ fontSize: 18, fontFamily: 'monospace' }}
+									>
+										{t('Wallet.Balance')}
+									</Typography>
+								</>
+							)}
+
+							{isLoading && <CircularProgress />}
 						</StyledWalletCard>
 						<StyledButtonWallet onClick={handleTopUp}>{t('Wallet.Top_up')}</StyledButtonWallet>
 						<StyledButtonWallet>{t('Wallet.WithDraw')}</StyledButtonWallet>

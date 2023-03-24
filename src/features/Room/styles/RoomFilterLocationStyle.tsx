@@ -49,3 +49,11 @@ export const ButtonFilter = styled('button')`
 	line-height: 24px;
 	cursor: pointer;
 `
+
+export const StyledHeadingFilter = styled('p')`
+	margin: 0;
+	font-size: 24px;
+	color: #333333;
+	font-weight: bold;
+	padding: 32px;
+`

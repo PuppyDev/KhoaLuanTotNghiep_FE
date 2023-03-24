@@ -7,7 +7,7 @@
 		"Password": "Mật khẩu",
 		"Confirm_Pass": "Xác nhận mật khẩu",
 		"Forgot_Your_Pass": "Quên mật khẩu",
-		"Full_Name": "Họ và tên",
+		"Full_Name": "Tên đăng nhập",
 		"Phone": "Số điện thoại",
 		"SEND_OTP": "Chúng tôi đã gửi mã OTP về điện thoại của bạn, vui lòng kiểm tra và nhập OTP để hoàn tất Đăng ký",
 		"OtpCode": "Mã OTP ",
@@ -114,6 +114,7 @@
 		"Phone": "SĐT",
 		"Date_post": "Ngày đăng",
 		"Rent": "Thuê ngay",
+		"internetCost": "Tiền mạng",
 
 		"Results": "Kết quả ",
 		"Filters": "Bộ lọc",

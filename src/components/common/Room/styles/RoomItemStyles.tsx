@@ -46,6 +46,50 @@ export const CardRoomItem = styled(Link)({
 	},
 })
 
+export const CardRoomSkeleton = styled(Box)({
+	padding: '13px 0',
+	borderBottom: '1px solid #CDCDCD',
+	display: 'flex',
+	gap: '16px',
+	textDecoration: 'none',
+	color: 'black',
+
+	'& > .roomItemImage': {
+		width: '216px',
+		height: '152px',
+		borderRadius: '8px',
+		objectFit: 'cover',
+		overflow: 'hidden',
+
+		'& > img': {
+			width: '100%',
+			height: '100%',
+		},
+	},
+
+	'& > .roomItemContent': {
+		display: 'flex',
+		flexDirection: 'column',
+		flex: '1 1 0',
+		alignItems: 'flex-start',
+		height: '100%',
+		gap: '20px',
+
+		'@media only screen and (max-width: 765px)': {
+			gap: '5px',
+		},
+	},
+
+	'@media only screen and (max-width: 765px)': {
+		flexDirection: 'column',
+
+		'& > .roomItemImage': {
+			width: '100%',
+			height: '250px',
+		},
+	},
+})
+
 export const RoomItemHeading = styled(Typography)({
 	color: 'black',
 	fontSize: '20px',
@@ -61,6 +105,7 @@ export const RoomPreviews = styled(Box)({
 	color: '#666666',
 	fontSize: '16px',
 	fontWeight: '100',
+	width: '100%',
 
 	'@media only screen and (max-width: 900px)': {
 		gap: '10px',
@@ -73,6 +118,7 @@ export const RoomPreviewItem = styled(Box)({
 	gap: '15px',
 	fontWeight: '600',
 	fontFamily: 'Nunito',
+	textTransform: 'capitalize',
 })
 
 export const RoomPrice = styled(Box)({
@@ -218,15 +264,21 @@ export const StyledInfoOfOwner = styled(Box)`
 	display: flex;
 	align-items: flex-end;
 
-	img {
+	img,
+	.img {
 		width: 60px;
 		height: 60px;
 		object-fit: cover;
 		border-radius: 30px;
 	}
 
+	.img {
+		box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+	}
+
 	& .main-content {
 		border-right: 1px solid #cdcdcd;
 		padding-right: 24px;
+		text-transform: lowercase;
 	}
 `

@@ -1,3 +1,4 @@
+import { useAppSelector } from '@/app/hook'
 import HeadingTitle from '@/components/common/Heading/HeadingTitle'
 import CheckCircleSharpIcon from '@mui/icons-material/CheckCircleSharp'
 import DoneIcon from '@mui/icons-material/Done'
@@ -18,6 +19,8 @@ import {
 export const ProfilePage = () => {
 	const { t } = useTranslation()
 
+	const { user } = useAppSelector((state) => state.authSlice.userInfo)
+
 	return (
 		<Grid container alignItems="flex-start" justifyContent="space-between">
 			<StyledGridLayout item sm={12} md={4} lg={3} container>
@@ -26,8 +29,8 @@ export const ProfilePage = () => {
 						sx={{ width: 170, height: 170 }}
 						srcSet="https://scontent.fsgn2-7.fna.fbcdn.net/v/t39.30808-6/326706851_905071507593208_1684832252594277761_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=FVDo1ljBqpAAX9L_Ibl&_nc_ht=scontent.fsgn2-7.fna&oh=00_AfDit6WnL3XB4EBzCoNr-HFO14fEDcUsOJJE9QxxE0D0rQ&oe=6419E0FF"
 					/>
-					<Typography sx={{ fontSize: 34 }} fontWeight="bold">
-						Yone Doan
+					<Typography sx={{ fontSize: 26, textTransform: 'lowercase' }} fontWeight="bold">
+						{user.name}
 					</Typography>
 					<StyledWrapIndentity>
 						<DoneIcon fontSize="small" /> {t('USER.IDVerified')}

@@ -276,3 +276,7 @@ export const ListRoom = styled('ul')({
 	margin: 0,
 	listStyle: 'none',
 })
+
+export const StyledNoRoom = styled(Box)`
+	text-align: center;
+`

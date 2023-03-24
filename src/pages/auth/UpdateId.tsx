@@ -5,6 +5,11 @@ import { useForm } from 'react-hook-form'
 import ImageIcon from '@mui/icons-material/Image'
 import { StyledButtonUpdateId, StyledMiddle, StyledWrapUpdateID } from './styles'
 import { useTranslation } from 'react-i18next'
+import { IInfoFPT } from '@/models/auth'
+import { authApi } from '@/api/authApi'
+import { useAppDispatch, useAppSelector } from '@/app/hook'
+import ShowNostis from '@/utils/show-noti'
+import { setUserInfo } from '@/app/authSlice'
 type FormValues = {
 	front: any
 	back: any
@@ -18,24 +23,40 @@ const UpdateId = () => {
 		},
 	})
 
+	const { userId } = useAppSelector((state) => state.authSlice.verifyInfo)
+	const dispatch = useAppDispatch()
 	const sendIDProfile = handleSubmit(async (values) => {
 		const formData = new FormData()
 		const file = values.front[0]
 		formData.append('image', file)
-
-		axios
-			.post('https://api.fpt.ai/vision/idr/vnm', formData, {
+		try {
+			const { data } = await axios.post('https://api.fpt.ai/vision/idr/vnm', formData, {
 				headers: {
 					'api-key': import.meta.env.VITE_API_FPTAI_ID,
 				},
 			})
-			.then((response) => {
-				console.log(response.data)
-			})
-			.catch((error) => {
-				console.error(error)
-			})
+
+			handleUpdateInfo(data[0] || data)
+		} catch (error) {
+			console.log('🚀 ~ file: UpdateId.tsx:40 ~ sendIDProfile ~ error:', error)
+		}
 	})
+
+	const handleUpdateInfo = async (data: { data: IInfoFPT[] }) => {
+		try {
+			const dataRequest = { ...data.data[0], userId }
+			const response = await authApi.verifyInfo(dataRequest)
+
+			localStorage.setItem('dataUser', JSON.stringify(response.data.data))
+
+			dispatch(setUserInfo(response.data.data))
+
+			ShowNostis.success(response.data.message || 'Cập nhập thành công !!!')
+		} catch (error) {
+			console.log('🚀 ~ file: UpdateId.tsx:46 ~ handleUpdateInfo ~ error:', error)
+			ShowNostis.error('Something went wrong, please contact an admin')
+		}
+	}
 
 	const { t } = useTranslation()
 

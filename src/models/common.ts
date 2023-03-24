@@ -19,3 +19,11 @@ export interface ResponseObject<T> {
 export interface LayoutProps {
 	children: ReactNode
 }
+
+export interface CommonPagination<T> {
+	total: number
+	page: number
+	limit: number
+	totalPages: number
+	items: T
+}

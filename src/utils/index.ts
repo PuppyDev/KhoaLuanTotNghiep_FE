@@ -48,3 +48,26 @@ export function maskEmail(email: string): string {
 	const maskedDomain = `${domain.charAt(0)}${'*'.repeat(domain.length - 2)}${domain.slice(-1)}`
 	return `${maskedUsername}@${maskedDomain}`
 }
+
+export function maskPhone(phone: string): string {
+	const maskedPhone = phone.replace(/\d(?=\d{4})/g, '*') // Replace all but the last 4 digits with asterisks
+	return maskedPhone
+}
+
+export function getNameVietNamese(fullName: string) {
+	const names = fullName.trim().split(' ')
+	if (names.length <= 1) {
+		return names[0]
+	}
+	return names[names.length - 2] + ' ' + names[names.length - 1]
+}
+
+export function convertPhone84(phoneNumber: string) {
+	phoneNumber = phoneNumber.replace(/\D/g, '') // Remove all non-numeric characters
+	if (phoneNumber.length === 10) {
+		phoneNumber = '+84' + phoneNumber.substr(1) // Prepend the country code and remove the leading "0"
+	} else if (phoneNumber.length === 11) {
+		phoneNumber = '+84' + phoneNumber.substr(2) // Prepend the country code and remove the leading "0"
+	}
+	return phoneNumber
+}

@@ -1,42 +1,53 @@
+import { authApi } from '@/api/authApi'
+import { setUserInfo, setVerifiedInfo } from '@/app/authSlice'
+import { useAppDispatch } from '@/app/hook'
 import FormInputText from '@/components/common/Input/FormInputText'
+import { FormValuesSignIn, IUpdateID, ResponseSignIn, VerifyType } from '@/models/auth'
 import { schema } from '@/schemas/Auth'
+import ShowNostis from '@/utils/show-noti'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { CircularProgress, Grid } from '@mui/material'
 import { useForm } from 'react-hook-form'
-import { ButtonAuth, HeaderSignUp, LinkSignIn, Wrapper } from './styles'
-import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useState } from 'react'
-import { Circle } from '@mui/icons-material'
-
-type FormValues = {
-	email: string
-	password: string
-}
+import { Link, useNavigate } from 'react-router-dom'
+import { ButtonAuth, HeaderSignUp, LinkSignIn, Wrapper } from './styles'
 
 const SignIn = () => {
 	const {
 		control,
 		handleSubmit,
-		formState: { errors, isSubmitting },
-	} = useForm<FormValues>({
-		defaultValues: {
-			email: '',
-			password: '',
-		},
+		formState: { errors, isSubmitting, isValid },
+	} = useForm<FormValuesSignIn>({
 		resolver: yupResolver(schema),
 	})
-
-	const [isLoading, setisLoading] = useState(false)
+	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
-	const handleSignIn = handleSubmit((data) => {
-		setisLoading(true)
-		setTimeout(() => {
-			console.log('meomeo')
-			setisLoading(false)
-			// navigate('/')
-		}, 3000)
-	})
+	const handleSignIn = async (data: FormValuesSignIn) => {
+		try {
+			const response = await authApi.login(data)
+			console.log('🚀 ~ file: SignIn.tsx:28 ~ handleSignIn ~ response:', response)
+
+			// @ts-ignore
+			if (response?.message === 'You must update your identity!') {
+				dispatch(setVerifiedInfo(response.data as VerifyType))
+				return navigate('/registerAuth')
+			}
+			// if (response) {
+			// 	dispatch(setVerifiedInfo(response?.data as VerifyType))
+			// 	navigate('/authOtp')
+			// }
+
+			if (response) {
+				dispatch(setUserInfo(response.data as ResponseSignIn))
+
+				localStorage.setItem('dataUser', JSON.stringify(response?.data as ResponseSignIn))
+
+				return navigate('/')
+			}
+		} catch (error: any) {
+			if (error) ShowNostis.error(error?.data.message || 'something went wrong')
+		}
+	}
 
 	const { t } = useTranslation()
 
@@ -57,7 +68,7 @@ const SignIn = () => {
 
 				<Grid item width="100%" xs={6}>
 					<form
-						onSubmit={handleSignIn}
+						onSubmit={handleSubmit(handleSignIn)}
 						style={{
 							display: 'flex',
 							flexDirection: 'column',
@@ -70,9 +81,9 @@ const SignIn = () => {
 
 						<FormInputText
 							control={control}
-							name="email"
-							label="Email"
-							error={errors.email?.message || null}
+							name="username"
+							label="Username"
+							error={errors.username?.message || null}
 						/>
 
 						<FormInputText
@@ -84,7 +95,7 @@ const SignIn = () => {
 						/>
 
 						<Link
-							to="/"
+							to="/forgot-password"
 							style={{
 								textAlign: 'right',
 								fontSize: 12,
@@ -94,8 +105,8 @@ const SignIn = () => {
 							{t('AUTH.Forgot_Your_Pass')} ?
 						</Link>
 
-						<ButtonAuth disabled={isSubmitting || isLoading} type="submit" variant="contained">
-							{isLoading ? <CircularProgress size={25} /> : t('AUTH.LOGIN') + ' ' + t('NOW')}
+						<ButtonAuth disabled={isSubmitting || !isValid} type="submit" variant="contained">
+							{isSubmitting ? <CircularProgress size={25} /> : t('AUTH.LOGIN') + ' ' + t('NOW')}
 						</ButtonAuth>
 					</form>
 				</Grid>

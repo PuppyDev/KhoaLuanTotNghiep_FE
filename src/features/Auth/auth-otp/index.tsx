@@ -3,12 +3,30 @@ import { StyledButtonOtp, StyledHeading, StyledMainOtp, StyledWrapOTP } from './
 import Illustration from '@/assets/images/Illustration.svg'
 import { Box, Button } from '@mui/material'
 import OtpInput from 'react-otp-input'
-import { maskEmail } from '@/utils/index'
+import { maskEmail, maskPhone } from '@/utils/index'
+import { authApi } from '@/api/authApi'
+import ShowNostis from '@/utils/show-noti'
+import { useAppSelector } from '@/app/hook'
+import PageNotFound from 'pages/notFoundPage'
 const AuthOtpContainer = () => {
 	const [otp, setOtp] = useState('')
+	const [isResent, setIsResent] = useState<any>()
+
+	const { phone, username } = useAppSelector((state) => state.authSlice.verifyInfo)
 
 	const handleChange = (otpTyping: string) => {
 		setOtp(otpTyping)
+	}
+
+	const handleResetOtp = async () => {
+		try {
+			const response = await authApi.resetOtp({ username })
+			//@ts-ignore
+			ShowNostis.success(response?.message)
+			setIsResent(Date.now())
+		} catch (error: any) {
+			ShowNostis.error(error.data.message)
+		}
 	}
 
 	return (
@@ -17,7 +35,7 @@ const AuthOtpContainer = () => {
 
 			<StyledHeading>
 				<Box className="main-heading">OTP Verification</Box>
-				<Box className="sub-heading">Code sent via mail to {maskEmail('giangvo0206@gmail.com')}</Box>
+				<Box className="sub-heading">Code sent via phone to {maskPhone(phone)}</Box>
 			</StyledHeading>
 
 			<StyledMainOtp>
@@ -44,19 +62,21 @@ const AuthOtpContainer = () => {
 							borderRadius: '12px',
 						}}
 						onChange={handleChange}
-						numInputs={4}
-						separator={<span style={{ padding: '0px 10px' }}> - </span>}
+						numInputs={6}
+						separator={<span style={{ padding: '0px 2px' }}> - </span>}
 						shouldAutoFocus
 					/>
 				</Box>
 			</StyledMainOtp>
 
 			<StyledButtonOtp>
-				<Button className="button-continue" disabled={otp.length < 4} variant="contained">
+				<Button className="button-continue" variant="contained">
 					Continue
 				</Button>
 
-				<p className="button-resend">Resend code</p>
+				<p className="button-resend" onClick={handleResetOtp}>
+					Resend code
+				</p>
 			</StyledButtonOtp>
 		</StyledWrapOTP>
 	)

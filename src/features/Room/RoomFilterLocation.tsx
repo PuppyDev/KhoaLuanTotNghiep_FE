@@ -5,7 +5,7 @@ import { options } from 'pages/room/AddRoom'
 import React, { memo, MouseEventHandler, PropsWithChildren } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { ButtonFilter, FilterItem, ListFilters } from './styles/RoomFilterLocationStyle'
+import { ButtonFilter, FilterItem, ListFilters, StyledHeadingFilter } from './styles/RoomFilterLocationStyle'
 
 interface IProps {
 	onApply: (dataSearchFilter: any) => void
@@ -44,6 +44,7 @@ const optionSex = [
 		value: 'Nữ',
 	},
 ]
+
 type FormValues = {
 	prices: number[]
 	utilities: string[]
@@ -65,21 +66,13 @@ const RoomFilterLocation = ({ onApply }: IProps) => {
 		},
 	})
 
-	const handleChange = (panel: string) => {
-		setExpanded(panel === expanded ? null : panel)
-	}
-
-	const filterRoom = (values: any) => {
-		console.log('🚀 ~ file: RoomFilterLocation.tsx:60 ~ filterRoom ~ values', values)
-	}
+	const handleChange = (panel: string) => setExpanded(panel === expanded ? null : panel)
 
 	return (
 		<Box>
-			<Typography style={{ margin: 0, fontSize: '24px', color: '#333333', fontWeight: 'bold', padding: '32px' }}>
-				{t('Room.Filters')}
-			</Typography>
+			<StyledHeadingFilter>{t('Room.Filters')}</StyledHeadingFilter>
 
-			<ListFilters onSubmit={handleSubmit(filterRoom)}>
+			<ListFilters onSubmit={handleSubmit(onApply)}>
 				<RoomFilterLocation.FilterItem
 					panel="panel1"
 					activeTab={expanded}
@@ -91,13 +84,13 @@ const RoomFilterLocation = ({ onApply }: IProps) => {
 						name="prices"
 						render={({ field }) => (
 							<Slider
+								{...field}
 								// @ts-ignore
 								onChange={(_, values) => setValue('prices', values)}
 								min={0}
 								step={10000}
 								max={9000000}
 								valueLabelFormat={(number) => number.toLocaleString()}
-								defaultValue={field.value}
 								disableSwap
 								valueLabelDisplay="on"
 							/>
@@ -111,32 +104,28 @@ const RoomFilterLocation = ({ onApply }: IProps) => {
 					label={t('Room.utilities')}
 					onClick={() => handleChange('panel2')}
 				>
-					{options.map((item) => {
-						console.log('🚀 ~ file: RoomFilterLocation.tsx:115 ~ {options.map ~ item:', item)
-
-						return (
-							<FormControlLabel
-								style={{ width: '100%', paddingLeft: '20px' }}
-								control={
-									<Checkbox
-										sx={{
-											color: pink[300],
-											'&.Mui-checked': {
-												color: pink[600],
-											},
-										}}
-										value={item}
-										{...register('utilities')}
-										defaultChecked={
-											getValues('utilities').findIndex((itemCheck) => itemCheck === item) !== -1
-										}
-									/>
-								}
-								key={Date.now() + Math.random() * 10000}
-								label={item}
-							/>
-						)
-					})}
+					{options.map((item) => (
+						<FormControlLabel
+							style={{ width: '100%', paddingLeft: '20px' }}
+							control={
+								<Checkbox
+									sx={{
+										color: pink[300],
+										'&.Mui-checked': {
+											color: pink[600],
+										},
+									}}
+									value={item}
+									{...register('utilities')}
+									defaultChecked={
+										getValues('utilities').findIndex((itemCheck) => itemCheck === item) !== -1
+									}
+								/>
+							}
+							key={Date.now() + Math.random() * 10000}
+							label={item}
+						/>
+					))}
 				</RoomFilterLocation.FilterItem>
 
 				<RoomFilterLocation.FilterItem
@@ -145,7 +134,7 @@ const RoomFilterLocation = ({ onApply }: IProps) => {
 					label={t('Room.TypeRoom')}
 					onClick={() => handleChange('panel3')}
 				>
-					{optionTypeRoom.map((item) => (
+					{optionTypeRoom.map((item: any) => (
 						<FormControlLabel
 							style={{ width: '100%', paddingLeft: '20px' }}
 							control={
@@ -157,11 +146,14 @@ const RoomFilterLocation = ({ onApply }: IProps) => {
 										},
 									}}
 									value={item.value}
+									{...register('typeRoom')}
+									defaultChecked={
+										getValues('typeRoom').findIndex((itemCheck) => itemCheck === item.value) !== -1
+									}
 								/>
 							}
 							key={Date.now() + Math.random() * 10000}
 							label={item.label}
-							{...register('typeRoom')}
 						/>
 					))}
 				</RoomFilterLocation.FilterItem>
@@ -184,17 +176,18 @@ const RoomFilterLocation = ({ onApply }: IProps) => {
 										},
 									}}
 									value={item.value}
+									{...register('gender')}
+									defaultChecked={
+										getValues('gender').findIndex((itemCheck) => itemCheck === item.value) !== -1
+									}
 								/>
 							}
 							key={Date.now() + Math.random() * 10000}
 							label={item.label}
-							{...register('gender')}
 						/>
 					))}
 				</RoomFilterLocation.FilterItem>
-				<ButtonFilter type="submit" onClick={() => onApply(123)}>
-					{t('Room.Apply')}
-				</ButtonFilter>
+				<ButtonFilter type="submit">{t('Room.Apply')}</ButtonFilter>
 			</ListFilters>
 		</Box>
 	)

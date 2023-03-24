@@ -1,9 +1,12 @@
 import { HomeLayout } from '@/components/layout/HomeLayout'
-import Home from 'pages/Home'
+import AuthenPage from 'pages/auth/AuthenPage'
+import ForgotPassPage from 'pages/auth/ForgotPassPage'
 import SignIn from 'pages/auth/SignIn'
 import SignUp from 'pages/auth/SignUp'
 import UpdateId from 'pages/auth/UpdateId'
+import Home from 'pages/Home'
 import PageNotFound from 'pages/notFoundPage'
+import PaymentPageHandle from 'pages/payment'
 import RoomDetail from 'pages/room'
 import AddRoom from 'pages/room/AddRoom'
 import RoomsLocation from 'pages/room/RoomsLocation'
@@ -12,12 +15,10 @@ import BookingPage from 'pages/user/BookingPage'
 import MyRoomPage from 'pages/user/MyRoomPage'
 import WalletPage from 'pages/user/WalletPage'
 import { Route, Routes } from 'react-router-dom'
+import { randomId } from '../utils'
 import AdminRoute from './AdminRoute'
 import PrivateRoute from './PrivateRoute'
 import RenderRouteHeader from './RenderRouteHeader'
-import { randomId } from '../utils'
-import AuthenPage from 'pages/auth/AuthenPage'
-import ForgotPassPage from 'pages/auth/ForgotPassPage'
 
 const mainRoutes = [
 	{
@@ -36,14 +37,14 @@ const mainRoutes = [
 		pathName: '/MyWallet',
 	},
 	{
-		id: 5,
-		element: <UpdateId />,
-		pathName: '/registerAuth',
-	},
-	{
 		id: 6,
 		element: <MyRoomPage />,
 		pathName: '/room/myRooms',
+	},
+	{
+		id: 7,
+		element: <PaymentPageHandle />,
+		pathName: '/bh/payment-confirmation',
 	},
 ]
 
@@ -99,6 +100,10 @@ const AuthRoutes = [
 	{
 		element: <ForgotPassPage />,
 		pathName: '/forgot-password',
+	},
+	{
+		element: <UpdateId />,
+		pathName: '/registerAuth',
 	},
 ]
 

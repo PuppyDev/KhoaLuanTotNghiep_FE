@@ -1,11 +1,13 @@
+import { roomApi } from '@/api/roomApi'
 import RoomItem from '@/components/common/Room/RoomItem'
-import { randomId } from '@/utils/index'
+import { ArrayFrom, randomId } from '@/utils/index'
 import { encode } from '@/utils/super-function'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser'
 import { Grid } from '@mui/material'
 import Typography from '@mui/material/Typography'
 import { Box } from '@mui/system'
+import { useQuery } from '@tanstack/react-query'
 import { debounce } from 'lodash'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -25,6 +27,7 @@ import {
 	SearchResult,
 	SearchResultItem,
 	SearchResultNoData,
+	StyledNoRoom,
 	TrendingHeader,
 	TrendingItem,
 	TrendingList,
@@ -45,6 +48,12 @@ const Home = () => {
 			// setResultSearch(['binhthanh'])
 		}
 	}, [searchKeyWord])
+
+	const {
+		data: roomData,
+		isLoading,
+		isError,
+	} = useQuery(['getAllNewRoom'], () => roomApi.getAllRoom({ limit: 8, page: 1 }))
 
 	const { t } = useTranslation()
 
@@ -118,9 +127,22 @@ const Home = () => {
 								<Typography className="heading">{t('Home.new_room')}</Typography>
 
 								<ListRoom>
-									<RoomItem to="/room/1"></RoomItem>
-									<RoomItem to="/room/12"></RoomItem>
-									<RoomItem to="/room/13"></RoomItem>
+									{isLoading && ArrayFrom(10).map(() => <RoomItem.Skeleton key={randomId()} />)}
+
+									{!isLoading &&
+										roomData &&
+										roomData.data.items?.map((room) => (
+											<RoomItem
+												key={room._id}
+												to={`/room/${room._id}`}
+												roomItem={room}
+											></RoomItem>
+										))}
+
+									{!roomData?.data?.items ||
+										(roomData?.data?.items?.length === 0 && (
+											<StyledNoRoom>No room not founded.</StyledNoRoom>
+										))}
 								</ListRoom>
 
 								<Box
@@ -130,7 +152,7 @@ const Home = () => {
 									}}
 								>
 									<Link
-										to="/"
+										to={'/search/' + encode('/all')}
 										style={{
 											color: '#4877f8',
 											lineHeight: '24px',

@@ -2,7 +2,7 @@ import * as yup from 'yup'
 
 export const schema = yup
 	.object({
-		email: yup.string().email('Nhập sai định dạng email').required('Vui lòng nhập Email'),
+		username: yup.string().required('Vui lòng nhập Email'),
 		password: yup
 			.string()
 			.required('Vui lòng nhập mật khẩu')
@@ -13,14 +13,13 @@ export const schema = yup
 	})
 	.required()
 
-// /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
-const phoneRegExp =
-	/^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
+const phoneRegExp = /^(84|\+84|0)(3[2-9]|5[2689]|7[06-9]|8[1-9]|9[0-4])[0-9]{7}$/
+
 export const signUp = yup
 	.object({
-		name: yup.string().required(),
+		username: yup.string().required(),
 		email: yup.string().email('Nhập sai định dạng email').required('Vui lòng nhập Email'),
-		phone: yup.string().matches(phoneRegExp, 'Vui lòng nhập đúng số điện thoại'),
+		contactInfo: yup.string().matches(phoneRegExp, 'Vui lòng nhập đúng số điện thoại'),
 		password: yup
 			.string()
 			.required('Vui lòng nhập mật khẩu')
