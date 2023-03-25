@@ -19,7 +19,8 @@ import {
 	StyledWrapButtonGroupWallet,
 	StyledWrapRightWallet,
 } from './style'
-import { IUserWallet } from '@/models/user'
+import { ITransaction, IUserWallet } from '@/models/user'
+import { randomId } from '@/utils/index'
 
 const WalletPage = () => {
 	const [filterTransaction, setfilterTransaction] = useState('all')
@@ -48,6 +49,12 @@ const WalletPage = () => {
 	const { data: walletData, isLoading } = useQuery({
 		queryKey: ['getWalletInfo'],
 		queryFn: () => userApi.getWalletInfo(),
+		staleTime: 60 * 1000 * 5,
+	})
+
+	const { data: walletTransaction, isLoading: loadingTransaction } = useQuery({
+		queryKey: ['getWalletTransaction'],
+		queryFn: () => userApi.getWalletTransaction(),
 		staleTime: 60 * 1000 * 5,
 	})
 
@@ -143,9 +150,13 @@ const WalletPage = () => {
 						</Box>
 
 						<ListItemTransaction>
-							<WalletPage.ItemTransaction />
-							<WalletPage.ItemTransaction />
-							<WalletPage.ItemTransaction />
+							{loadingTransaction && <p>loading ...</p>}
+							{walletTransaction?.data?.items.map((transaction) => (
+								<WalletPage.ItemTransaction
+									transaction={transaction}
+									key={transaction._id || randomId()}
+								/>
+							))}
 						</ListItemTransaction>
 					</StyledWrapRightWallet>
 				</Grid>
@@ -154,7 +165,7 @@ const WalletPage = () => {
 	)
 }
 
-WalletPage.ItemTransaction = () => {
+WalletPage.ItemTransaction = ({ transaction }: { transaction: ITransaction }) => {
 	return (
 		<Grid container alignItems="center" spacing={2}>
 			<Grid item xs={1.5} alignItems="center" container justifyContent="center">
@@ -165,11 +176,11 @@ WalletPage.ItemTransaction = () => {
 
 			<Grid item xs>
 				<Typography style={{ fontSize: '18px' }} color="initial">
-					Booking
+					{transaction?.action || 'Updating...'}
 				</Typography>
 
 				<Typography style={{ fontSize: '18px' }} color="#84878B">
-					Booking ID <span style={{ color: 'black' }}>NR710746375497578453</span>
+					{transaction?.action} ID <span style={{ color: 'black' }}>{transaction?._id}</span>
 				</Typography>
 
 				<Typography style={{ fontSize: '14px' }} color="#84878B">
@@ -179,7 +190,7 @@ WalletPage.ItemTransaction = () => {
 
 			<Grid item xs={2}>
 				<Typography style={{ fontSize: '18px' }} color="#222529" fontWeight="Bold">
-					$ 526
+					{convertVNDtoUSD(transaction?.actionAmount)}
 				</Typography>
 			</Grid>
 		</Grid>

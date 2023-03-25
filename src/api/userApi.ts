@@ -1,4 +1,5 @@
-import { IResUserWallet, IUserWallet, IWalletInfo } from '@/models/user'
+import { IResUserWallet, ITransaction, IUserWallet, IWalletInfo } from '@/models/user'
+import { CommonPagination } from '../models'
 import axiosClient from './axiosClient'
 
 const BASES_URL = '/users'
@@ -10,5 +11,9 @@ export const userApi = {
 
 	getWalletInfo() {
 		return axiosClient.get<IWalletInfo>(`${BASES_URL}/me/wallet`)
+	},
+
+	getWalletTransaction() {
+		return axiosClient.get<CommonPagination<ITransaction[]>>(`${BASES_URL}/me/transaction-history`)
 	},
 }

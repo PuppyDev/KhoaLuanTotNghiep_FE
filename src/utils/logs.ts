@@ -73,7 +73,7 @@ export const LogError = (error: AxiosError<any>): void => {
 export const LogRequest = (config: AxiosRequestConfig): void => {
 	const fullUrl = `${config.baseURL}${config.url}`
 	return console.log(
-		`%c REQUEST --> ${config.method?.toUpperCase()} --> ${fullUrl}\n Data-->`,
+		`%c REQUEST --> ${config.method?.toUpperCase()} --> ${fullUrl}\n Payload Data Request-->`,
 		'background: #222; color: #0a95ff; font-style: italic',
 		config.data
 	)

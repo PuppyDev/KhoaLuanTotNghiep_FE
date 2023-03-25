@@ -87,11 +87,11 @@ export default function RoomDetail() {
 		<WrapperBackground>
 			<HomePageContent style={{ paddingTop: '32px' }}>
 				<RoomDetailGallary>
-					<RoomDetail.Carousel itemData={RoomData?.data.roomAttachment.url || []} />
+					<RoomDetail.Carousel itemData={RoomData?.data?.roomAttachment?.url || []} />
 				</RoomDetailGallary>
 
 				<HeadingRoomBlock>
-					<Typography className="headingRoom">{RoomData?.data.name || 'tên đang cập nhập'}</Typography>
+					<Typography className="headingRoom">{RoomData?.data?.name || 'tên đang cập nhập'}</Typography>
 					<ButtonRent onClick={() => setIsShowContract(true)}>{t('Room.Rent')}</ButtonRent>
 				</HeadingRoomBlock>
 
@@ -115,19 +115,19 @@ export default function RoomDetail() {
 									/>
 									<RoomDetailInfo
 										label={t('Room.room_rates')}
-										value={RoomData?.data.basePrice.toLocaleString() + ' đồng'}
+										value={RoomData?.data?.basePrice.toLocaleString() + ' đồng'}
 										xs={4}
 										md={3}
 									/>
 									<RoomDetailInfo
 										label={t('Room.acreage')}
-										value={RoomData?.data.acreage + ' mét vuông'}
+										value={RoomData?.data?.acreage + ' mét vuông'}
 										xs={4}
 										md={3}
 									/>
 									<RoomDetailInfo
 										label={t('Room.deposit')}
-										value={RoomData?.data.deposit.toLocaleString() + ' đồng' || 'Đang cập nhập'}
+										value={RoomData?.data?.deposit.toLocaleString() + ' đồng' || 'Đang cập nhập'}
 										xs={4}
 										md={3}
 									/>
@@ -136,7 +136,7 @@ export default function RoomDetail() {
 										value={
 											RoomData?.data.totalNbPeople +
 											' ' +
-											(RoomData?.data.gender === 'All' ? ' Nam hoặc Nữ' : RoomData?.data.gender)
+											(RoomData?.data?.gender === 'All' ? ' Nam hoặc Nữ' : RoomData?.data?.gender)
 										}
 										xs={4}
 										md={3}
@@ -145,15 +145,15 @@ export default function RoomDetail() {
 									<RoomDetailInfo
 										label={t('Room.electricity')}
 										value={
-											typeOfRoom.find((item) => item.value === RoomData?.data.typeRoom)?.label ||
-											'Phòng cho thuê'
+											typeOfRoom.find((item) => item?.value === RoomData?.data?.typeRoom)
+												?.label || 'Phòng cho thuê'
 										}
 										xs={4}
 										md={3}
 									/>
 									<RoomDetailInfo
 										label={t('Room.address')}
-										value={RoomData?.data.address.fullText || 'Upadating...'}
+										value={RoomData?.data?.address?.fullText || 'Upadating...'}
 									/>
 								</RoomDetailContent>
 							</Card>
@@ -171,7 +171,7 @@ export default function RoomDetail() {
 									style={{ fontSize: '16px', color: '#333333', fontWeight: 'normal' }}
 									spacing="24px"
 								>
-									{RoomData?.data.amentilities.map((item) => (
+									{RoomData?.data?.amentilities.map((item) => (
 										<RoomDetail.Utiliti key={item} label={item} icon={getIcon(item)} />
 									))}
 								</RoomDetailContent>
@@ -187,7 +187,7 @@ export default function RoomDetail() {
 								<p
 									style={{ paddingTop: '10px' }}
 									dangerouslySetInnerHTML={{
-										__html: RoomData?.data.description || 'Không có mô tả',
+										__html: RoomData?.data?.description || 'Không có mô tả',
 									}}
 								/>
 							</Card>
@@ -195,7 +195,10 @@ export default function RoomDetail() {
 					</Grid>
 
 					<Grid item xs={12} md={5}>
-						<RoomDetail.InfoOfMaster dataOwner={RoomData?.data.owner} postDate={RoomData?.data.createdAt} />
+						<RoomDetail.InfoOfMaster
+							dataOwner={RoomData?.data?.owner}
+							postDate={RoomData?.data?.createdAt}
+						/>
 					</Grid>
 				</DetailRoom>
 			</HomePageContent>
