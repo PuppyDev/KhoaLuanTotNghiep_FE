@@ -1,3 +1,4 @@
+import { INotification } from '@/models/notification'
 import { IResUserWallet, ITransaction, IUserWallet, IWalletInfo } from '@/models/user'
 import { CommonPagination } from '../models'
 import axiosClient from './axiosClient'
@@ -15,5 +16,17 @@ export const userApi = {
 
 	getWalletTransaction() {
 		return axiosClient.get<CommonPagination<ITransaction[]>>(`${BASES_URL}/me/transaction-history`)
+	},
+
+	getAllNotifications() {
+		return axiosClient.get<CommonPagination<INotification[]>>(`${BASES_URL}/notifications`)
+	},
+
+	getAllRequest() {
+		return axiosClient.get(`${BASES_URL}/requests`)
+	},
+
+	doCancelContract(contractId: string) {
+		return axiosClient.get(`${BASES_URL}/contract/${contractId}/cancel-by-renter`)
 	},
 }

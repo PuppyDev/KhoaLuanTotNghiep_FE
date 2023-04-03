@@ -9,6 +9,7 @@ import PageNotFound from 'pages/notFoundPage'
 import PaymentPageHandle from 'pages/payment'
 import RoomDetail from 'pages/room'
 import AddRoom from 'pages/room/AddRoom'
+import DeclareRoomPage from 'pages/room/DeclareRoomPage'
 import RoomsLocation from 'pages/room/RoomsLocation'
 import { ProfilePage } from 'pages/user'
 import BookingPage from 'pages/user/BookingPage'
@@ -45,6 +46,11 @@ const mainRoutes = [
 		id: 7,
 		element: <PaymentPageHandle />,
 		pathName: '/bh/payment-confirmation',
+	},
+	{
+		id: 8,
+		element: <DeclareRoomPage />,
+		pathName: '/room/myRooms/:idRoom',
 	},
 ]
 

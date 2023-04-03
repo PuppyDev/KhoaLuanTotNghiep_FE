@@ -61,7 +61,7 @@ export const LogError = (error: AxiosError<any>): void => {
 	const statusText = error.response?.statusText ?? 'Unknown'
 	const requestUrl = (error.config && error?.config.url) ?? 'Unknown'
 
-	console.error(
+	console.log(
 		`%c ERROR --> ${
 			error?.config && error.config.method?.toUpperCase()
 		} --> ${requestUrl}\n Status --> ${status} ${statusText}\n`,

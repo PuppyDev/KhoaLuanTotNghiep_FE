@@ -175,6 +175,10 @@ export const StyledStatus = styled('span')`
 	&.yellow {
 		color: yellow;
 	}
+
+	&.info {
+		color: #385898;
+	}
 `
 
 export const StyledContractDrawer = styled(Box)`
@@ -213,17 +217,21 @@ export const StyledModalForm = styled('form')`
 	padding: 20px;
 	border-radius: 8px;
 	outline: none;
+	width: 60vw;
+	min-width: 800px;
 	border: none;
 
 	& .headerForm {
 		font-weight: bold;
 		margin-bottom: 20px;
-		font-size: 20px;
+		font-size: 36px;
+		text-align: center;
 	}
 
 	& .descriptionForm {
 		font-weight: 100;
-		font-size: 12px;
+		font-size: 16px;
+		margin-bottom: 20px;
 	}
 `
 
@@ -256,6 +264,7 @@ export const StyledWrapMoreService = styled(Box)`
 	display: flex;
 	align-items: center;
 	gap: 10px;
+	flex-wrap: wrap;
 `
 
 export const StyledInfoOfOwner = styled(Box)`
@@ -282,3 +291,20 @@ export const StyledInfoOfOwner = styled(Box)`
 		text-transform: lowercase;
 	}
 `
+
+export const StyledWrapInfo = styled(Box)`
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	width: 100%;
+	gap: 10px;
+	.text {
+		flex: 1;
+	}
+
+	.right {
+		text-align: right;
+	}
+`
+
+export const StyledText = styled('p')``

@@ -5,7 +5,6 @@ export const schemaFormCreateRoom = yup
 		name: yup.string().required('Vui lòng nhập tên phòng '),
 		acreage: yup.number().min(1).max(500).required('Vui lòng nhập vào diện tích phòng'),
 		basePrice: yup.number().min(10000).max(1000000000).required('Vui lòng nhập vào số tiền trọ / tháng'),
-		deposit: yup.number().lessThan(yup.ref('basePrice')).required('Vui lòng nhập vào tiền đặt cọc'),
 		roomElectric: yup.number().required('Vui lòng nhập vào tiền điện / tháng hoặc /kw'),
 		totalNbPeople: yup
 			.number()

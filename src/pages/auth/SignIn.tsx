@@ -18,7 +18,7 @@ const SignIn = () => {
 		handleSubmit,
 		formState: { errors, isSubmitting, isValid },
 	} = useForm<FormValuesSignIn>({
-		resolver: yupResolver(schema),
+		// resolver: yupResolver(schema),
 	})
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
@@ -41,7 +41,7 @@ const SignIn = () => {
 				dispatch(setUserInfo(response.data as ResponseSignIn))
 
 				localStorage.setItem('dataUser', JSON.stringify(response?.data as ResponseSignIn))
-
+				ShowNostis.success('Login successfully!!!')
 				return navigate('/')
 			}
 		} catch (error: any) {

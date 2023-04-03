@@ -1,4 +1,4 @@
-import { IOwnerInfo } from './user'
+import { IOwnerInfo, IUser } from './user'
 
 export interface RoomFilters {
 	price: {
@@ -49,7 +49,7 @@ export interface room {
 	roomAttachment: {
 		url: string[]
 	}
-	services: string[]
+	services: IServiceType[]
 	owner: {
 		_id: string
 		username: string
@@ -62,6 +62,8 @@ export interface room {
 	createdAt: string
 	updatedAt: string
 	address: AddressType
+	period: number
+	status?: string
 }
 
 export type AddressType = {
@@ -108,7 +110,9 @@ export interface IpropsRoomMaster {
 }
 
 export interface IResponseRented {
-	dateRent: string
-	room: room
-	_id: string
+	dateRent: string | undefined
+	room: room | undefined
+	_id: string | undefined
+	lessor: IUser | undefined
+	renter: IUser | undefined
 }

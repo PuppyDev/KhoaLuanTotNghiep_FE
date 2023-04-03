@@ -10,11 +10,7 @@ import { useTranslation } from 'react-i18next'
 const MyRoomPage = () => {
 	const { t } = useTranslation()
 
-	const {
-		data: listForRent,
-		isLoading,
-		isError,
-	} = useQuery({
+	const { data: listForRent, isLoading } = useQuery({
 		queryKey: ['getRoomRented'],
 		queryFn: () => roomApi.getRoomForRent(),
 		refetchOnWindowFocus: false,
@@ -31,7 +27,7 @@ const MyRoomPage = () => {
 					listForRent.data &&
 					listForRent.data.items.length > 0 &&
 					listForRent.data.items.map((item) => (
-						<RoomItem to={`/room/${item.room._id}`} key={item._id} roomItem={item.room} isRented />
+						<RoomItem to={`/room/${item._id}`} key={item._id} roomItem={item} isOwner />
 					))}
 
 				{listForRent && listForRent.data.items.length === 0 && <StyledMiddle>Nothing</StyledMiddle>}

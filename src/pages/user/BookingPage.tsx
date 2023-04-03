@@ -20,18 +20,23 @@ const BookingPage = () => {
 		refetchOnWindowFocus: false,
 	})
 
+	const isRenderItem = !isLoading && listRoomRented && listRoomRented.data && listRoomRented.data.items.length > 0
+
 	return (
 		<StyledWrapPage>
 			<HeadingTitle>{t('ROOM_RENTED')}</HeadingTitle>
 
 			<ListRoom>
 				{isLoading && ArrayFrom(4).map((_) => <RoomItem.Skeleton key={randomId()} />)}
-				{!isLoading &&
-					listRoomRented &&
-					listRoomRented.data &&
-					listRoomRented.data.items.length > 0 &&
+				{isRenderItem &&
 					listRoomRented.data.items.map((item) => (
-						<RoomItem to={`/room/${item.room._id}`} key={item._id} roomItem={item.room} isRented />
+						<RoomItem
+							to={`/room/${item?.room?._id}`}
+							key={item._id}
+							roomItem={item?.room}
+							rentAndLessorInfo={item}
+							isRented
+						/>
 					))}
 			</ListRoom>
 		</StyledWrapPage>

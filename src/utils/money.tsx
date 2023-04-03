@@ -25,9 +25,10 @@ export function convertVNDtoUSD(amountVND: number): string {
 	return `$${amountUSD.toFixed(2)}`
 }
 
-export function convertMoneyToVndText(money: number): string {
+export function convertMoneyToVndText(money: number | undefined): string {
+	if (!money) return '0k'
 	if (money < 1000) {
-		return `${money} vnđ`
+		return `${money}k`
 	} else if (money < 10000) {
 		return `${Math.floor(money / 1000)}k`
 	} else if (money < 1000000) {

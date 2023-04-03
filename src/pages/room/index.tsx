@@ -1,23 +1,26 @@
+import { contractApi } from '@/api/contractApi'
 import { roomApi } from '@/api/roomApi'
+import { useAppSelector } from '@/app/hook'
 import Card from '@/components/common/Card'
 import RoomDetailInfo from '@/components/common/Room/RoomDetailInfo'
 import { StyledInfoOfOwner } from '@/components/common/Room/styles/RoomItemStyles'
 import { typeOfRoom } from '@/constants/room'
 import { IpropsRoomMaster } from '@/models/room'
-import { IOwnerInfo } from '@/models/user'
 import { getContract, getContractTerm } from '@/utils/contract'
 import { getIcon } from '@/utils/icon'
 import { randomId } from '@/utils/index'
+import ShowNostis from '@/utils/show-noti'
+import { formatDDMMYYYY } from '@/utils/time'
 import CottageOutlinedIcon from '@mui/icons-material/CottageOutlined'
 import DeckIcon from '@mui/icons-material/Deck'
 import ErrorIcon from '@mui/icons-material/Error'
 import PersonIcon from '@mui/icons-material/Person'
-import { Box, Button, Fade, Grid, Modal, TextField, Typography } from '@mui/material'
-import { useQuery } from '@tanstack/react-query'
+import { Box, Button, CircularProgress, Fade, Grid, Modal, TextField, Typography } from '@mui/material'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { HomePageContent, WrapperBackground } from 'pages/Home/HomeStyles'
 import { memo, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { Autoplay, EffectCoverflow, Pagination } from 'swiper'
 import 'swiper/css'
 import 'swiper/css/pagination'
@@ -36,17 +39,13 @@ import {
 	StyledAcceptTerm,
 	StyledButtonAcceptTerm,
 	StyledCheckBox,
-	StyledHeadingPayment,
-	StyledItemListPayment,
 	StyledLabelAcceptTerm,
-	StyledListPayment,
-	StyledModalPayment,
 } from './styles/RoomDetail'
 
 export default function RoomDetail() {
 	const [isShowContract, setIsShowContract] = useState(false)
-
-	const [showStep, setShowStep] = useState<'Term' | 'Contract' | 'Pyament'>('Term')
+	const { user } = useAppSelector((state) => state.authSlice.userInfo)
+	const [showStep, setShowStep] = useState<'Term' | 'Contract'>('Term')
 	const { t } = useTranslation()
 	const [isSign, setIsSign] = useState(false)
 	const [showModalOTP, setShowModalOTP] = useState(false)
@@ -65,23 +64,68 @@ export default function RoomDetail() {
 		},
 		staleTime: Infinity,
 	})
+	console.log('🚀 ~ file: index.tsx:67 ~ RoomDetail ~ RoomData:', RoomData)
 
-	const handleComfirmOTP = async () => {
-		try {
-			setShowModalOTP(false)
-			setIsSign(true)
-			setShowStep('Pyament')
-			setIsShowContract(false)
-		} catch (error) {}
-	}
-
-	const handleClosePayment = () => {
-		setShowStep('Term')
-	}
+	const navigation = useNavigate()
 
 	const [isAcceptTerm, setIsAcceptTerm] = useState(false)
 
-	// const roomStatus = RoomData?.data.
+	const [contractHash, setContractHash] = useState('')
+
+	const { mutate: mutateContract, isLoading: loadingContract } = useMutation({
+		mutationFn: contractApi.createContract,
+		mutationKey: ['PostNewContract'],
+		onSuccess: (data) => {
+			setContractHash(data.data.contractHash)
+			setShowStep('Contract')
+		},
+		onError: (err) => {
+			console.log(err)
+		},
+	})
+
+	const { mutate: mutateSignContract, isLoading: loadingSignContract } = useMutation({
+		mutationFn: contractApi.signContract,
+		mutationKey: ['SignContractUser'],
+		onSuccess: (data) => {
+			console.log('🚀 ~ file: index.tsx:108 ~ RoomDetail ~ data:', data)
+			setIsSign(true)
+			setShowModalOTP(false)
+			setIsShowContract(false)
+			// setShowStep("Term")
+
+			ShowNostis.success('Rent room successfully!!!')
+		},
+		onError: (err) => {
+			console.log(err)
+			setShowModalOTP(false)
+		},
+	})
+
+	const handleComfirmOTP = async () => {
+		try {
+			mutateSignContract({
+				roomId: RoomData?.data._id,
+				contractHash: contractHash || '',
+			})
+		} catch (error) {}
+	}
+
+	const handleCreateContract = () => {
+		const newTrans = {
+			period: RoomData?.data.period || 6,
+			room: RoomData?.data._id,
+			dateRent: formatDDMMYYYY(new Date()),
+			payTime: formatDDMMYYYY(new Date()),
+			payment: RoomData?.data.basePrice,
+			payMode: 'VNPay',
+		}
+		mutateContract(newTrans)
+	}
+
+	const handleSignContract = () => {
+		setShowModalOTP(true)
+	}
 
 	return (
 		<WrapperBackground>
@@ -92,7 +136,17 @@ export default function RoomDetail() {
 
 				<HeadingRoomBlock>
 					<Typography className="headingRoom">{RoomData?.data?.name || 'tên đang cập nhập'}</Typography>
-					<ButtonRent onClick={() => setIsShowContract(true)}>{t('Room.Rent')}</ButtonRent>
+					{RoomData?.data?.owner?.username !== user.username ? (
+						<ButtonRent onClick={() => setIsShowContract(true)}>
+							{loadingContract ? <CircularProgress size={10} /> : t('Room.Rent')}
+						</ButtonRent>
+					) : RoomData.data.status !== 'already-rent' ? (
+						<ButtonRent onClick={() => navigation(`/room/addRoom/${RoomData?.data._id}`)}>
+							{t('Room.edit_room')}
+						</ButtonRent>
+					) : (
+						''
+					)}
 				</HeadingRoomBlock>
 
 				<DetailRoom container spacing="32px">
@@ -108,10 +162,10 @@ export default function RoomDetail() {
 								<RoomDetailContent container spacing="20px">
 									<RoomDetailInfo
 										label={t('Room.status')}
-										value="Hết phòng"
+										value={RoomData?.data?.status === 'already-rent' ? 'Đã Thuê' : 'Còn phòng'}
 										xs={4}
 										md={3}
-										highlight="unactive"
+										highlight={RoomData?.data?.status === 'already-rent' ? 'unactive' : 'active'}
 									/>
 									<RoomDetailInfo
 										label={t('Room.room_rates')}
@@ -134,7 +188,7 @@ export default function RoomDetail() {
 									<RoomDetailInfo
 										label={t('Room.capacity')}
 										value={
-											RoomData?.data.totalNbPeople +
+											RoomData?.data?.totalNbPeople +
 											' ' +
 											(RoomData?.data?.gender === 'All' ? ' Nam hoặc Nữ' : RoomData?.data?.gender)
 										}
@@ -231,11 +285,8 @@ export default function RoomDetail() {
 									</StyledLabelAcceptTerm>
 
 									{isAcceptTerm && (
-										<StyledButtonAcceptTerm
-											variant="contained"
-											onClick={() => setShowStep('Contract')}
-										>
-											{t('Room.Continue')}
+										<StyledButtonAcceptTerm variant="contained" onClick={handleCreateContract}>
+											{loadingContract ? <CircularProgress size={10} /> : t('Room.Continue')}
 										</StyledButtonAcceptTerm>
 									)}
 								</StyledAcceptTerm>
@@ -246,7 +297,13 @@ export default function RoomDetail() {
 							<>
 								<div
 									dangerouslySetInnerHTML={{
-										__html: getContract({}),
+										__html: getContract({
+											dateRent: '',
+											room: undefined,
+											_id: '',
+											lessor: undefined,
+											renter: undefined,
+										}),
 									}}
 								/>
 
@@ -274,9 +331,7 @@ export default function RoomDetail() {
 													<p>Đoàn Ngọc Quốc Bảo</p>
 												</>
 											) : (
-												<button onClick={() => setShowModalOTP(true)}>
-													Bấm vào đây để ký tên
-												</button>
+												<button onClick={handleSignContract}>Bấm vào đây để ký tên</button>
 											)}
 										</Box>
 									</SignNameItem>
@@ -307,35 +362,6 @@ export default function RoomDetail() {
 						</Modal>
 					</ModalContract>
 				</Fade>
-			</Modal>
-
-			<Modal open={showStep === 'Pyament'} onClose={handleClosePayment}>
-				<StyledModalPayment>
-					<StyledHeadingPayment>Chọn phương thức thanh toán</StyledHeadingPayment>
-
-					<StyledListPayment>
-						<StyledItemListPayment>
-							<span className="item-left">
-								<img
-									src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Icon-VNPAY-QR.png"
-									alt="logo vnpay"
-								/>
-								Ví Bughouse
-							</span>
-						</StyledItemListPayment>
-						<StyledItemListPayment>
-							<span className="item-left">
-								<img
-									src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Icon-VNPAY-QR.png"
-									alt="logo vnpay"
-								/>
-								VNPay
-							</span>
-						</StyledItemListPayment>
-					</StyledListPayment>
-
-					<Button>Thanh toán</Button>
-				</StyledModalPayment>
 			</Modal>
 		</WrapperBackground>
 	)

@@ -148,7 +148,11 @@
 		"create_room": "Tạo phòng",
 		"add_images": "Thêm ảnh ",
 
-		"male_or_female": "Nam hoặc Nữ"
+		"male_or_female": "Nam hoặc Nữ",
+		"edit_room": "Chỉnh sửa phòng",
+		"Notice": "Lưu ý : Nếu không khai báo chỉ số thì hệ thống sẽ tự động lấy chỉ số của tháng trước (Miễn Phí / Theo Tháng) trường hợp tính theo chỉ số thì sẽ được tính = 0",
+		"unsuitable": "Hết hợp đồng",
+		"roomRented": "Phòng của bạn đã được thuê"
 	},
 	"Header": {
 		"Notifications": "Thông báo",
@@ -164,6 +168,10 @@
 		"New_pass": "Mật khẩu mới",
 		"Confirm_pass": "Xác nhận mật khẩu mới",
 		"Change": "Thay đổi",
-		"Change_lang": "Chuyển sang tiếng anh"
+		"Change_lang": "Chuyển sang tiếng anh",
+		"NOTIFICATION": "Thông báo ",
+		"INVOICE_TO_PAY": "Thanh toán hoá đơn",
+		"time": "Thời gian",
+		"CANCEL_REQUEST": "Huỷ hợp đồng"
 	}
 }

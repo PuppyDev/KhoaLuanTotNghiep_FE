@@ -128,3 +128,35 @@ export const StyledWrapModal = styled(Box)`
 		margin-bottom: 10px;
 	}
 `
+
+export const StyledMiddleContent = styled('div')`
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-wrap: wrap;
+	width: 100%;
+	height: 80vh;
+
+	& .wrapContent {
+		display: flex;
+		align-items: center;
+		justify-items: center;
+		gap: 10px;
+		flex-direction: column;
+
+		font-size: 14px;
+		color: '#333';
+		font-style: italic;
+
+		& .heading {
+			font-size: 26px;
+			font-weight: bold;
+		}
+
+		& .img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+	}
+`

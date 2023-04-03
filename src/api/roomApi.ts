@@ -22,6 +22,6 @@ export const roomApi = {
 	},
 
 	getRoomForRent() {
-		return axiosClient.get<CommonPagination<IResponseRented[]>>(`${BASES_URL}/user/leased`)
+		return axiosClient.get<CommonPagination<room[]>>(`${BASES_URL}/user/leased`)
 	},
 }

@@ -82,7 +82,7 @@
 		"service_declaration": "Service Declaration",
 		"view_contract": "View contract",
 		"currently_being_rented": "Currently being rented",
-		"not_yet_hired": "Not yet hired",
+		"not_yet_hired": "Availabed",
 		"person": "person",
 		"more_services": "More services",
 		"confirm_service": "Confirm",
@@ -148,7 +148,11 @@
 		"create_room": "Create room",
 		"add_images": "Add Images",
 
-		"male_or_female": "Male or Female"
+		"male_or_female": "Male or Female",
+		"edit_room": "Edit your room",
+		"Notice": "Note: If you do not declare the index, the system will automatically get the index of the previous month (Free / Monthly) in case of index calculation, it will be calculated = 0",
+		"unsuitable": "unsuitable",
+		"roomRented": "Your room rented"
 	},
 	"Header": {
 		"Notifications": "Notifications",
@@ -164,6 +168,10 @@
 		"New_pass": "New password",
 		"Confirm_pass": "Confirm password",
 		"Change": "Change Now",
-		"Change_lang": "Change to Vietnamese"
+		"Change_lang": "Change to Vietnamese",
+		"NOTIFICATION": "Notification",
+		"INVOICE_TO_PAY": "Invoice Payment",
+		"time": "Time",
+		"CANCEL_REQUEST": "Cancel Request"
 	}
 }

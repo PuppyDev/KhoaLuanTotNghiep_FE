@@ -36,3 +36,29 @@ export interface ITransaction {
 	updatedAt: string
 	__v: number
 }
+
+export interface IUser {
+	address: {
+		city: string
+		district: string
+		ward: string
+		street: string
+	}
+	_id: string
+	username: string
+	email: string
+	phone: string
+	identity: number | string
+	name: string
+	gender: string
+	dob: string
+	avatar: string
+	notifications: []
+	enable: boolean
+	socketId: string
+	wishList: []
+	deleted: boolean
+	wallet: IWalletInfo
+	createdAt: string
+	updatedAt: string
+}

@@ -1,14 +1,13 @@
 export interface IContract {
 	period: number
-	room: string
-	dateRent: string
-	payTime: string
-	payment: number
-	payMode: string
-	renterInfo: string
+	room: string | undefined
+	dateRent: string | undefined
+	payTime: string | undefined
+	payment: number | undefined
+	payMode: string | undefined
 }
 
-export interface IResContract {
+export interface IContractRes {
 	period: string
 	renter: string
 	room: string
@@ -21,4 +20,15 @@ export interface IResContract {
 	lessor: string
 	createdAt: string
 	updatedAt: string
+	plusContract: string
+}
+
+export interface IResContract {
+	contract: IContractRes
+	contractHash: string
+}
+
+export interface ISignContract {
+	roomId: string | undefined
+	contractHash: string | undefined
 }

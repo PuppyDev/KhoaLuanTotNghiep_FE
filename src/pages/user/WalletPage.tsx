@@ -20,7 +20,7 @@ import {
 	StyledWrapRightWallet,
 } from './style'
 import { ITransaction, IUserWallet } from '@/models/user'
-import { randomId } from '@/utils/index'
+import { convertToTitleCase, randomId } from '@/utils/index'
 
 const WalletPage = () => {
 	const [filterTransaction, setfilterTransaction] = useState('all')
@@ -176,7 +176,7 @@ WalletPage.ItemTransaction = ({ transaction }: { transaction: ITransaction }) =>
 
 			<Grid item xs>
 				<Typography style={{ fontSize: '18px' }} color="initial">
-					{transaction?.action || 'Updating...'}
+					{convertToTitleCase(transaction?.action) || 'Updating...'}
 				</Typography>
 
 				<Typography style={{ fontSize: '18px' }} color="#84878B">

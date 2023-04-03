@@ -1,19 +1,20 @@
+import { serviceApi } from '@/api/serviceApi'
 import { typeOfRoom } from '@/constants/room'
-import { room } from '@/models/room'
+import { IResponseRented, room } from '@/models/room'
+import { IServiceRes } from '@/models/services'
 import { getContract } from '@/utils/contract'
-import { randomId } from '@/utils/index'
 import { convertMoneyToVndText } from '@/utils/money'
 import CottageOutlinedIcon from '@mui/icons-material/CottageOutlined'
-import DeleteIcon from '@mui/icons-material/Delete'
 import FmdGoodOutlinedIcon from '@mui/icons-material/FmdGoodOutlined'
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined'
 import StraightenOutlinedIcon from '@mui/icons-material/StraightenOutlined'
-import { Button, Drawer, FormControl, InputLabel, MenuItem, Modal, Select, Skeleton, TextField } from '@mui/material'
+import { Button, Drawer, Skeleton, TextField } from '@mui/material'
 import { Box } from '@mui/system'
-import classNames from 'classnames'
-import { Fragment, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { Fragment, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import {
 	CardRoomItem,
@@ -23,35 +24,48 @@ import {
 	RoomPreviews,
 	RoomPrice,
 	StyledButtonOwner,
-	StyledButtonService,
 	StyledCloseButton,
 	StyledContractDrawer,
-	StyledModalForm,
 	StyledOwner,
 	StyledStatus,
+	StyledText,
+	StyledWrapInfo,
 	StyledWrapMoreService,
-	StyledWrapServices,
 } from './styles/RoomItemStyles'
 
 interface IProps {
 	to: string
 	isRented?: boolean
 	isOwner?: boolean
-	roomItem: room
+	roomItem: room | undefined
+	rentAndLessorInfo?: IResponseRented | undefined
 }
 
 const RoomItem = (props: IProps) => {
-	const { to, isRented, isOwner, roomItem } = props
+	const { to, isRented, isOwner, roomItem, rentAndLessorInfo } = props
 	const { register, setValue } = useForm({})
 	const { t } = useTranslation()
 
-	const [isOpenService, setIsOpenService] = useState(false)
-	const [numberOfService, setNumberOfService] = useState<{ id: string | number }[]>([{ id: 1 }])
+	const navigation = useNavigate()
+	const [numberOfService, setNumberOfService] = useState<IServiceRes[]>([])
 	const [isOpenContract, setIsOpenContract] = useState(false)
 
-	const handleSetDataService = (values: string) => {
-		console.log(values)
-	}
+	const [idRoomSelected, setIdRoomSelected] = useState('')
+	const { data: dataServices, isLoading: loadingServices } = useQuery({
+		queryKey: ['getServiceRemand', idRoomSelected, isOwner],
+		queryFn: () => {
+			if (idRoomSelected && isOwner) {
+				return serviceApi.getListServiceDemand(idRoomSelected)
+			}
+			return null
+		},
+		keepPreviousData: true,
+		staleTime: Infinity,
+	})
+
+	useEffect(() => {
+		if (dataServices) setNumberOfService(dataServices?.data)
+	}, [dataServices])
 
 	const handleWatchContract = (e: any) => {
 		e.preventDefault()
@@ -60,7 +74,7 @@ const RoomItem = (props: IProps) => {
 
 	const handleOpenService = (e: any) => {
 		e.preventDefault()
-		setIsOpenService(true)
+		navigation('/room/myRooms/' + roomItem?._id)
 	}
 
 	const handleCancelContract = () => {
@@ -89,7 +103,7 @@ const RoomItem = (props: IProps) => {
 	}
 
 	const handleDeleteService = (id: number | string) => {
-		const newDataService = numberOfService.filter((item) => item.id != id)
+		const newDataService = numberOfService.filter((item) => item._id != id)
 		setNumberOfService(newDataService)
 	}
 
@@ -99,7 +113,7 @@ const RoomItem = (props: IProps) => {
 				<Box className="roomItemImage">
 					<img
 						src={
-							roomItem.roomAttachment.url[0] ||
+							roomItem?.roomAttachment?.url[0] ||
 							'https://bayleaf.s3.ap-southeast-1.amazonaws.com/property-images/fa7d4c8e-692e-4cc7-bf85-0fcad740b16c/2b271aa2-779e-4bb3-b9dc-0a730084fc22-46325561_1975119655915194_6045991570992267264_n.jpg'
 						}
 						alt="banner image room"
@@ -129,13 +143,25 @@ const RoomItem = (props: IProps) => {
 
 				{isOwner && (
 					<StyledOwner>
-						<StyledButtonOwner onClick={handleOpenService}>
-							{t('Room.service_declaration')}
-						</StyledButtonOwner>
+						{roomItem?.status === 'already-rent' && (
+							<>
+								<StyledStatus className="green">{t('Room.currently_being_rented')}</StyledStatus>
+								<StyledButtonOwner onClick={handleOpenService}>
+									{t('Room.service_declaration')}
+								</StyledButtonOwner>
+								<StyledButtonOwner onClick={handleWatchContract}>
+									{t('Room.view_contract')}
+								</StyledButtonOwner>
+							</>
+						)}
 
-						<StyledButtonOwner onClick={handleWatchContract}>{t('Room.view_contract')}</StyledButtonOwner>
+						{roomItem?.status === 'available' && (
+							<StyledStatus className="info">{t('Room.not_yet_hired')}</StyledStatus>
+						)}
 
-						<StyledStatus className="green">{t('Room.currently_being_rented')}</StyledStatus>
+						{roomItem?.status === 'not-available' && (
+							<StyledStatus className="red">{t('Room.unsuitable')}</StyledStatus>
+						)}
 					</StyledOwner>
 				)}
 
@@ -146,7 +172,7 @@ const RoomItem = (props: IProps) => {
 				)}
 
 				<RoomPrice>
-					<span> {convertMoneyToVndText(roomItem.basePrice)}</span>
+					<span> {convertMoneyToVndText(roomItem?.basePrice)}</span>
 					vnđ / {t('Room.person')}
 				</RoomPrice>
 			</CardRoomItem>
@@ -157,7 +183,15 @@ const RoomItem = (props: IProps) => {
 						<StyledCloseButton onClick={() => setIsOpenContract(false)}>X</StyledCloseButton>
 						<div
 							dangerouslySetInnerHTML={{
-								__html: getContract({}),
+								__html: getContract(
+									rentAndLessorInfo || {
+										lessor: undefined,
+										renter: undefined,
+										room: undefined,
+										_id: undefined,
+										dateRent: undefined,
+									}
+								),
 							}}
 						/>
 
@@ -165,108 +199,35 @@ const RoomItem = (props: IProps) => {
 					</StyledContractDrawer>
 				</Drawer>
 			)}
-
-			{isOwner && (
-				<Modal
-					open={isOpenService}
-					onClose={() => {
-						setIsOpenService(false)
-					}}
-				>
-					<StyledModalForm>
-						<p className="headerForm">
-							{t('Room.service_declaration')} <br />
-							<span className="descriptionForm">
-								Lưu ý : Nếu không khai báo chỉ số thì hệ thống sẽ tự động lấy chỉ số của tháng trước (
-								Miễn Phí / Theo Tháng) trường hợp tính theo chỉ số thì sẽ được tính = 0
-							</span>
-						</p>
-
-						{numberOfService &&
-							numberOfService.map((item) => (
-								<RoomItem.Service
-									isDelete={numberOfService.length === 1}
-									key={item.id}
-									handleDelete={() => handleDeleteService(item.id)}
-								/>
-							))}
-
-						<StyledWrapServices>
-							<StyledButtonService
-								onClick={() => setNumberOfService((pre) => [...pre, { id: randomId() }])}
-								className={classNames({ disabled: numberOfService.length >= 5 })}
-							>
-								{t('Room.more_services')}
-							</StyledButtonService>
-
-							<StyledButtonService onClick={() => console.log('Khai bao dich vụ các kiểu')}>
-								{t('Room.confirm_service')}
-							</StyledButtonService>
-						</StyledWrapServices>
-					</StyledModalForm>
-				</Modal>
-			)}
 		</Fragment>
 	)
 }
 
 RoomItem.Service = ({
 	setValue,
-	handleDelete,
-	isDelete,
+	serviceData,
+	loading,
+	register,
 }: {
 	setValue?: any
-	handleDelete: () => void
-	isDelete?: boolean
+	serviceData?: IServiceRes
+	loading?: boolean
+	register: any
 }) => {
-	const [typeCal, setTypeCal] = useState(0)
-	const [currentService, setCurrentService] = useState<number>(1)
 	const { t } = useTranslation()
-
-	const handleChange = (event: any) => {
-		setCurrentService(event.target.value)
-		setTypeCal(0)
-	}
-
-	const handleChange2 = (event: any) => setTypeCal(event.target.value)
-
-	const optionServices = [
-		[
-			{ value: 0, label: t('Room.free') },
-			{ value: 1, label: t('Room.from_state_index') },
-			{ value: 2, label: t('Room.monthly') },
-		],
-		[
-			{ value: 0, label: t('Room.free') },
-			{ value: 1, label: t('Room.from_state_index') },
-			{ value: 2, label: t('Room.monthly') },
-		],
-		[
-			{ value: 0, label: t('Room.free') },
-			{ value: 2, label: t('Room.monthly') },
-		],
-		[
-			{ value: 0, label: t('Room.free') },
-			{ value: 2, label: t('Room.monthly') },
-		],
-		[
-			{ value: 0, label: t('Room.free') },
-			{ value: 2, label: t('Room.monthly') },
-		],
-	]
 
 	const services = [
 		{
 			label: t('Room.electricity_bill'),
-			value: 1,
+			value: 'electricity cost',
 		},
 		{
 			label: t('Room.water_money'),
-			value: 2,
+			value: 'water cost',
 		},
 		{
 			label: t('Room.wifi_money'),
-			value: 3,
+			value: 'internet cost',
 		},
 		{
 			label: t('Room.money_management'),
@@ -278,58 +239,42 @@ RoomItem.Service = ({
 		},
 	]
 
+	const [newIndicator, setnewIndicator] = useState(0)
+
+	const serviceName = services.find((item) => item.value === serviceData?.service.name)?.label
+	const isElectric = serviceName?.trim() === 'electricity cost' || serviceName?.trim() === 'Tiền điện'
+
 	return (
 		<StyledWrapMoreService>
-			<FormControl>
-				<InputLabel id="demo-simple-select-label">{t('Room.services')}</InputLabel>
-				<Select
-					labelId="demo-simple-select-label"
-					id="demo-simple-select"
-					value={currentService}
-					onChange={handleChange}
-					style={{ minWidth: 200 }}
-					label={t('Room.new_index')}
-					variant="standard"
-				>
-					{services.map((serviceItem) => (
-						<MenuItem value={serviceItem.value} key={randomId()}>
-							{serviceItem.label}
-						</MenuItem>
-					))}
-				</Select>
-			</FormControl>
-			<FormControl>
-				<InputLabel id="demo-simple-select-label">{t('Room.unit')}</InputLabel>
-				<Select
-					labelId="demo-simple-select-label"
-					id="demo-simple-select"
-					value={typeCal}
-					onChange={handleChange2}
-					style={{ minWidth: 200 }}
-					label={t('Room.unit')}
-					variant="standard"
-				>
-					{optionServices[currentService - 1].map((item: any) => (
-						<MenuItem value={item?.value} key={randomId()}>
-							{item?.label}
-						</MenuItem>
-					))}
-				</Select>
-			</FormControl>
-
-			{typeCal !== 0 && (
+			<StyledWrapInfo>
+				<TextField className="text" variant="filled" disabled={true} value={serviceName} />
+				<TextField className="text" variant="filled" disabled={true} value={serviceData?.service.description} />
 				<TextField
-					id="standard-basic"
-					label={typeCal === 1 ? `Chỉ số ${services[currentService - 1].label} mới` : 'Tiền / tháng'}
-					style={{ minWidth: 200 }}
-					variant="standard"
+					className="text"
+					variant="outlined"
+					label={isElectric ? 'Chỉ số mới' : 'Số người '}
+					onChange={(e) => {
+						if (e && e.target.value && +e.target.value > (serviceData?.oldIndicator || 0))
+							setnewIndicator(Number(e.target.value))
+					}}
+					{...register(serviceData?.service.name.trim().replace(/ /g, '_') || 'name')}
 				/>
-			)}
-			{!isDelete && (
-				<Box onClick={handleDelete} style={{ color: 'red', cursor: 'pointer' }}>
-					<DeleteIcon />
-				</Box>
-			)}
+			</StyledWrapInfo>
+
+			<StyledWrapInfo>
+				<div>Đơn giá cho {serviceName} </div>
+
+				{isElectric ? (
+					<div className="right">
+						<StyledText>Chỉ số cũ : {serviceData?.oldIndicator}</StyledText>
+						<StyledText>Chỉ số mới : {newIndicator}</StyledText>
+					</div>
+				) : (
+					<div className="right">
+						<StyledText>Tiền dịch vụ {serviceData?.service?.basePrice}</StyledText>
+					</div>
+				)}
+			</StyledWrapInfo>
 		</StyledWrapMoreService>
 	)
 }

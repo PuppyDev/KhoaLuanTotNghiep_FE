@@ -71,3 +71,10 @@ export function convertPhone84(phoneNumber: string) {
 	}
 	return phoneNumber
 }
+
+export function convertToTitleCase(str: string): string {
+	return str
+		.split('_') // Split the string at each underscore
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize the first letter of each word
+		.join(' ') // Join the words back together with a space
+}

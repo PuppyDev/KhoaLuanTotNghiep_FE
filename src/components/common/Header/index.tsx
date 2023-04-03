@@ -1,21 +1,31 @@
+import { userApi } from '@/api/userApi'
+import { setUserInfo } from '@/app/authSlice'
+import { useAppDispatch, useAppSelector } from '@/app/hook'
 import BugHouseLogo from '@/assets/images/LogoBugHouse1.png'
-import useAuth from '@/hooks/useAuth'
+import { ResetPassSchema } from '@/schemas/Auth'
+import ShowNostis from '@/utils/show-noti'
+import { formatDate } from '@/utils/time'
+import { yupResolver } from '@hookform/resolvers/yup'
 import {
 	AccountCircleOutlined,
 	CreditCard,
 	ExpandMore,
+	LanguageOutlined,
 	LockOpenOutlined,
 	Logout,
 	PersonOutlineOutlined,
-	LanguageOutlined,
 } from '@mui/icons-material'
+import DoneIcon from '@mui/icons-material/Done'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'
 import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined'
+import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 import {
 	Avatar,
 	Badge,
 	Box,
 	Button,
+	CircularProgress,
 	Drawer,
 	FormControl,
 	Menu,
@@ -24,34 +34,27 @@ import {
 	TextField,
 	Typography,
 } from '@mui/material'
+import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom'
 import {
 	HeaderContainer,
 	NavHeader,
 	paperProps,
 	StyledContentDrawer,
+	StyledMiddleContent,
 	StyledNotificationItem,
 	StyledWrapHeader,
 	StyledWrapModal,
 } from './HeaderStyle'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
-import WarningAmberIcon from '@mui/icons-material/WarningAmber'
-import DoneIcon from '@mui/icons-material/Done'
-import { ResetPassSchema } from '@/schemas/Auth'
-import ShowNostis from '@/utils/show-noti'
-import { formatDate } from '@/utils/time'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { useTranslation } from 'react-i18next'
-import { useAppDispatch } from '@/app/hook'
-import { setUserInfo } from '@/app/authSlice'
+
 const Header = () => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 	const navigate = useNavigate()
 	const open = Boolean(anchorEl)
-
-	const { user } = useAuth()
+	const { user } = useAppSelector((state) => state.authSlice.userInfo)
 	const [openDrawer, setOpenDrawer] = useState(false)
 
 	const handleClick = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget)
@@ -79,19 +82,16 @@ const Header = () => {
 					<img style={{ width: 80 }} src={BugHouseLogo} />
 				</Link>
 				<StyledWrapHeader>
-					<Badge badgeContent={4} color="secondary">
+					<Badge color="secondary">
 						<NotificationsNoneIcon className="icon_notification" onClick={() => setOpenDrawer(true)} />
 					</Badge>
-					<NavHeader onClick={(e) => !user && handleClick(e)}>
-						{user ? (
+					<NavHeader onClick={(e) => user && handleClick(e)}>
+						{!user ? (
 							<Avatar className="avatar" onClick={() => navigate('/login')} />
 						) : (
 							<>
-								<Avatar
-									className="avatar"
-									srcSet="https://scontent.fsgn2-7.fna.fbcdn.net/v/t39.30808-6/326706851_905071507593208_1684832252594277761_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=FVDo1ljBqpAAX9L_Ibl&_nc_ht=scontent.fsgn2-7.fna&oh=00_AfDit6WnL3XB4EBzCoNr-HFO14fEDcUsOJJE9QxxE0D0rQ&oe=6419E0FF"
-								/>
-								<span className="name_heading">Yone Doan</span>
+								<Avatar className="avatar" srcSet="https://api.multiavatar.com/123.png" />
+								<span className="name_heading">{user.username}</span>
 								<ExpandMore />
 							</>
 						)}
@@ -99,49 +99,7 @@ const Header = () => {
 				</StyledWrapHeader>
 			</HeaderContainer>
 
-			<Drawer anchor="left" open={openDrawer} onClose={() => setOpenDrawer(false)}>
-				<StyledContentDrawer>
-					<p className="Heading">{t('Header.Notifications')}</p>
-					<StyledNotificationItem className="error">
-						<InfoOutlinedIcon fontSize="large" color="error" />
-						<Box>
-							<p className="headingNotification">Thanh toán hợp đồng không thành công</p>
-							<p style={{ margin: '10px 0' }}>
-								Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam corrupti
-							</p>
-							<p>
-								<span style={{ fontWeight: 'bold' }}> Thời gian </span> : {formatDate(new Date())}
-							</p>
-						</Box>
-					</StyledNotificationItem>
-
-					<StyledNotificationItem className="warning">
-						<WarningAmberIcon fontSize="large" color="warning" />
-						<Box>
-							<p className="headingNotification">Thanh toán hợp đồng thành công</p>
-							<p style={{ margin: '10px 0' }}>
-								Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam corrupti
-							</p>
-							<p>
-								<span style={{ fontWeight: 'bold' }}> Thời gian </span> : {formatDate(new Date())}
-							</p>
-						</Box>
-					</StyledNotificationItem>
-
-					<StyledNotificationItem className="success">
-						<DoneIcon fontSize="large" color="success" />
-						<Box>
-							<p className="headingNotification">Thanh toán hợp đồng thành công</p>
-							<p style={{ margin: '10px 0' }}>
-								Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam corrupti
-							</p>
-							<p>
-								<span style={{ fontWeight: 'bold' }}> Thời gian </span> : {formatDate(new Date())}
-							</p>
-						</Box>
-					</StyledNotificationItem>
-				</StyledContentDrawer>
-			</Drawer>
+			<Header.Notifications openDrawer={openDrawer} setOpenDrawer={setOpenDrawer} />
 
 			<Menu
 				anchorEl={anchorEl}
@@ -277,6 +235,75 @@ Header.ChangePasswordForm = ({ isOpen, handleClose }: { isOpen: boolean; handleC
 				</StyledWrapModal>
 			</Modal>
 		</>
+	)
+}
+
+Header.Notifications = ({
+	openDrawer = false,
+	setOpenDrawer,
+}: {
+	openDrawer: boolean
+	setOpenDrawer: (val: boolean) => void
+}) => {
+	const { t } = useTranslation()
+
+	const { data: notificationList, isLoading } = useQuery({
+		queryKey: ['getAllNotifications', openDrawer],
+		queryFn: () => {
+			if (openDrawer) return userApi.getAllNotifications()
+			return null
+		},
+	})
+	console.log('🚀 ~ file: index.tsx:257 ~ notificationList:', notificationList?.data)
+
+	const ruleRender =
+		!isLoading &&
+		notificationList &&
+		notificationList.data &&
+		notificationList.data.items &&
+		notificationList.data.items.length > 0
+
+	return (
+		<Drawer anchor="left" open={openDrawer} onClose={() => setOpenDrawer(false)}>
+			<StyledContentDrawer>
+				<p className="Heading">{t('Header.Notifications')}</p>
+
+				{isLoading && (
+					<StyledMiddleContent>
+						<CircularProgress style={{ color: '#F73486' }} />
+					</StyledMiddleContent>
+				)}
+
+				{!ruleRender && (
+					<StyledMiddleContent>
+						<div className="wrapContent">
+							<img
+								className="img"
+								src="https://blog.tryshiftcdn.com/uploads/2021/01/notifications@2x.jpg"
+								alt=""
+							/>
+							<p className="heading">No Notices Right Now!</p>
+							<p>You're up-to-date ! would work well</p>
+						</div>
+					</StyledMiddleContent>
+				)}
+
+				{ruleRender &&
+					notificationList.data.items.map((notification) => (
+						<StyledNotificationItem className="error" key={notification._id}>
+							<InfoOutlinedIcon fontSize="large" color="error" />
+							<Box>
+								<p className="headingNotification">{t(`Header.${notification.type}`)}</p>
+								<p style={{ margin: '10px 0' }}>{notification.content}</p>
+								<p>
+									<span style={{ fontWeight: 'bold' }}> {t('Header.time')} </span> :{' '}
+									{formatDate(new Date(notification.createdAt))}
+								</p>
+							</Box>
+						</StyledNotificationItem>
+					))}
+			</StyledContentDrawer>
+		</Drawer>
 	)
 }
 

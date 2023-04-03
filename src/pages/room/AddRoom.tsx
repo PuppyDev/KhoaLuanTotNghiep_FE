@@ -1,5 +1,4 @@
 import { addressApi } from '@/api/addressApi'
-import { commonApi } from '@/api/index'
 import { roomApi } from '@/api/roomApi'
 import EditorBase from '@/components/common/Input/Editor'
 import { typeGender, typeOfRoom } from '@/constants/room'
@@ -7,21 +6,20 @@ import { schemaFormCreateRoom } from '@/schemas/form'
 import { getContract } from '@/utils/contract'
 import { getPathNameAfterSlah, randomId } from '@/utils/index'
 import ShowNostis from '@/utils/show-noti'
-import { decode } from '@/utils/super-function'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { LoadingButton } from '@mui/lab'
-import { Box, Button, Checkbox, Grid, ListItemIcon, ListItemText, MenuItem, Select, TextField } from '@mui/material'
+import { Checkbox, Grid, ListItemIcon, ListItemText, MenuItem, Select, TextField } from '@mui/material'
 import Typography from '@mui/material/Typography/Typography'
 import { useQuery } from '@tanstack/react-query'
 import { Editor } from '@tinymce/tinymce-react'
-import axios, { AxiosResponse } from 'axios'
+import axios from 'axios'
 import { HomePageContent, WrapperBackground } from 'pages/Home/HomeStyles'
 import { PropsWithChildren, useCallback, useEffect, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { Controller, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useSearchParams } from 'react-router-dom'
-import { DisplayResultImages, FileManager, GroupButton } from './styles/AddRoomStyle'
+import { DisplayResultImages, FileManager, GroupButton, StyledBoxInput } from './styles/AddRoomStyle'
 
 export type FormValues = {
 	name?: string
@@ -51,6 +49,38 @@ export type FormValues = {
 	}
 }
 
+const defaultValues = {
+	totalNbPeople: 1,
+	period: 6,
+	amentilities: [],
+	contract: getContract({
+		dateRent: undefined,
+		room: undefined,
+		_id: undefined,
+		lessor: undefined,
+		renter: undefined,
+	}),
+	ditrictName: 'Quận 1',
+	cityName: 'Hồ Chí Minh',
+	gender: 'All',
+	typeRoom: 'ROOM_FOR_RENT',
+	nbCurrentPeople: undefined,
+	wardName: '',
+	streetName: '',
+	name: '',
+	acreage: undefined,
+	images: [],
+	roomElectric: undefined,
+	address: '',
+	waterPrice: undefined,
+	plusContract: '',
+	addressDetail: '',
+	internetCost: '',
+	roomAttachment: {
+		url: '',
+	},
+}
+
 const AddRoom = () => {
 	const {
 		handleSubmit,
@@ -58,67 +88,79 @@ const AddRoom = () => {
 		setValue,
 		getValues,
 		formState: { errors, isValid },
+		reset,
 	} = useForm<FormValues>({
-		defaultValues: {
-			totalNbPeople: 1,
-			period: 1,
-			amentilities: [],
-			contract: getContract({}),
-			ditrictName: 'Quận 1',
-			cityName: 'Hồ Chí Minh',
-			gender: 'All',
-			typeRoom: 'ROOM_FOR_RENT',
-			nbCurrentPeople: 0,
-			wardName: '',
-			streetName: '',
-		},
+		defaultValues,
 		resolver: yupResolver(schemaFormCreateRoom),
 	})
 	const [isEdit, setIsEdit] = useState(false)
 	const [isLoading, setIsLoading] = useState(false)
 	const location = useLocation()
 	const [searchParams] = useSearchParams()
+	const [districtName, setDistrictName] = useState(getValues('ditrictName') || 'Quận 1')
 	const { t } = useTranslation()
 
 	useEffect(() => {
 		// Edit Room handle here
 		if (location.pathname !== '/room/addroom') {
-			const keySearch = decode(getPathNameAfterSlah(location.pathname))
 			setIsEdit(true)
-			getInfoOfRoom()
+			console.log('Vo day')
 		}
 	}, [location])
 
-	const getInfoOfRoom = async () => {
-		try {
-			console.log('dang fetch data .... ')
-		} catch (error) {
-			ShowNostis.error('Có lỗi gì đó gòi bạn êy')
+	const { data: dataSearch } = useQuery({
+		queryKey: ['getDefaultValue', location.pathname],
+		queryFn: () => {
+			const keySearch = getPathNameAfterSlah(location.pathname)
+			if (keySearch && location.pathname !== '/room/addroom') return roomApi.getDetailRoom(keySearch)
+			return null
+		},
+		staleTime: 60 * 1000 * 3,
+	})
+
+	useEffect(() => {
+		if (dataSearch && dataSearch.data) {
+			const { address, services } = dataSearch.data
+			reset({
+				...dataSearch.data,
+				streetName: address.street,
+				wardName: address.ward,
+				ditrictName: address.district,
+				addressDetail: address.addressDetail,
+
+				roomElectric: services[1]?.basePrice,
+				waterPrice: services[2]?.basePrice,
+				internetCost: services[0]?.basePrice,
+				nbCurrentPeople: dataSearch.data.nbCurrentPeople,
+			} as unknown as FormValues)
+			setDistrictName(dataSearch.data.address.district)
 		}
-	}
+	}, [dataSearch])
 
 	const { data: dataDistric } = useQuery({
 		queryKey: ['getAllDistrics'],
 		queryFn: () => addressApi.getAllDistrics(),
 		staleTime: Infinity,
+		keepPreviousData: true,
 	})
 
-	const [districtName, setDistrictName] = useState(getValues('ditrictName') || 'Quận 1')
 	const { data: dataWards } = useQuery({
 		queryKey: ['getAllWards', districtName],
 		queryFn: () => addressApi.getAllWards(districtName || 'Quận 1'),
 		staleTime: Infinity,
+		keepPreviousData: true,
 	})
 	const { data: dataNameDistricts } = useQuery({
 		queryKey: ['getAllNameDistricts', districtName],
 		queryFn: () => addressApi.getAllStreets(districtName || 'Quận 1'),
 		staleTime: Infinity,
+		keepPreviousData: true,
 	})
 
 	const onDrop = useCallback((acceptedFiles: any) => {
 		setValue('images', acceptedFiles)
-		// Do something with the files
 	}, [])
+
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
 
 	const handelSubmitRoom = async (values: any) => {
@@ -166,16 +208,18 @@ const AddRoom = () => {
 				unitName: 'person(s)/month',
 			},
 		]
+		values.deposit = values.basePrice
 
 		try {
 			const response = await roomApi.createRoom(values)
-			console.log('🚀 ~ file: AddRoom.tsx:139 ~ handleCreateRoom ~ response:', response)
-
+			console.log('🚀 ~ file: AddRoom.tsx:214 ~ handleCreateRoom ~ response:', response)
 			ShowNostis.success('Create a room successfully!!!')
 
+			reset(defaultValues)
 			setIsLoading(false)
 		} catch (error) {
 			console.log(error)
+			ShowNostis.error('Something went wrong please contact an admin')
 			setIsLoading(false)
 		}
 	}
@@ -206,12 +250,7 @@ const AddRoom = () => {
 								control={control}
 								error={errors.basePrice?.message || null}
 							/>
-							<AddRoom.InputFeild
-								label={t('Room.Deposit')}
-								name="deposit"
-								control={control}
-								error={errors.deposit?.message || null}
-							/>
+							<AddRoom.InputFeild label={t('Room.Deposit')} name="basePrice" control={control} disabled />
 						</Grid>
 
 						<Grid item xs={12} container spacing={2}>
@@ -446,10 +485,11 @@ interface IProps extends PropsWithChildren {
 	xs?: number
 	md?: number
 	setValue?: any
+	disabled?: boolean
 }
 
 AddRoom.InputFeild = (props: IProps) => {
-	const { name, defaultValue = '', control, label, error, xs = 12, md = 3 } = props
+	const { name, defaultValue = '', control, label, error, xs = 12, md = 3, disabled } = props
 	const {} = useForm
 	return (
 		<Grid item md={md} xs={xs} sx={{ width: '100%' }}>
@@ -460,32 +500,10 @@ AddRoom.InputFeild = (props: IProps) => {
 			<Controller
 				control={control}
 				name={name}
-				render={({ field: { onChange, onBlur, value } }) => (
-					<Box
-						style={{
-							width: '100%',
-							border: '1px solid ',
-							borderRadius: 10,
-							overflow: 'hidden',
-							marginTop: '5px',
-							borderColor: error ? '#DB1E1E' : '#DEDFE1',
-						}}
-					>
-						<input
-							type="text"
-							style={{
-								outline: 'none',
-								fontSize: 14,
-								border: 'none',
-								padding: '15px',
-								width: '100%',
-								flex: '1 1 0',
-							}}
-							defaultValue={defaultValue}
-							onChange={onChange}
-							onBlur={onBlur}
-						/>
-					</Box>
+				render={({ field }) => (
+					<StyledBoxInput style={{ background: error ? '#DB1E1E' : '#DEDFE1' }}>
+						<input type="text" {...field} disabled={disabled} />
+					</StyledBoxInput>
 				)}
 			/>
 

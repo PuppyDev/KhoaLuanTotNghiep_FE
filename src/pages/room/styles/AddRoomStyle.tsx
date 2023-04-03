@@ -44,3 +44,21 @@ export const DisplayResultImages = styled(Grid)({
 	overflow: 'auto',
 	marginBottom: '20px',
 })
+
+export const StyledBoxInput = styled(Box)`
+	width: 100%;
+	border: 1px solid;
+	border-radius: 10px;
+	overflow: hidden;
+	margin-top: 5px;
+	background-color: #dedfe1;
+
+	input {
+		outline: none;
+		font-size: 14px;
+		border: none;
+		padding: 15px;
+		width: 100%;
+		flex: 1 1 0;
+	}
+`
