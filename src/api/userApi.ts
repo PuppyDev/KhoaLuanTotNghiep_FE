@@ -1,4 +1,5 @@
 import { INotification } from '@/models/notification'
+import { IResContract } from '@/models/services'
 import { IResUserWallet, ITransaction, IUserWallet, IWalletInfo } from '@/models/user'
 import { CommonPagination } from '../models'
 import axiosClient from './axiosClient'
@@ -27,6 +28,10 @@ export const userApi = {
 	},
 
 	doCancelContract(contractId: string) {
-		return axiosClient.get(`${BASES_URL}/contract/${contractId}/cancel-by-renter`)
+		return axiosClient.post(`${BASES_URL}/contract/${contractId}/cancel-by-renter`, {})
+	},
+
+	getDetailContract(roomId: string) {
+		return axiosClient.get<IResContract>(`${BASES_URL}/contract/${roomId}`)
 	},
 }

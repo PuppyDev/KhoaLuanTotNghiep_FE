@@ -1,7 +1,9 @@
 import { serviceApi } from '@/api/serviceApi'
+import { userApi } from '@/api/userApi'
 import { typeOfRoom } from '@/constants/room'
 import { IResponseRented, room } from '@/models/room'
 import { IServiceRes } from '@/models/services'
+import { IUser } from '@/models/user'
 import { getContract } from '@/utils/contract'
 import { convertMoneyToVndText } from '@/utils/money'
 import CottageOutlinedIcon from '@mui/icons-material/CottageOutlined'
@@ -10,7 +12,7 @@ import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined
 import StraightenOutlinedIcon from '@mui/icons-material/StraightenOutlined'
 import { Button, Drawer, Skeleton, TextField } from '@mui/material'
 import { Box } from '@mui/system'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Fragment, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -63,6 +65,17 @@ const RoomItem = (props: IProps) => {
 		staleTime: Infinity,
 	})
 
+	const { data: dataContract, isLoading: loadingContract } = useQuery({
+		queryKey: ['getServiceRemand', idRoomSelected, isOwner, isRented, isOpenContract],
+		queryFn: () => {
+			if (idRoomSelected && isOpenContract) {
+				return userApi.getDetailContract(idRoomSelected)
+			}
+			return null
+		},
+		keepPreviousData: true,
+		staleTime: Infinity,
+	})
 	useEffect(() => {
 		if (dataServices) setNumberOfService(dataServices?.data)
 	}, [dataServices])
@@ -70,12 +83,28 @@ const RoomItem = (props: IProps) => {
 	const handleWatchContract = (e: any) => {
 		e.preventDefault()
 		setIsOpenContract(true)
+		setIdRoomSelected(roomItem?._id || '')
 	}
 
 	const handleOpenService = (e: any) => {
 		e.preventDefault()
 		navigation('/room/myRooms/' + roomItem?._id)
 	}
+
+	const { mutate: mutateCancelContract, isLoading } = useMutation({
+		mutationFn: userApi.doCancelContract,
+		mutationKey: ['handleCancelContract'],
+		onSuccess: () => {
+			Swal.fire(
+				t('Room.canceled_successfully') || 'Huỷ thành công !',
+				t('Room.date_cancel_contract') || 'Bạn đã huỷ hợp đồng và hợp đồng sẽ hết hiệu lực vào ngày ....',
+				'success'
+			)
+		},
+		onError: (error) => {
+			console.log('🚀 ~ file: RoomItem.tsx:108 ~ RoomItem ~ error:', error)
+		},
+	})
 
 	const handleCancelContract = () => {
 		setIsOpenContract(false)
@@ -86,19 +115,13 @@ const RoomItem = (props: IProps) => {
 			showCancelButton: true,
 			confirmButtonColor: '#f73486',
 			cancelButtonColor: '#ef5a5a',
-			confirmButtonText: t('Room.confirm') || 'Huỷ hợp đồng',
+			confirmButtonText: isLoading ? 'canceling...' : t('Room.confirm') || 'Huỷ hợp đồng',
 			cancelButtonText: t('Room.cancel') || 'Huỷ hợp đồng',
 			html: `<div><p>Bạn có muốn chấm dứt hợp đông này không ?</p><p style="color: red; font-size: 14px; font-style: italic">Hợp đồng chưa hết kỳ hạn. nếu huỷ bạn sẽ ${
 				isOwner ? 'phải chịu 1 khoản phạt ' : 'mất tiền cọc . <br/>'
 			}. Hợp đồng của bạn kết thúc vào ngày : 12/2/2023</p> </div>`,
 		}).then((result) => {
-			if (result.isConfirmed) {
-				Swal.fire(
-					t('Room.canceled_successfully') || 'Huỷ thành công !',
-					t('Room.date_cancel_contract') || 'Bạn đã huỷ hợp đồng và hợp đồng sẽ hết hiệu lực vào ngày ....',
-					'success'
-				)
-			}
+			if (result.isConfirmed && dataContract?.data) mutateCancelContract(dataContract?.data.contract._id)
 		})
 	}
 
@@ -185,10 +208,10 @@ const RoomItem = (props: IProps) => {
 							dangerouslySetInnerHTML={{
 								__html: getContract(
 									rentAndLessorInfo || {
-										lessor: undefined,
-										renter: undefined,
-										room: undefined,
-										_id: undefined,
+										lessor: (dataContract?.data.contract.lessor as IUser) || undefined,
+										renter: (dataContract?.data.contract.lessor as IUser) || undefined,
+										room: dataContract?.data.contract.room || undefined,
+										_id: dataContract?.data.contract._id || undefined,
 										dateRent: undefined,
 									}
 								),

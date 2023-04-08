@@ -64,7 +64,6 @@ export default function RoomDetail() {
 		},
 		staleTime: Infinity,
 	})
-	console.log('🚀 ~ file: index.tsx:67 ~ RoomDetail ~ RoomData:', RoomData)
 
 	const navigation = useNavigate()
 

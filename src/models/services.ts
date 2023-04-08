@@ -1,3 +1,5 @@
+import { room } from './room'
+
 export interface IServiceRes {
 	_id: string
 	oldIndicator: number
@@ -32,5 +34,39 @@ export interface IUpdateServiceParams {
 	demandInfo: {
 		atMonth: number | string
 		demands: IDemainService[]
+	}
+}
+
+export interface IResContract {
+	contract: {
+		_id: string
+		period: number
+		lessor: {
+			_id: string
+			username: string
+			email: string
+			phone: string
+			name: string
+			avatar: string
+		}
+		room: room
+		dateRent: string
+		payTime: string
+		payMode: string
+		payment: number
+		enable: boolean
+		penaltyFeeEndRent: number
+		status: string
+		plusContract: string
+		renter: {
+			_id: string
+			username: string
+			email: string
+			phone: string
+			name: string
+			avatar: string
+		}
+		createdAt: string
+		updatedAt: string
 	}
 }
