@@ -48,22 +48,33 @@ export const paperProps = {
 export const StyledNotificationItem = styled(Box)`
 	padding: 20px 25px;
 	display: flex;
-	border-radius: 10px;
+	justify-items: space-between;
 
 	gap: 20px;
 	margin-bottom: 10px;
-	box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 	transition: all 0.3s;
-	background-color: #f0f0f0;
+	background-color: #fff;
+	border-bottom: 1px solid #e7e7e7;
+	border-radius: 3px;
 
 	& .headingNotification {
 		font-weight: bold;
 	}
+	&.notCheck {
+		&:hover {
+			cursor: pointer;
+			background-color: white;
+			box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+		}
+	}
 
-	&:hover {
-		cursor: pointer;
-		background-color: white;
-		box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+	& .middle {
+		flex: 1;
+	}
+
+	& .check-notification {
+		display: flex;
+		align-items: center;
 	}
 
 	&.success {
@@ -74,10 +85,14 @@ export const StyledNotificationItem = styled(Box)`
 
 	&.error {
 	}
+
+	&.checked {
+		background: rgb(247, 255, 250);
+	}
 `
 
 export const StyledContentDrawer = styled(Box)`
-	width: 400px;
+	width: 450px;
 	padding: 10px;
 
 	.Heading {

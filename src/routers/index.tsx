@@ -7,6 +7,7 @@ import UpdateId from 'pages/auth/UpdateId'
 import Home from 'pages/Home'
 import PageNotFound from 'pages/notFoundPage'
 import PaymentPageHandle from 'pages/payment'
+import InvoicePage from 'pages/payment/InvoicePage'
 import RoomDetail from 'pages/room'
 import AddRoom from 'pages/room/AddRoom'
 import DeclareRoomPage from 'pages/room/DeclareRoomPage'
@@ -51,6 +52,11 @@ const mainRoutes = [
 		id: 8,
 		element: <DeclareRoomPage />,
 		pathName: '/room/myRooms/:idRoom',
+	},
+	{
+		id: 9,
+		element: <InvoicePage />,
+		pathName: '/invoices',
 	},
 ]
 

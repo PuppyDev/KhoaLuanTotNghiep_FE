@@ -172,6 +172,8 @@
 		"NOTIFICATION": "Notification",
 		"INVOICE_TO_PAY": "Invoice Payment",
 		"time": "Time",
-		"CANCEL_REQUEST": "Cancel Request"
+		"CANCEL_REQUEST": "Cancel Request",
+		"No_notices": "No Notices Right Now!",
+		"Sub_no_notices": "You're up-to-date ! would work well"
 	}
 }

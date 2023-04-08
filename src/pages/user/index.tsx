@@ -30,7 +30,7 @@ export const ProfilePage = () => {
 						srcSet="https://scontent.fsgn2-7.fna.fbcdn.net/v/t39.30808-6/326706851_905071507593208_1684832252594277761_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=FVDo1ljBqpAAX9L_Ibl&_nc_ht=scontent.fsgn2-7.fna&oh=00_AfDit6WnL3XB4EBzCoNr-HFO14fEDcUsOJJE9QxxE0D0rQ&oe=6419E0FF"
 					/>
 					<Typography sx={{ fontSize: 26, textTransform: 'lowercase' }} fontWeight="bold">
-						{user.name}
+						{user.name || user.username}
 					</Typography>
 					<StyledWrapIndentity>
 						<DoneIcon fontSize="small" /> {t('USER.IDVerified')}

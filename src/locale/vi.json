@@ -172,6 +172,8 @@
 		"NOTIFICATION": "Thông báo ",
 		"INVOICE_TO_PAY": "Thanh toán hoá đơn",
 		"time": "Thời gian",
-		"CANCEL_REQUEST": "Huỷ hợp đồng"
+		"CANCEL_REQUEST": "Huỷ hợp đồng",
+		"No_notices": "Không có thông báo ngay bây giờ!",
+		"Sub_no_notices": "Quay lại sau khi có thông báo"
 	}
 }

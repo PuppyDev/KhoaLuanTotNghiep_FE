@@ -1,3 +1,4 @@
+import { IContractItem } from './contract'
 import { room } from './room'
 
 export interface IServiceRes {
@@ -38,35 +39,24 @@ export interface IUpdateServiceParams {
 }
 
 export interface IResContract {
-	contract: {
-		_id: string
-		period: number
-		lessor: {
-			_id: string
-			username: string
-			email: string
-			phone: string
-			name: string
-			avatar: string
-		}
-		room: room
-		dateRent: string
-		payTime: string
-		payMode: string
-		payment: number
-		enable: boolean
-		penaltyFeeEndRent: number
-		status: string
-		plusContract: string
-		renter: {
-			_id: string
-			username: string
-			email: string
-			phone: string
-			name: string
-			avatar: string
-		}
-		createdAt: string
-		updatedAt: string
-	}
+	contract: IContractItem
+}
+
+export interface IServiceDemand {
+	listDemand: IServiceDemandItem[]
+}
+
+export interface IServiceDemandItem {
+	_id: string
+	oldIndicator: number
+	newIndicator: number
+	service: IService
+	quality: number
+	amount: number
+	atMonth: number
+	atYear: number
+	type: number
+	enable: boolean
+	createdAt: string
+	updatedAt: string
 }

@@ -397,7 +397,7 @@ RoomDetail.InfoOfMaster = ({ dataOwner, postDate }: IpropsRoomMaster) => {
 					<img src={`https://api.multiavatar.com/${randomId()}.png`} />
 				</div>
 				<div className="main-content">
-					<p>{dataOwner?.name || 'Đang cập nhập'}</p>
+					<p>{dataOwner?.name || dataOwner?.username || 'Đang cập nhập'}</p>
 					<p>
 						<span> {dataOwner?.phone || '+84911336236'} </span>
 					</p>

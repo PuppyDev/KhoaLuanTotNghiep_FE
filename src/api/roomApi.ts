@@ -1,4 +1,4 @@
-import { IParamsGetRoom, IResponseRented, IRoomParams, room } from '@/models/room'
+import { IParamsGetRoom, IResponseLessed, IResponseRented, IRoomParams, room } from '@/models/room'
 import { CommonPagination } from './../models/common'
 
 import axiosClient from './axiosClient'
@@ -22,6 +22,6 @@ export const roomApi = {
 	},
 
 	getRoomForRent() {
-		return axiosClient.get<CommonPagination<room[]>>(`${BASES_URL}/user/leased`)
+		return axiosClient.get<CommonPagination<IResponseLessed[]>>(`${BASES_URL}/user/leased`)
 	},
 }

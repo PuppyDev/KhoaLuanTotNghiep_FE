@@ -23,17 +23,17 @@ import { DisplayResultImages, FileManager, GroupButton, StyledBoxInput } from '.
 
 export type FormValues = {
 	name?: string
-	acreage?: number
+	acreage?: number | null | string
 	basePrice?: number
 	deposit?: number
 	images?: any
-	roomElectric?: number
+	roomElectric?: number | null | string
 	totalNbPeople?: number
 	period?: number
 	amentilities?: string[]
 	address?: string
 	contract?: string
-	waterPrice?: number
+	waterPrice?: number | null | string
 	gender?: string
 	nbCurrentPeople?: number
 	plusContract?: string
@@ -41,7 +41,7 @@ export type FormValues = {
 	cityName?: string
 	typeRoom: string
 	addressDetail: string
-	internetCost: string
+	internetCost: string | null
 	wardName: string
 	streetName: string
 	roomAttachment?: {
@@ -64,15 +64,15 @@ const defaultValues = {
 	cityName: 'Hồ Chí Minh',
 	gender: 'All',
 	typeRoom: 'ROOM_FOR_RENT',
-	nbCurrentPeople: undefined,
+	nbCurrentPeople: 0,
 	wardName: '',
 	streetName: '',
 	name: '',
-	acreage: undefined,
+	acreage: '',
 	images: [],
-	roomElectric: undefined,
+	roomElectric: '',
 	address: '',
-	waterPrice: undefined,
+	waterPrice: '',
 	plusContract: '',
 	addressDetail: '',
 	internetCost: '',
@@ -94,6 +94,7 @@ const AddRoom = () => {
 		resolver: yupResolver(schemaFormCreateRoom),
 	})
 	const [isEdit, setIsEdit] = useState(false)
+	console.log('🚀 ~ file: AddRoom.tsx:97 ~ AddRoom ~ isEdit:', isEdit)
 	const [isLoading, setIsLoading] = useState(false)
 	const location = useLocation()
 	const [searchParams] = useSearchParams()
@@ -104,7 +105,6 @@ const AddRoom = () => {
 		// Edit Room handle here
 		if (location.pathname !== '/room/addroom') {
 			setIsEdit(true)
-			console.log('Vo day')
 		}
 	}, [location])
 

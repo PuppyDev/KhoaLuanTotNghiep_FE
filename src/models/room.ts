@@ -116,3 +116,7 @@ export interface IResponseRented {
 	lessor: IUser | undefined
 	renter: IUser | undefined
 }
+
+export interface IResponseLessed {
+	room: room
+}

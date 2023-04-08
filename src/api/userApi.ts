@@ -1,3 +1,4 @@
+import { IInvoiceItem } from '@/models/Invoice'
 import { INotification } from '@/models/notification'
 import { IResContract } from '@/models/services'
 import { IResUserWallet, ITransaction, IUserWallet, IWalletInfo } from '@/models/user'
@@ -33,5 +34,21 @@ export const userApi = {
 
 	getDetailContract(roomId: string) {
 		return axiosClient.get<IResContract>(`${BASES_URL}/contract/${roomId}`)
+	},
+
+	updateRoom(roomId: string) {
+		return axiosClient.put(`${BASES_URL}/${roomId}`)
+	},
+
+	checkNotification(notificationId: string) {
+		return axiosClient.put(`${BASES_URL}/notifications/${notificationId}`)
+	},
+
+	doAcceptCancelRent() {
+		return axiosClient.post(`${BASES_URL}/contract/accept`)
+	},
+
+	getInvoices() {
+		return axiosClient.get<CommonPagination<IInvoiceItem[]>>(`${BASES_URL}/invoices/rented`)
 	},
 }

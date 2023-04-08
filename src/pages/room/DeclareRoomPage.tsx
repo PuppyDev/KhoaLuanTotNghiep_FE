@@ -7,6 +7,7 @@ import {
 	StyledWrapServices,
 } from '@/components/common/Room/styles/RoomItemStyles'
 import { IServiceRes } from '@/models/services'
+import ShowNostis from '@/utils/show-noti'
 import { getCurrentDate } from '@/utils/time'
 import { CircularProgress } from '@mui/material'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -25,9 +26,8 @@ const DeclareRoomPage = () => {
 	const { data: dataServices, isLoading: loadingServices } = useQuery({
 		queryKey: ['getServiceRemand', idRoom],
 		queryFn: () => {
-			if (idRoom) {
-				return serviceApi.getListServiceDemand(idRoom)
-			}
+			if (idRoom) return serviceApi.getListServiceDemand(idRoom)
+
 			return null
 		},
 		keepPreviousData: true,
@@ -37,8 +37,14 @@ const DeclareRoomPage = () => {
 	const { mutate: createInvoiceMutate, isLoading: invoiceLoading } = useMutation({
 		mutationKey: ['CreateInvoice'],
 		mutationFn: invoiceApi.createInvoice,
-		onSuccess: () => {},
-		onError: () => {},
+		onSuccess: (data) => {
+			console.log('🚀 ~ file: DeclareRoomPage.tsx:42 ~ DeclareRoomPage ~ data:', data)
+			ShowNostis.success('success')
+		},
+		onError: (err) => {
+			ShowNostis.error('Something went wrong')
+			console.log('🚀 ~ file: DeclareRoomPage.tsx:49 ~ DeclareRoomPage ~ err:', err)
+		},
 	})
 
 	const {
@@ -49,8 +55,12 @@ const DeclareRoomPage = () => {
 		mutationKey: ['UpdateServiceDemand'],
 		mutationFn: serviceApi.updateServiceDemand,
 		onSuccess: (data) => {
-			console.log('🚀 ~ file: DeclareRoomPage.tsx:48 ~ DeclareRoomPage ~ data:', data)
-			// createInvoiceMutate({contractId: "", invoiceInfo: {}})
+			createInvoiceMutate({
+				contractId: idRoom || '',
+				invoiceInfo: {
+					listServiceDemands: data.data.listDemand,
+				},
+			})
 		},
 		onError: (err) => {
 			console.log('🚀 ~ file: DeclareRoomPage.tsx:50 ~ DeclareRoomPage ~ err:', err)
@@ -62,21 +72,19 @@ const DeclareRoomPage = () => {
 	}, [dataServices])
 
 	const handleUpdateService = () => {
-		if (invoiceLoading || isLoading) return
+		if (invoiceLoading || isLoading || !idRoom || !dataServices || !dataServices.data) return
 
-		if (!idRoom || !dataServices || !dataServices.data) return
-		const { electricity_cost, internet_cost, water_cost } = getValues()
 		updateServiceMutate({
 			roomId: idRoom,
 			demandInfo: {
 				atMonth: getCurrentDate().month,
 				demands: dataServices?.data.map((item) => {
-					const isElectric = item.service.name.trim() === 'electricity cost'
-					const isInternet = item.service.name.trim() === 'internet cost'
+					const isQuality = item.type === 0
+					const data = getValues(item.service.name.split(' ').join('_'))
 					return {
 						serviceId: item._id,
-						newIndicator: isElectric ? electricity_cost : 0,
-						quality: isElectric ? 0 : isInternet ? internet_cost : water_cost,
+						newIndicator: !isQuality ? data : 0,
+						quality: !isQuality ? 0 : data,
 					}
 				}),
 			},

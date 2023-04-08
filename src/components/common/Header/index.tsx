@@ -2,6 +2,8 @@ import { userApi } from '@/api/userApi'
 import { setUserInfo } from '@/app/authSlice'
 import { useAppDispatch, useAppSelector } from '@/app/hook'
 import BugHouseLogo from '@/assets/images/LogoBugHouse1.png'
+import { CommonPagination } from '@/models/common'
+import { INotification } from '@/models/notification'
 import { ResetPassSchema } from '@/schemas/Auth'
 import ShowNostis from '@/utils/show-noti'
 import { formatDate } from '@/utils/time'
@@ -34,8 +36,8 @@ import {
 	TextField,
 	Typography,
 } from '@mui/material'
-import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { MouseEventHandler, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom'
@@ -49,6 +51,7 @@ import {
 	StyledWrapHeader,
 	StyledWrapModal,
 } from './HeaderStyle'
+import CheckIcon from '@mui/icons-material/Check'
 
 const Header = () => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -56,6 +59,13 @@ const Header = () => {
 	const open = Boolean(anchorEl)
 	const { user } = useAppSelector((state) => state.authSlice.userInfo)
 	const [openDrawer, setOpenDrawer] = useState(false)
+
+	const { data: notificationList, isLoading } = useQuery({
+		queryKey: ['getAllNotifications'],
+		queryFn: userApi.getAllNotifications,
+		keepPreviousData: true,
+		refetchOnWindowFocus: false,
+	})
 
 	const handleClick = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget)
 
@@ -73,6 +83,8 @@ const Header = () => {
 		localStorage.setItem('lang', lang)
 	}
 
+	const notificationUnCheck = notificationList?.data.items.filter((notification) => !notification.isChecked).length
+
 	const dispatch = useAppDispatch()
 
 	return (
@@ -82,7 +94,7 @@ const Header = () => {
 					<img style={{ width: 80 }} src={BugHouseLogo} />
 				</Link>
 				<StyledWrapHeader>
-					<Badge color="secondary">
+					<Badge color="secondary" badgeContent={notificationUnCheck || 0}>
 						<NotificationsNoneIcon className="icon_notification" onClick={() => setOpenDrawer(true)} />
 					</Badge>
 					<NavHeader onClick={(e) => user && handleClick(e)}>
@@ -99,7 +111,12 @@ const Header = () => {
 				</StyledWrapHeader>
 			</HeaderContainer>
 
-			<Header.Notifications openDrawer={openDrawer} setOpenDrawer={setOpenDrawer} />
+			<Header.Notifications
+				openDrawer={openDrawer}
+				setOpenDrawer={setOpenDrawer}
+				notificationList={notificationList?.data || null}
+				isLoading={isLoading}
+			/>
 
 			<Menu
 				anchorEl={anchorEl}
@@ -241,27 +258,31 @@ Header.ChangePasswordForm = ({ isOpen, handleClose }: { isOpen: boolean; handleC
 Header.Notifications = ({
 	openDrawer = false,
 	setOpenDrawer,
+	isLoading = false,
+	notificationList,
 }: {
 	openDrawer: boolean
 	setOpenDrawer: (val: boolean) => void
+	isLoading: boolean
+	notificationList: CommonPagination<INotification[]> | null
 }) => {
 	const { t } = useTranslation()
+	const queryClient = useQueryClient()
+	const ruleRender = !isLoading && notificationList && notificationList.items && notificationList.items.length > 0
 
-	const { data: notificationList, isLoading } = useQuery({
-		queryKey: ['getAllNotifications', openDrawer],
-		queryFn: () => {
-			if (openDrawer) return userApi.getAllNotifications()
-			return null
+	const checkNotiMutate = useMutation({
+		mutationFn: userApi.checkNotification,
+		onSuccess: (data) => {
+			console.log('🚀 ~ file: index.tsx:275 ~ data:', data)
+			queryClient.invalidateQueries({ queryKey: ['getAllNotifications'] })
 		},
+		onError: () => {},
 	})
-	console.log('🚀 ~ file: index.tsx:257 ~ notificationList:', notificationList?.data)
 
-	const ruleRender =
-		!isLoading &&
-		notificationList &&
-		notificationList.data &&
-		notificationList.data.items &&
-		notificationList.data.items.length > 0
+	const handleCheckNotification = (e: any, noti_id: string) => {
+		e.preventDefault()
+		if (!checkNotiMutate.isLoading) checkNotiMutate.mutate(noti_id)
+	}
 
 	return (
 		<Drawer anchor="left" open={openDrawer} onClose={() => setOpenDrawer(false)}>
@@ -282,17 +303,20 @@ Header.Notifications = ({
 								src="https://blog.tryshiftcdn.com/uploads/2021/01/notifications@2x.jpg"
 								alt=""
 							/>
-							<p className="heading">No Notices Right Now!</p>
-							<p>You're up-to-date ! would work well</p>
+							<p className="heading">{t('Header.No_notices')}</p>
+							<p>{t('Header.Sub_no_notices')}</p>
 						</div>
 					</StyledMiddleContent>
 				)}
 
 				{ruleRender &&
-					notificationList.data.items.map((notification) => (
-						<StyledNotificationItem className="error" key={notification._id}>
+					notificationList.items.map((notification) => (
+						<StyledNotificationItem
+							className={`${notification.isChecked ? 'checked' : 'notCheck'}`}
+							key={notification._id}
+						>
 							<InfoOutlinedIcon fontSize="large" color="error" />
-							<Box>
+							<Box className="middle">
 								<p className="headingNotification">{t(`Header.${notification.type}`)}</p>
 								<p style={{ margin: '10px 0' }}>{notification.content}</p>
 								<p>
@@ -300,6 +324,18 @@ Header.Notifications = ({
 									{formatDate(new Date(notification.createdAt))}
 								</p>
 							</Box>
+							{!notification.isChecked && (
+								<Box
+									className="check-notification"
+									onClick={(e) => handleCheckNotification(e, notification._id)}
+								>
+									{checkNotiMutate.isLoading ? (
+										<CircularProgress color="primary" size={14} />
+									) : (
+										<CheckIcon />
+									)}
+								</Box>
+							)}
 						</StyledNotificationItem>
 					))}
 			</StyledContentDrawer>

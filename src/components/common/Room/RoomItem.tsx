@@ -265,7 +265,6 @@ RoomItem.Service = ({
 	const [newIndicator, setnewIndicator] = useState(0)
 
 	const serviceName = services.find((item) => item.value === serviceData?.service.name)?.label
-	const isElectric = serviceName?.trim() === 'electricity cost' || serviceName?.trim() === 'Tiền điện'
 
 	return (
 		<StyledWrapMoreService>
@@ -275,7 +274,7 @@ RoomItem.Service = ({
 				<TextField
 					className="text"
 					variant="outlined"
-					label={isElectric ? 'Chỉ số mới' : 'Số người '}
+					label={serviceData?.type === 1 ? 'Chỉ số mới' : 'Số người '}
 					onChange={(e) => {
 						if (e && e.target.value && +e.target.value > (serviceData?.oldIndicator || 0))
 							setnewIndicator(Number(e.target.value))
@@ -287,7 +286,7 @@ RoomItem.Service = ({
 			<StyledWrapInfo>
 				<div>Đơn giá cho {serviceName} </div>
 
-				{isElectric ? (
+				{serviceData?.type === 1 ? (
 					<div className="right">
 						<StyledText>Chỉ số cũ : {serviceData?.oldIndicator}</StyledText>
 						<StyledText>Chỉ số mới : {newIndicator}</StyledText>

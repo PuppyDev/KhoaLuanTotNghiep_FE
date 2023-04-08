@@ -1,3 +1,5 @@
+import { room } from './room'
+
 export interface IContract {
 	period: number
 	room: string | undefined
@@ -31,4 +33,36 @@ export interface IResContract {
 export interface ISignContract {
 	roomId: string | undefined
 	contractHash: string | undefined
+}
+
+export interface IContractItem {
+	_id: string
+	period: number
+	lessor: {
+		_id: string
+		username: string
+		email: string
+		phone: string
+		name: string
+		avatar: string
+	}
+	room: room
+	dateRent: string
+	payTime: string
+	payMode: string
+	payment: number
+	enable: boolean
+	penaltyFeeEndRent: number
+	status: string
+	plusContract: string
+	renter: {
+		_id: string
+		username: string
+		email: string
+		phone: string
+		name: string
+		avatar: string
+	}
+	createdAt: string
+	updatedAt: string
 }

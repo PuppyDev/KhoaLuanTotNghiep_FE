@@ -1,7 +1,10 @@
+import { IContractItem } from './contract'
+import { IServiceDemandItem } from './services'
+
 export interface IInvoice {
 	contractId: string
 	invoiceInfo: {
-		listServiceDemands: IServiceDemaind[]
+		listServiceDemands: IServiceDemandItem[]
 	}
 }
 
@@ -28,4 +31,24 @@ export interface IResInvoice {
 	enable: boolean
 	_id: string
 	serviceDemands: [string]
+}
+
+export type statusPay = 'Pending' | 'Complete' | 'Failed' | 'Declined' | 'Cancelled' | 'Refunsed'
+
+export interface IInvoiceItem {
+	_id: string
+	contract: IContractItem
+	vat: number
+	amount: number
+	payStatus: statusPay
+	paymentMethod: string
+	paymentDate: string
+	startDate: string
+	endDate: string
+	enable: true
+	createdAt: string
+	updatedAt: string
+	hash: string
+	txhash: string
+	isExtends: boolean
 }

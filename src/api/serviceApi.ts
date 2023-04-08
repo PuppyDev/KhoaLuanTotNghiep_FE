@@ -1,4 +1,4 @@
-import { IServiceRes } from '@/models/services'
+import { IServiceDemand, IServiceRes } from '@/models/services'
 import { IUpdateServiceParams } from './../models/services'
 import axiosClient from './axiosClient'
 
@@ -10,6 +10,6 @@ export const serviceApi = {
 	},
 
 	updateServiceDemand(params: IUpdateServiceParams) {
-		return axiosClient.put(`${BASES_URL}/service-demand`, params)
+		return axiosClient.put<IServiceDemand>(`${BASES_URL}/service-demand`, params)
 	},
 }

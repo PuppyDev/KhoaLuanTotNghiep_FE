@@ -27,7 +27,7 @@ const MyRoomPage = () => {
 					listForRent.data &&
 					listForRent.data.items.length > 0 &&
 					listForRent.data.items.map((item) => (
-						<RoomItem to={`/room/${item._id}`} key={item._id} roomItem={item} isOwner />
+						<RoomItem to={`/room/${item.room._id}`} key={item.room._id} roomItem={item.room} isOwner />
 					))}
 
 				{listForRent && listForRent.data.items.length === 0 && <StyledMiddle>Nothing</StyledMiddle>}
