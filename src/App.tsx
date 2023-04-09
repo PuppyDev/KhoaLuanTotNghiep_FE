@@ -3,8 +3,8 @@ import { Suspense } from 'react'
 import PathRouter from 'routers'
 import 'react-toastify/dist/ReactToastify.css'
 import { ToastContainer, toast } from 'react-toastify'
-import './app.css'
 import 'sweetalert2/src/sweetalert2.scss'
+import './app.css'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 // Create a client

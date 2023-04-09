@@ -17,11 +17,10 @@ import {
 	Logout,
 	PersonOutlineOutlined,
 } from '@mui/icons-material'
-import DoneIcon from '@mui/icons-material/Done'
+import CheckIcon from '@mui/icons-material/Check'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'
 import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined'
-import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 import {
 	Avatar,
 	Badge,
@@ -37,7 +36,7 @@ import {
 	Typography,
 } from '@mui/material'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { MouseEventHandler, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom'
@@ -51,7 +50,6 @@ import {
 	StyledWrapHeader,
 	StyledWrapModal,
 } from './HeaderStyle'
-import CheckIcon from '@mui/icons-material/Check'
 
 const Header = () => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)

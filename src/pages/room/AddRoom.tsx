@@ -1,6 +1,7 @@
 import { addressApi } from '@/api/addressApi'
 import { roomApi } from '@/api/roomApi'
 import EditorBase from '@/components/common/Input/Editor'
+import SEO from '@/components/seo'
 import { typeGender, typeOfRoom } from '@/constants/room'
 import { schemaFormCreateRoom } from '@/schemas/form'
 import { getContract } from '@/utils/contract'
@@ -94,7 +95,6 @@ const AddRoom = () => {
 		resolver: yupResolver(schemaFormCreateRoom),
 	})
 	const [isEdit, setIsEdit] = useState(false)
-	console.log('🚀 ~ file: AddRoom.tsx:97 ~ AddRoom ~ isEdit:', isEdit)
 	const [isLoading, setIsLoading] = useState(false)
 	const location = useLocation()
 	const [searchParams] = useSearchParams()
@@ -212,9 +212,7 @@ const AddRoom = () => {
 
 		try {
 			const response = await roomApi.createRoom(values)
-			console.log('🚀 ~ file: AddRoom.tsx:214 ~ handleCreateRoom ~ response:', response)
 			ShowNostis.success('Create a room successfully!!!')
-
 			reset(defaultValues)
 			setIsLoading(false)
 		} catch (error) {
@@ -226,6 +224,7 @@ const AddRoom = () => {
 
 	return (
 		<WrapperBackground className="min__height90">
+			<SEO title="Bughoue 🤡 - Post room" />
 			<HomePageContent>
 				<p className="heading__homepage">{isEdit ? t('Room.Upadate_info') : t('Room.Create_room')}</p>
 

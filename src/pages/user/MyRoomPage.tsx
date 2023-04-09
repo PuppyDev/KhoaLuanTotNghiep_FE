@@ -1,6 +1,7 @@
 import { roomApi } from '@/api/roomApi'
 import HeadingTitle from '@/components/common/Heading/HeadingTitle'
 import RoomItem from '@/components/common/Room/RoomItem'
+import SEO from '@/components/seo'
 import { ArrayFrom, randomId } from '@/utils/index'
 import { useQuery } from '@tanstack/react-query'
 import { StyledMiddle } from 'pages/auth/styles'
@@ -18,6 +19,8 @@ const MyRoomPage = () => {
 
 	return (
 		<>
+			<SEO title="Bughoue 🤡 - For rent" />
+
 			<HeadingTitle>{t('My_room_page')}</HeadingTitle>
 
 			<ListRoom>

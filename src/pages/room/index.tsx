@@ -4,6 +4,7 @@ import { useAppSelector } from '@/app/hook'
 import Card from '@/components/common/Card'
 import RoomDetailInfo from '@/components/common/Room/RoomDetailInfo'
 import { StyledInfoOfOwner } from '@/components/common/Room/styles/RoomItemStyles'
+import SEO from '@/components/seo'
 import { typeOfRoom } from '@/constants/room'
 import { IpropsRoomMaster } from '@/models/room'
 import { getContract, getContractTerm } from '@/utils/contract'
@@ -128,6 +129,7 @@ export default function RoomDetail() {
 
 	return (
 		<WrapperBackground>
+			<SEO title={`Bughoue 🤡 - ${RoomData?.data.name || 'Room detail'}`} />
 			<HomePageContent style={{ paddingTop: '32px' }}>
 				<RoomDetailGallary>
 					<RoomDetail.Carousel itemData={RoomData?.data?.roomAttachment?.url || []} />
@@ -135,17 +137,20 @@ export default function RoomDetail() {
 
 				<HeadingRoomBlock>
 					<Typography className="headingRoom">{RoomData?.data?.name || 'tên đang cập nhập'}</Typography>
-					{RoomData?.data?.owner?.username !== user.username ? (
-						<ButtonRent onClick={() => setIsShowContract(true)}>
-							{loadingContract ? <CircularProgress size={10} /> : t('Room.Rent')}
-						</ButtonRent>
-					) : RoomData.data.status !== 'already-rent' ? (
+
+					{RoomData?.data?.owner?.username === user.username && RoomData.data.status !== 'already-rent' && (
 						<ButtonRent onClick={() => navigation(`/room/addRoom/${RoomData?.data._id}`)}>
 							{t('Room.edit_room')}
 						</ButtonRent>
-					) : (
-						''
 					)}
+
+					{RoomData &&
+						RoomData?.data?.owner?.username !== user.username &&
+						RoomData.data.status !== 'already-rent' && (
+							<ButtonRent onClick={() => setIsShowContract(true)}>
+								{loadingContract ? <CircularProgress size={10} /> : t('Room.Rent')}
+							</ButtonRent>
+						)}
 				</HeadingRoomBlock>
 
 				<DetailRoom container spacing="32px">

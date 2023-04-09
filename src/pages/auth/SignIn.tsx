@@ -2,6 +2,7 @@ import { authApi } from '@/api/authApi'
 import { setUserInfo, setVerifiedInfo } from '@/app/authSlice'
 import { useAppDispatch } from '@/app/hook'
 import FormInputText from '@/components/common/Input/FormInputText'
+import SEO from '@/components/seo'
 import { FormValuesSignIn, IUpdateID, ResponseSignIn, VerifyType } from '@/models/auth'
 import { schema } from '@/schemas/Auth'
 import ShowNostis from '@/utils/show-noti'
@@ -52,66 +53,77 @@ const SignIn = () => {
 	const { t } = useTranslation()
 
 	return (
-		<Grid
-			container
-			direction="column"
-			alignContent="center"
-			justifyContent="center"
-			height="100vh"
-			style={{ background: '#f8f8f8' }}
-		>
-			<Wrapper container direction="row" alignItems="center" justifyContent="center">
-				<Grid container item direction="column" alignContent="center" justifyContent="center" xs={6} gap={7}>
-					<img src="https://colorlib.com/etc/regform/colorlib-regform-7/images/signin-image.jpg" />
-					<LinkSignIn to="/register">{t('AUTH.Not_Have_Account')}</LinkSignIn>
-				</Grid>
-
-				<Grid item width="100%" xs={6}>
-					<form
-						onSubmit={handleSubmit(handleSignIn)}
-						style={{
-							display: 'flex',
-							flexDirection: 'column',
-							width: '100%',
-							gap: 10,
-							padding: 60,
-						}}
+		<>
+			<SEO title="Bughoue - Sign in" />
+			<Grid
+				container
+				direction="column"
+				alignContent="center"
+				justifyContent="center"
+				height="100vh"
+				style={{ background: '#f8f8f8' }}
+			>
+				<Wrapper container direction="row" alignItems="center" justifyContent="center">
+					<Grid
+						container
+						item
+						direction="column"
+						alignContent="center"
+						justifyContent="center"
+						xs={6}
+						gap={7}
 					>
-						<HeaderSignUp variant="h2">{t('AUTH.LOGIN')}</HeaderSignUp>
+						<img src="https://colorlib.com/etc/regform/colorlib-regform-7/images/signin-image.jpg" />
+						<LinkSignIn to="/register">{t('AUTH.Not_Have_Account')}</LinkSignIn>
+					</Grid>
 
-						<FormInputText
-							control={control}
-							name="username"
-							label="Username"
-							error={errors.username?.message || null}
-						/>
-
-						<FormInputText
-							control={control}
-							name="password"
-							label={t('AUTH.Password')}
-							type="password"
-							error={errors.password?.message || null}
-						/>
-
-						<Link
-							to="/forgot-password"
+					<Grid item width="100%" xs={6}>
+						<form
+							onSubmit={handleSubmit(handleSignIn)}
 							style={{
-								textAlign: 'right',
-								fontSize: 12,
-								textDecoration: 'unset',
+								display: 'flex',
+								flexDirection: 'column',
+								width: '100%',
+								gap: 10,
+								padding: 60,
 							}}
 						>
-							{t('AUTH.Forgot_Your_Pass')} ?
-						</Link>
+							<HeaderSignUp variant="h2">{t('AUTH.LOGIN')}</HeaderSignUp>
 
-						<ButtonAuth disabled={isSubmitting || !isValid} type="submit" variant="contained">
-							{isSubmitting ? <CircularProgress size={25} /> : t('AUTH.LOGIN') + ' ' + t('NOW')}
-						</ButtonAuth>
-					</form>
-				</Grid>
-			</Wrapper>
-		</Grid>
+							<FormInputText
+								control={control}
+								name="username"
+								label="Username"
+								error={errors.username?.message || null}
+							/>
+
+							<FormInputText
+								control={control}
+								name="password"
+								label={t('AUTH.Password')}
+								type="password"
+								error={errors.password?.message || null}
+							/>
+
+							<Link
+								to="/forgot-password"
+								style={{
+									textAlign: 'right',
+									fontSize: 12,
+									textDecoration: 'unset',
+								}}
+							>
+								{t('AUTH.Forgot_Your_Pass')} ?
+							</Link>
+
+							<ButtonAuth disabled={isSubmitting || !isValid} type="submit" variant="contained">
+								{isSubmitting ? <CircularProgress size={25} /> : t('AUTH.LOGIN') + ' ' + t('NOW')}
+							</ButtonAuth>
+						</form>
+					</Grid>
+				</Wrapper>
+			</Grid>
+		</>
 	)
 }
 

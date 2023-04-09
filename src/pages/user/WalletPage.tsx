@@ -21,6 +21,7 @@ import {
 } from './style'
 import { ITransaction, IUserWallet } from '@/models/user'
 import { convertToTitleCase, randomId } from '@/utils/index'
+import SEO from '@/components/seo'
 
 const WalletPage = () => {
 	const [filterTransaction, setfilterTransaction] = useState('all')
@@ -88,6 +89,8 @@ const WalletPage = () => {
 
 	return (
 		<>
+			<SEO title="Bughoue 🤡 - Manage wallet" />
+
 			<HeadingTitle>{t('Wallet.Heading')}</HeadingTitle>
 
 			<Grid container justifyContent="space-between" spacing={3}>

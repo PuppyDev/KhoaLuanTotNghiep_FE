@@ -1,5 +1,6 @@
 import { useAppSelector } from '@/app/hook'
 import HeadingTitle from '@/components/common/Heading/HeadingTitle'
+import SEO from '@/components/seo'
 import CheckCircleSharpIcon from '@mui/icons-material/CheckCircleSharp'
 import DoneIcon from '@mui/icons-material/Done'
 import { Avatar, Grid, Typography } from '@mui/material'
@@ -23,6 +24,7 @@ export const ProfilePage = () => {
 
 	return (
 		<Grid container alignItems="flex-start" justifyContent="space-between">
+			<SEO title={`Bughoue 🤡 - ${user.name || user.username || 'Your information'}`} />
 			<StyledGridLayout item sm={12} md={4} lg={3} container>
 				<StyledWrapInfoUser>
 					<Avatar

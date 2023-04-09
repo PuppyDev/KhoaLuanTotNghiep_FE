@@ -1,6 +1,7 @@
 import { roomApi } from '@/api/roomApi'
 import HeadingTitle from '@/components/common/Heading/HeadingTitle'
 import RoomItem from '@/components/common/Room/RoomItem'
+import SEO from '@/components/seo'
 import { ArrayFrom, randomId } from '@/utils/index'
 import { useQuery } from '@tanstack/react-query'
 import { ListRoom } from 'pages/Home/HomeStyles'
@@ -24,15 +25,18 @@ const BookingPage = () => {
 
 	return (
 		<StyledWrapPage>
+			<SEO title="Bughoue 🤡 - Room rented" />
+
 			<HeadingTitle>{t('ROOM_RENTED')}</HeadingTitle>
 
 			<ListRoom>
-				{isLoading && ArrayFrom(4).map((_) => <RoomItem.Skeleton key={randomId()} />)}
+				{isLoading && ArrayFrom(4).map((item) => <RoomItem.Skeleton key={item} />)}
+
 				{isRenderItem &&
 					listRoomRented.data.items.map((item) => (
 						<RoomItem
 							to={`/room/${item?.room?._id}`}
-							key={item._id}
+							key={randomId()}
 							roomItem={item?.room}
 							rentAndLessorInfo={item}
 							isRented

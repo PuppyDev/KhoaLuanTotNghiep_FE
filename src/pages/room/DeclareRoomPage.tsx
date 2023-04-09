@@ -6,6 +6,7 @@ import {
 	StyledModalForm,
 	StyledWrapServices,
 } from '@/components/common/Room/styles/RoomItemStyles'
+import SEO from '@/components/seo'
 import { IServiceRes } from '@/models/services'
 import ShowNostis from '@/utils/show-noti'
 import { getCurrentDate } from '@/utils/time'
@@ -92,23 +93,31 @@ const DeclareRoomPage = () => {
 	}
 
 	return (
-		<StyledModalForm>
-			<p className="headerForm">
-				{t('Room.service_declaration')} <br />
-			</p>
-			<p className="descriptionForm">{t('Room.Notice')}</p>
+		<>
+			<SEO title="Bughoue 🤡 - Declare service" />
+			<StyledModalForm>
+				<p className="headerForm">
+					{t('Room.service_declaration')} <br />
+				</p>
+				<p className="descriptionForm">{t('Room.Notice')}</p>
 
-			{numberOfService &&
-				numberOfService.map((item) => (
-					<RoomItem.Service key={item._id} register={register} serviceData={item} loading={loadingServices} />
-				))}
+				{numberOfService &&
+					numberOfService.map((item) => (
+						<RoomItem.Service
+							key={item._id}
+							register={register}
+							serviceData={item}
+							loading={loadingServices}
+						/>
+					))}
 
-			<StyledWrapServices>
-				<StyledButtonService onClick={handleUpdateService}>
-					{isLoading || invoiceLoading ? <CircularProgress size={14} /> : t('Room.confirm_service')}
-				</StyledButtonService>
-			</StyledWrapServices>
-		</StyledModalForm>
+				<StyledWrapServices>
+					<StyledButtonService onClick={handleUpdateService}>
+						{isLoading || invoiceLoading ? <CircularProgress size={14} /> : t('Room.confirm_service')}
+					</StyledButtonService>
+				</StyledWrapServices>
+			</StyledModalForm>
+		</>
 	)
 }
 

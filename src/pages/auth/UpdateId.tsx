@@ -10,6 +10,7 @@ import { authApi } from '@/api/authApi'
 import { useAppDispatch, useAppSelector } from '@/app/hook'
 import ShowNostis from '@/utils/show-noti'
 import { setUserInfo } from '@/app/authSlice'
+import SEO from '@/components/seo'
 type FormValues = {
 	front: any
 	back: any
@@ -62,6 +63,8 @@ const UpdateId = () => {
 
 	return (
 		<StyledWrapUpdateID>
+			<SEO title="Bughoue 🤡 - Update your ID" />
+
 			<p className="heading">{t('Update_id.More_info')}</p>
 
 			<p className="description_updateId">

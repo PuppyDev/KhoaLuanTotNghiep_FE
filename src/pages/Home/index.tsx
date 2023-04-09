@@ -1,5 +1,6 @@
 import { roomApi } from '@/api/roomApi'
 import RoomItem from '@/components/common/Room/RoomItem'
+import SEO from '@/components/seo'
 import { ArrayFrom, randomId } from '@/utils/index'
 import { encode } from '@/utils/super-function'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
@@ -59,6 +60,8 @@ const Home = () => {
 
 	return (
 		<>
+			<SEO title="Bughoue 🤡" />
+
 			<HomeBanner>
 				<WrapperBanner>
 					<ContentBanner>

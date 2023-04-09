@@ -13,6 +13,7 @@ import { IParamsGetRoom } from '@/models/room'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 import queryString from 'query-string'
+import SEO from '@/components/seo'
 const _page = 1
 const _limit = 10
 
@@ -64,6 +65,7 @@ const RoomsLocation = () => {
 
 	return (
 		<WrapperBackground style={{ minHeight: '92vh' }}>
+			<SEO title="Bughoue 🤡 - Search..." />
 			<HomePageContent>
 				<Box style={{ paddingTop: '40px' }}>
 					<Grid container spacing="32px">
