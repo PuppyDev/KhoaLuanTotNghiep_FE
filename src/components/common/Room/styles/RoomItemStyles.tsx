@@ -148,16 +148,24 @@ export const StyledButtonOwner = styled('span')`
 	text-align: center;
 	border: 1px solid #f73486;
 	width: fit-content;
-
-	padding: 10px 20px;
+	font-size: 14px;
+	padding: 5px 10px;
 	border-radius: 10px;
 	color: #f73486;
 	transition: all 0.3s;
 	overflow: hidden;
+	min-width: 100px;
+
+	&.cancel_contract {
+	}
 
 	&:hover {
 		background: #f73486;
 		color: white;
+	}
+
+	& svg {
+		color: #f73486;
 	}
 `
 
@@ -308,3 +316,68 @@ export const StyledWrapInfo = styled(Box)`
 `
 
 export const StyledText = styled('p')``
+
+export const StyledModalReOpenContract = styled('form')`
+	background: white;
+	width: 100%;
+	max-width: 450px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+
+	border-radius: 3px;
+
+	& .modal-heading {
+		font-weight: 600;
+		border-bottom: 1px solid #ccc;
+		padding: 10px 20px;
+	}
+
+	& .modal-body {
+		padding: 20px;
+		border-bottom: 1px solid #ccc;
+
+		& .modal-body__textfeild {
+			&--label {
+				color: #001737;
+				font-size: 14px;
+				font-style: normal;
+				font-weight: 500;
+				line-height: 21px;
+				display: block;
+				margin-bottom: 8px;
+			}
+
+			input,
+			select {
+				display: flex;
+				align-items: center;
+				width: 100%;
+				padding: 8px 10px;
+				gap: 8px;
+				border: 1px solid #c0ccda;
+				border-radius: 4px;
+				margin-bottom: 10px;
+				outline: none;
+
+				&:focus {
+					border: 1px solid #ccc;
+				}
+			}
+		}
+	}
+
+	& .modal-footer {
+		padding: 15px 20px;
+		display: flex;
+		align-item: center;
+		justify-content: flex-end;
+		gap: 10px;
+
+		& button {
+			text-transform: unset;
+			padding: 3px 15px;
+		}
+	}
+`

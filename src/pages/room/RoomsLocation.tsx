@@ -1,19 +1,19 @@
 import { roomApi } from '@/api/roomApi'
 import Card from '@/components/common/Card'
 import RoomItem from '@/components/common/Room/RoomItem'
+import SEO from '@/components/seo'
 import RoomFilterLocation from '@/features/Room/RoomFilterLocation'
-import { ArrayFrom, getPathNameAfterSlah, itemData, randomId } from '@/utils/index'
+import { IParamsGetRoom } from '@/models/room'
+import { ArrayFrom, getPathNameAfterSlah, randomId } from '@/utils/index'
 import { decode } from '@/utils/super-function'
 import { Box, Grid, Pagination } from '@mui/material'
 import Typography from '@mui/material/Typography/Typography'
 import { useQuery } from '@tanstack/react-query'
 import { HomePageContent, ListRoom, WrapperBackground } from 'pages/Home/HomeStyles'
+import queryString from 'query-string'
 import { useEffect, useState } from 'react'
-import { IParamsGetRoom } from '@/models/room'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
-import queryString from 'query-string'
-import SEO from '@/components/seo'
 const _page = 1
 const _limit = 10
 
@@ -34,7 +34,6 @@ const RoomsLocation = () => {
 	const getRoomFromURL = () => {
 		try {
 			const keySearch = decode(getPathNameAfterSlah(location.pathname))
-			console.log('🚀 ~ file: RoomsLocation.tsx:20 ~ useEffect ~ keySearch', keySearch)
 			if (keySearch === '/all') {
 			}
 			// const querySearch = location.search
@@ -95,9 +94,9 @@ const RoomsLocation = () => {
 										roomData.data.items.length > 0 &&
 										roomData.data.items.map((room) => (
 											<RoomItem
-												key={room._id}
-												to={`/room/${room._id}`}
-												roomItem={room}
+												key={room.room._id}
+												to={`/room/${room.room._id}`}
+												roomItem={room.room}
 											></RoomItem>
 										))}
 								</ListRoom>

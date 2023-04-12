@@ -4,7 +4,7 @@ import { IServiceDemandItem } from './services'
 export interface IInvoice {
 	contractId: string
 	invoiceInfo: {
-		listServiceDemands: IServiceDemandItem[]
+		listServiceDemands: string[]
 	}
 }
 

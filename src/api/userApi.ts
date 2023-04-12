@@ -1,5 +1,6 @@
 import { IInvoiceItem } from '@/models/Invoice'
 import { INotification } from '@/models/notification'
+import { IRequest } from '@/models/request'
 import { IResContract } from '@/models/services'
 import { IResUserWallet, ITransaction, IUserWallet, IWalletInfo } from '@/models/user'
 import { CommonPagination } from '../models'
@@ -25,7 +26,7 @@ export const userApi = {
 	},
 
 	getAllRequest() {
-		return axiosClient.get(`${BASES_URL}/requests`)
+		return axiosClient.get<IRequest[]>(`${BASES_URL}/requests`)
 	},
 
 	doCancelContract(contractId: string) {
@@ -44,8 +45,8 @@ export const userApi = {
 		return axiosClient.put(`${BASES_URL}/notifications/${notificationId}`)
 	},
 
-	doAcceptCancelRent() {
-		return axiosClient.post(`${BASES_URL}/contract/accept`)
+	doAcceptCancelRent(requestId: string) {
+		return axiosClient.post(`${BASES_URL}/contract/accept/${requestId}`)
 	},
 
 	getInvoices() {

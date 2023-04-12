@@ -92,7 +92,7 @@ const InvoiceContainer = () => {
 										</p>
 
 										<p className="invoice-content__time">
-											Thoi gian tao :{' '}
+											Thoi gian tao :
 											{moment(invoiceItem.createdAt).format(
 												i18n.language === 'en' ? DATE_FORMAT_DEFAULT_EN : DATE_FORMAT_DEFAULT_VI
 											)}

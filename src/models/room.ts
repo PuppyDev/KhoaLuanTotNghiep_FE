@@ -49,6 +49,7 @@ export interface room {
 	roomAttachment: {
 		url: string[]
 	}
+	demandAt?: number
 	services: IServiceType[]
 	owner: {
 		_id: string
@@ -119,4 +120,13 @@ export interface IResponseRented {
 
 export interface IResponseLessed {
 	room: room
+}
+
+export interface IReOpenRoom {
+	basePrice: number | string
+	typeRoom: string
+	totalNbPeople: number | string
+	deposit: number | string
+	gender: string
+	roomId?: string
 }

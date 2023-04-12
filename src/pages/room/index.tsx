@@ -16,12 +16,15 @@ import CottageOutlinedIcon from '@mui/icons-material/CottageOutlined'
 import DeckIcon from '@mui/icons-material/Deck'
 import ErrorIcon from '@mui/icons-material/Error'
 import PersonIcon from '@mui/icons-material/Person'
-import { Box, Button, CircularProgress, Fade, Grid, Modal, TextField, Typography } from '@mui/material'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import SendIcon from '@mui/icons-material/Send'
+import { Box, Button, CircularProgress, Fade, Grid, Modal, Typography } from '@mui/material'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { HomePageContent, WrapperBackground } from 'pages/Home/HomeStyles'
-import { memo, useEffect, useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
+import SignatureCanvas from 'react-signature-canvas'
 import { Autoplay, EffectCoverflow, Pagination } from 'swiper'
 import 'swiper/css'
 import 'swiper/css/pagination'
@@ -38,8 +41,11 @@ import {
 	SignName,
 	SignNameItem,
 	StyledAcceptTerm,
+	StyledActionButton,
 	StyledButtonAcceptTerm,
 	StyledCheckBox,
+	StyledFeedbackRoom,
+	StyledInputSendFeedback,
 	StyledLabelAcceptTerm,
 } from './styles/RoomDetail'
 
@@ -51,6 +57,10 @@ export default function RoomDetail() {
 	const [isSign, setIsSign] = useState(false)
 	const [showModalOTP, setShowModalOTP] = useState(false)
 	const { roomid } = useParams()
+	const navigation = useNavigate()
+	const queryClient = useQueryClient()
+	const [isAcceptTerm, setIsAcceptTerm] = useState(false)
+	const [contractHash, setContractHash] = useState('')
 
 	useEffect(() => {
 		window.scrollTo(0, 0)
@@ -63,14 +73,8 @@ export default function RoomDetail() {
 			if (roomid) return roomApi.getDetailRoom(roomid)
 			return
 		},
-		staleTime: Infinity,
+		staleTime: 60 * 1000,
 	})
-
-	const navigation = useNavigate()
-
-	const [isAcceptTerm, setIsAcceptTerm] = useState(false)
-
-	const [contractHash, setContractHash] = useState('')
 
 	const { mutate: mutateContract, isLoading: loadingContract } = useMutation({
 		mutationFn: contractApi.createContract,
@@ -83,17 +87,15 @@ export default function RoomDetail() {
 			console.log(err)
 		},
 	})
-
 	const { mutate: mutateSignContract, isLoading: loadingSignContract } = useMutation({
 		mutationFn: contractApi.signContract,
 		mutationKey: ['SignContractUser'],
 		onSuccess: (data) => {
-			console.log('🚀 ~ file: index.tsx:108 ~ RoomDetail ~ data:', data)
 			setIsSign(true)
 			setShowModalOTP(false)
 			setIsShowContract(false)
 			// setShowStep("Term")
-
+			queryClient.invalidateQueries({ queryKey: ['getDetailsRoom'] })
 			ShowNostis.success('Rent room successfully!!!')
 		},
 		onError: (err) => {
@@ -104,6 +106,8 @@ export default function RoomDetail() {
 
 	const handleComfirmOTP = async () => {
 		try {
+			trim()
+			setIsSign(true)
 			mutateSignContract({
 				roomId: RoomData?.data._id,
 				contractHash: contractHash || '',
@@ -125,6 +129,14 @@ export default function RoomDetail() {
 
 	const handleSignContract = () => {
 		setShowModalOTP(true)
+	}
+
+	const [dataURL, setDataURL] = useState<string | null>(null)
+	let padRef = useRef<SignatureCanvas>(null)
+
+	const trim = () => {
+		const url = padRef.current?.getTrimmedCanvas().toDataURL('image/png')
+		if (url) setDataURL(url)
 	}
 
 	return (
@@ -253,10 +265,14 @@ export default function RoomDetail() {
 					</Grid>
 
 					<Grid item xs={12} md={5}>
-						<RoomDetail.InfoOfMaster
-							dataOwner={RoomData?.data?.owner}
-							postDate={RoomData?.data?.createdAt}
-						/>
+						<StyledFeedbackRoom>
+							<RoomDetail.InfoOfMaster
+								dataOwner={RoomData?.data?.owner}
+								postDate={RoomData?.data?.createdAt}
+							/>
+
+							<RoomDetail.Feedback roomId={RoomData?.data._id || ''} />
+						</StyledFeedbackRoom>
 					</Grid>
 				</DetailRoom>
 			</HomePageContent>
@@ -331,8 +347,8 @@ export default function RoomDetail() {
 										<Box className="signContent">
 											{isSign ? (
 												<>
-													<p>Bảo</p>
-													<p>Đoàn Ngọc Quốc Bảo</p>
+													<img src={dataURL || ''} alt="user generated signature" />
+													<p>{user.name || 'Doan ngoc quoc bao'}</p>
 												</>
 											) : (
 												<button onClick={handleSignContract}>Bấm vào đây để ký tên</button>
@@ -351,17 +367,37 @@ export default function RoomDetail() {
 									textAlign: 'center',
 									height: 'auto',
 									paddingBottom: 20,
+									overflow: 'hidden',
 								}}
 							>
-								<h3>Xác thực OTP!</h3>
-								<p style={{ fontSize: 14 }}> Chúng tôi đã gửi 1 mã OTP đến mail của bạn !!! </p>
-								<TextField style={{ width: '100%', margin: '20px 0' }} label="Mã OTP" />
-								<Button variant="outlined" style={{ marginRight: 10 }}>
-									Gửi lại OTP
-								</Button>
-								<Button variant="outlined" onClick={handleComfirmOTP}>
-									Xác nhận
-								</Button>
+								<h3>Ký tên xác thực !</h3>
+								<p style={{ fontSize: 14, margin: '10px 0' }}>
+									Chúng tôi cần chữ ký của bạn !!!, nếu sai bạn sẽ phải chịu mọi trách nhiệm liên quan
+									tới pháp luật{' '}
+								</p>
+								<div style={{ border: '1px solid black', width: '350px', height: 180 }}>
+									<SignatureCanvas
+										canvasProps={{ width: '350px', height: 200, className: 'sigCanvas' }}
+										ref={padRef}
+									/>
+								</div>
+
+								<StyledActionButton>
+									<Button
+										variant="outlined"
+										style={{ marginRight: 10 }}
+										onClick={() => setShowModalOTP(false)}
+									>
+										Quay lại
+									</Button>
+									<Button
+										variant="outlined"
+										disabled={loadingSignContract}
+										onClick={handleComfirmOTP}
+									>
+										{loadingSignContract ? <CircularProgress size={14} /> : 'Xác nhận'}
+									</Button>
+								</StyledActionButton>
 							</ModalContract>
 						</Modal>
 					</ModalContract>
@@ -415,6 +451,48 @@ RoomDetail.InfoOfMaster = ({ dataOwner, postDate }: IpropsRoomMaster) => {
 					{t('Room.Date_post')}:<p>{new Date(postDate || '')?.toLocaleDateString() || ''}</p>
 				</div>
 			</StyledInfoOfOwner>
+		</Card>
+	)
+}
+
+RoomDetail.Feedback = ({ roomId }: { roomId: string }) => {
+	const { register, handleSubmit, reset } = useForm<{ content: string }>()
+
+	const { data, isLoading } = useQuery({
+		queryFn: () => (roomId ? roomApi.getRoomFeedback(roomId) : null),
+		queryKey: ['getRoomFeedback', roomId],
+		keepPreviousData: true,
+		refetchOnWindowFocus: false,
+	})
+
+	const mutateFeedback = useMutation({
+		mutationKey: ['postFeedback'],
+		mutationFn: roomApi.addFeedback,
+		onSuccess: () => {
+			reset({ content: '' })
+		},
+		onError: (err) => {},
+	})
+
+	const handleAddFeedback = (values: { content: string }) => {
+		mutateFeedback.mutate({
+			roomId,
+			content: values.content,
+		})
+	}
+
+	if (!roomId) return <div>Nothing</div>
+
+	return (
+		<Card>
+			<Box>{isLoading && <div>loading....</div>}</Box>
+
+			<StyledInputSendFeedback onSubmit={handleSubmit(handleAddFeedback)}>
+				<input {...register('content')} placeholder="Typing..." disabled={isLoading} />
+				<button type="submit" disabled={mutateFeedback.isLoading || isLoading}>
+					{mutateFeedback.isLoading ? <CircularProgress size={14} /> : <SendIcon />}
+				</button>
+			</StyledInputSendFeedback>
 		</Card>
 	)
 }

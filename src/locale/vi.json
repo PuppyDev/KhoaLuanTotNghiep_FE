@@ -174,6 +174,8 @@
 		"time": "Thời gian",
 		"CANCEL_REQUEST": "Huỷ hợp đồng",
 		"No_notices": "Không có thông báo ngay bây giờ!",
-		"Sub_no_notices": "Quay lại sau khi có thông báo"
+		"Sub_no_notices": "Quay lại sau khi có thông báo",
+		"Invoices": "Hoá đơn của bạn",
+		"CONTINUE_RENTAL": "Gia hạn hợp đồng"
 	}
 }

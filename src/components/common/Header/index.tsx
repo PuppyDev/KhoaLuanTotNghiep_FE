@@ -10,17 +10,21 @@ import { formatDate } from '@/utils/time'
 import { yupResolver } from '@hookform/resolvers/yup'
 import {
 	AccountCircleOutlined,
-	CreditCard,
+	AddHomeOutlined,
+	BedroomParentOutlined,
+	CancelOutlined,
 	ExpandMore,
+	GiteOutlined,
 	LanguageOutlined,
 	LockOpenOutlined,
 	Logout,
-	PersonOutlineOutlined,
+	NotificationsActiveOutlined,
+	PaymentsOutlined,
+	ReceiptLongOutlined,
 } from '@mui/icons-material'
 import CheckIcon from '@mui/icons-material/Check'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'
-import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined'
 import {
 	Avatar,
 	Badge,
@@ -130,16 +134,19 @@ const Header = () => {
 					<AccountCircleOutlined /> <Typography variant="body1"> {t('Header.My_account')} </Typography>
 				</MenuItem>
 				<MenuItem onClick={() => handleClose('/room/myRooms')}>
-					<PersonOutlineOutlined /> {t('Header.Room_for_rent')}
+					<GiteOutlined /> {t('Header.Room_for_rent')}
 				</MenuItem>
 				<MenuItem onClick={() => handleClose('/room/rented')}>
-					<CreditCard /> {t('Header.Room_rented')}
+					<BedroomParentOutlined /> {t('Header.Room_rented')}
 				</MenuItem>
 				<MenuItem onClick={() => handleClose('/mywallet')}>
-					<CreditCard /> {t('Header.Wallet')}
+					<PaymentsOutlined /> {t('Header.Wallet')}
 				</MenuItem>
 				<MenuItem onClick={() => handleClose('/room/addroom')}>
-					<PostAddOutlinedIcon /> {t('Header.Post')}
+					<AddHomeOutlined /> {t('Header.Post')}
+				</MenuItem>
+				<MenuItem onClick={() => handleClose('/invoices')}>
+					<ReceiptLongOutlined /> {t('Header.Invoices')}
 				</MenuItem>
 				<MenuItem
 					onClick={() => {
@@ -271,15 +278,32 @@ Header.Notifications = ({
 	const checkNotiMutate = useMutation({
 		mutationFn: userApi.checkNotification,
 		onSuccess: (data) => {
-			console.log('🚀 ~ file: index.tsx:275 ~ data:', data)
 			queryClient.invalidateQueries({ queryKey: ['getAllNotifications'] })
 		},
-		onError: () => {},
+		onError: (err) => {
+			ShowNostis.error('Something wrong please contact an admin')
+		},
 	})
 
 	const handleCheckNotification = (e: any, noti_id: string) => {
 		e.preventDefault()
 		if (!checkNotiMutate.isLoading) checkNotiMutate.mutate(noti_id)
+	}
+
+	const getIcons = (type: string) => {
+		switch (type) {
+			case 'CONTINUE_RENTAL':
+				return <AddHomeOutlined fontSize="large" color="action" />
+			case 'NOTIFICATION':
+				return <NotificationsActiveOutlined fontSize="large" color="info" />
+			case 'CANCEL_REQUEST':
+				return <CancelOutlined fontSize="large" color="error" />
+			case 'INVOICE_TO_PAY':
+				return <ReceiptLongOutlined fontSize="large" color="secondary" />
+			default: {
+				return <InfoOutlinedIcon fontSize="large" color="error" />
+			}
+		}
 	}
 
 	return (
@@ -313,7 +337,7 @@ Header.Notifications = ({
 							className={`${notification.isChecked ? 'checked' : 'notCheck'}`}
 							key={notification._id}
 						>
-							<InfoOutlinedIcon fontSize="large" color="error" />
+							{getIcons(notification.type)}
 							<Box className="middle">
 								<p className="headingNotification">{t(`Header.${notification.type}`)}</p>
 								<p style={{ margin: '10px 0' }}>{notification.content}</p>

@@ -1,4 +1,4 @@
-import { IParamsGetRoom, IResponseLessed, IResponseRented, IRoomParams, room } from '@/models/room'
+import { IParamsGetRoom, IReOpenRoom, IResponseLessed, IResponseRented, IRoomParams, room } from '@/models/room'
 import { CommonPagination } from './../models/common'
 
 import axiosClient from './axiosClient'
@@ -10,7 +10,7 @@ export const roomApi = {
 	},
 
 	getAllRoom(params: IParamsGetRoom) {
-		return axiosClient.get<CommonPagination<room[]>>(`${BASES_URL}/`, { params: params })
+		return axiosClient.get<CommonPagination<IResponseLessed[]>>(`${BASES_URL}/`, { params: params })
 	},
 
 	getDetailRoom(roomId: string) {
@@ -23,5 +23,17 @@ export const roomApi = {
 
 	getRoomForRent() {
 		return axiosClient.get<CommonPagination<IResponseLessed[]>>(`${BASES_URL}/user/leased`)
+	},
+
+	doReOpenRoom(params: IReOpenRoom) {
+		return axiosClient.post(`${BASES_URL}/re-open/${params.roomId}`, params)
+	},
+
+	getRoomFeedback(roomId: string) {
+		return axiosClient.get(`${BASES_URL}/${roomId}/feedback`)
+	},
+
+	addFeedback(params: { roomId: string; content: string }) {
+		return axiosClient.post(`${BASES_URL}/${params.roomId}/feedback`, { content: params.content })
 	},
 }

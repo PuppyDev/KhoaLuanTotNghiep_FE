@@ -1,5 +1,6 @@
 import { invoiceApi } from '@/api/invoiceApi'
 import { serviceApi } from '@/api/serviceApi'
+import { userApi } from '@/api/userApi'
 import RoomItem from '@/components/common/Room/RoomItem'
 import {
 	StyledButtonService,
@@ -11,17 +12,18 @@ import { IServiceRes } from '@/models/services'
 import ShowNostis from '@/utils/show-noti'
 import { getCurrentDate } from '@/utils/time'
 import { CircularProgress } from '@mui/material'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 const DeclareRoomPage = () => {
 	const { t } = useTranslation()
 	const { idRoom } = useParams()
 	const [numberOfService, setNumberOfService] = useState<IServiceRes[]>([])
-
+	const navigate = useNavigate()
+	const queryClient = useQueryClient()
 	const { register, getValues } = useForm()
 
 	const { data: dataServices, isLoading: loadingServices } = useQuery({
@@ -39,12 +41,28 @@ const DeclareRoomPage = () => {
 		mutationKey: ['CreateInvoice'],
 		mutationFn: invoiceApi.createInvoice,
 		onSuccess: (data) => {
-			console.log('🚀 ~ file: DeclareRoomPage.tsx:42 ~ DeclareRoomPage ~ data:', data)
-			ShowNostis.success('success')
+			queryClient.invalidateQueries({ queryKey: ['getRoomRented'] })
+			ShowNostis.success('Create invoices successfully!!!')
+			navigate(-1)
 		},
 		onError: (err) => {
 			ShowNostis.error('Something went wrong')
-			console.log('🚀 ~ file: DeclareRoomPage.tsx:49 ~ DeclareRoomPage ~ err:', err)
+		},
+	})
+
+	const { mutate: getContractMutate, isLoading: loadingContract } = useMutation({
+		mutationKey: ['getContractInfo'],
+		mutationFn: userApi.getDetailContract,
+		onSuccess: (data) => {
+			createInvoiceMutate({
+				contractId: data.data.contract._id || '',
+				invoiceInfo: {
+					listServiceDemands: numberOfService.map((item) => item._id),
+				},
+			})
+		},
+		onError: (err) => {
+			ShowNostis.error('Something went wrong')
 		},
 	})
 
@@ -55,14 +73,7 @@ const DeclareRoomPage = () => {
 	} = useMutation({
 		mutationKey: ['UpdateServiceDemand'],
 		mutationFn: serviceApi.updateServiceDemand,
-		onSuccess: (data) => {
-			createInvoiceMutate({
-				contractId: idRoom || '',
-				invoiceInfo: {
-					listServiceDemands: data.data.listDemand,
-				},
-			})
-		},
+		onSuccess: () => getContractMutate(idRoom || ''),
 		onError: (err) => {
 			console.log('🚀 ~ file: DeclareRoomPage.tsx:50 ~ DeclareRoomPage ~ err:', err)
 		},
@@ -83,7 +94,7 @@ const DeclareRoomPage = () => {
 					const isQuality = item.type === 0
 					const data = getValues(item.service.name.split(' ').join('_'))
 					return {
-						serviceId: item._id,
+						serviceId: item.service._id,
 						newIndicator: !isQuality ? data : 0,
 						quality: !isQuality ? 0 : data,
 					}

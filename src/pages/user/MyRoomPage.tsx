@@ -1,4 +1,5 @@
 import { roomApi } from '@/api/roomApi'
+import { userApi } from '@/api/userApi'
 import HeadingTitle from '@/components/common/Heading/HeadingTitle'
 import RoomItem from '@/components/common/Room/RoomItem'
 import SEO from '@/components/seo'
@@ -17,6 +18,28 @@ const MyRoomPage = () => {
 		refetchOnWindowFocus: false,
 	})
 
+	const { data: dataRequests, isLoading: requestsLoading } = useQuery({
+		queryKey: ['getAllRequestsCancelRoom'],
+		queryFn: () => userApi.getAllRequest(),
+	})
+
+	const ObjectCancelRequest = dataRequests?.data
+		.map((item) => {
+			const key = item.roomId
+			const value = item.requestId
+			return item.type === 'CANCEL_RENTAL'
+				? {
+						[key]: value,
+				  }
+				: null
+		})
+		.reduce(function (result, item) {
+			if (!item || !result) return result
+			var key = Object.keys(item)[0] //first property: a, b, c
+			result[key] = item[key]
+			return result
+		}, {})
+
 	return (
 		<>
 			<SEO title="Bughoue 🤡 - For rent" />
@@ -27,13 +50,19 @@ const MyRoomPage = () => {
 				{isLoading && ArrayFrom(4).map((_) => <RoomItem.Skeleton key={randomId()} />)}
 				{!isLoading &&
 					listForRent &&
-					listForRent.data &&
-					listForRent.data.items.length > 0 &&
-					listForRent.data.items.map((item) => (
-						<RoomItem to={`/room/${item.room._id}`} key={item.room._id} roomItem={item.room} isOwner />
+					listForRent?.data &&
+					listForRent?.data?.items?.length > 0 &&
+					listForRent?.data?.items?.map((item) => (
+						<RoomItem
+							to={`/room/${item.room._id}`}
+							key={item.room._id}
+							roomItem={item.room}
+							isOwner
+							ObjectCancelRequest={ObjectCancelRequest}
+						/>
 					))}
 
-				{listForRent && listForRent.data.items.length === 0 && <StyledMiddle>Nothing</StyledMiddle>}
+				{listForRent && listForRent?.data?.items?.length === 0 && <StyledMiddle>Nothing</StyledMiddle>}
 			</ListRoom>
 		</>
 	)

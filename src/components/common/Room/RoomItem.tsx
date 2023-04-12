@@ -1,18 +1,22 @@
+import { roomApi } from '@/api/roomApi'
 import { serviceApi } from '@/api/serviceApi'
 import { userApi } from '@/api/userApi'
-import { typeOfRoom } from '@/constants/room'
+import { typeGender, typeOfRoom } from '@/constants/room'
 import { IResponseRented, room } from '@/models/room'
 import { IServiceRes } from '@/models/services'
 import { IUser } from '@/models/user'
 import { getContract } from '@/utils/contract'
+import { ArrayFrom } from '@/utils/index'
 import { convertMoneyToVndText } from '@/utils/money'
+import ShowNostis from '@/utils/show-noti'
+import { getCurrentDate } from '@/utils/time'
 import CottageOutlinedIcon from '@mui/icons-material/CottageOutlined'
 import FmdGoodOutlinedIcon from '@mui/icons-material/FmdGoodOutlined'
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined'
 import StraightenOutlinedIcon from '@mui/icons-material/StraightenOutlined'
-import { Button, Drawer, Skeleton, TextField } from '@mui/material'
+import { Button, CircularProgress, Drawer, Modal, Skeleton, TextField } from '@mui/material'
 import { Box } from '@mui/system'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Fragment, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -28,6 +32,7 @@ import {
 	StyledButtonOwner,
 	StyledCloseButton,
 	StyledContractDrawer,
+	StyledModalReOpenContract,
 	StyledOwner,
 	StyledStatus,
 	StyledText,
@@ -41,17 +46,17 @@ interface IProps {
 	isOwner?: boolean
 	roomItem: room | undefined
 	rentAndLessorInfo?: IResponseRented | undefined
+	ObjectCancelRequest?: any
 }
 
 const RoomItem = (props: IProps) => {
-	const { to, isRented, isOwner, roomItem, rentAndLessorInfo } = props
-	const { register, setValue } = useForm({})
+	const { to, isRented, isOwner, roomItem, rentAndLessorInfo, ObjectCancelRequest } = props
 	const { t } = useTranslation()
-
 	const navigation = useNavigate()
 	const [numberOfService, setNumberOfService] = useState<IServiceRes[]>([])
 	const [isOpenContract, setIsOpenContract] = useState(false)
-
+	const [open, setOpen] = useState(false)
+	const queryClient = useQueryClient()
 	const [idRoomSelected, setIdRoomSelected] = useState('')
 	const { data: dataServices, isLoading: loadingServices } = useQuery({
 		queryKey: ['getServiceRemand', idRoomSelected, isOwner],
@@ -106,6 +111,14 @@ const RoomItem = (props: IProps) => {
 		},
 	})
 
+	const { mutate: mutateAcceptCancel, isLoading: loadingAcceptCancel } = useMutation({
+		mutationFn: userApi.doAcceptCancelRent,
+		mutationKey: ['handleAcceptContract'],
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['getRoomRented'] })
+		},
+	})
+
 	const handleCancelContract = () => {
 		setIsOpenContract(false)
 
@@ -125,104 +138,140 @@ const RoomItem = (props: IProps) => {
 		})
 	}
 
-	const handleDeleteService = (id: number | string) => {
-		const newDataService = numberOfService.filter((item) => item._id != id)
-		setNumberOfService(newDataService)
+	const handleAcceptCancel = (e: any) => {
+		e.preventDefault()
+		if (roomItem) mutateAcceptCancel(ObjectCancelRequest[roomItem._id])
+		else ShowNostis.error('Something went wrong')
 	}
 
 	return (
-		<Fragment>
-			<CardRoomItem to={to}>
-				<Box className="roomItemImage">
-					<img
-						src={
-							roomItem?.roomAttachment?.url[0] ||
-							'https://bayleaf.s3.ap-southeast-1.amazonaws.com/property-images/fa7d4c8e-692e-4cc7-bf85-0fcad740b16c/2b271aa2-779e-4bb3-b9dc-0a730084fc22-46325561_1975119655915194_6045991570992267264_n.jpg'
-						}
-						alt="banner image room"
-					/>
-				</Box>
-
-				<Box className="roomItemContent">
-					<RoomItemHeading>{roomItem?.name || 'Name room error'}</RoomItemHeading>
-
-					<RoomPreviews>
-						<RoomPreviewItem>
-							<CottageOutlinedIcon style={{ fontSize: '24px' }} />
-							{typeOfRoom.find((type) => type.value === roomItem?.typeRoom)?.label || 'Phòng cho thuê'}
-						</RoomPreviewItem>
-						<RoomPreviewItem>
-							<PersonOutlineOutlinedIcon style={{ fontSize: '24px' }} />
-							<div>{roomItem?.gender === 'All' ? t('Room.gender') : t(`Room.${roomItem?.gender}`)}</div>
-							<StraightenOutlinedIcon style={{ fontSize: '24px' }} />
-							{roomItem?.acreage}m2
-						</RoomPreviewItem>
-						<RoomPreviewItem>
-							<FmdGoodOutlinedIcon style={{ fontSize: '24px' }} />
-							{roomItem?.address?.fullText || 'Updating...'}
-						</RoomPreviewItem>
-					</RoomPreviews>
-				</Box>
-
-				{isOwner && (
-					<StyledOwner>
-						{roomItem?.status === 'already-rent' && (
-							<>
-								<StyledStatus className="green">{t('Room.currently_being_rented')}</StyledStatus>
-								<StyledButtonOwner onClick={handleOpenService}>
-									{t('Room.service_declaration')}
-								</StyledButtonOwner>
-								<StyledButtonOwner onClick={handleWatchContract}>
-									{t('Room.view_contract')}
-								</StyledButtonOwner>
-							</>
-						)}
-
-						{roomItem?.status === 'available' && (
-							<StyledStatus className="info">{t('Room.not_yet_hired')}</StyledStatus>
-						)}
-
-						{roomItem?.status === 'not-available' && (
-							<StyledStatus className="red">{t('Room.unsuitable')}</StyledStatus>
-						)}
-					</StyledOwner>
-				)}
-
-				{isRented && (
-					<StyledOwner>
-						<StyledButtonOwner onClick={handleWatchContract}>{t('Room.view_contract')}</StyledButtonOwner>
-					</StyledOwner>
-				)}
-
-				<RoomPrice>
-					<span> {convertMoneyToVndText(roomItem?.basePrice)}</span>
-					vnđ / {t('Room.person')}
-				</RoomPrice>
-			</CardRoomItem>
-
-			{(isOwner || isRented) && (
-				<Drawer anchor={'left'} open={isOpenContract} onClose={() => setIsOpenContract(false)}>
-					<StyledContractDrawer>
-						<StyledCloseButton onClick={() => setIsOpenContract(false)}>X</StyledCloseButton>
-						<div
-							dangerouslySetInnerHTML={{
-								__html: getContract(
-									rentAndLessorInfo || {
-										lessor: (dataContract?.data.contract.lessor as IUser) || undefined,
-										renter: (dataContract?.data.contract.lessor as IUser) || undefined,
-										room: dataContract?.data.contract.room || undefined,
-										_id: dataContract?.data.contract._id || undefined,
-										dateRent: undefined,
-									}
-								),
-							}}
+		<>
+			<Fragment>
+				<CardRoomItem to={to}>
+					<Box className="roomItemImage">
+						<img
+							src={
+								roomItem?.roomAttachment?.url[0] ||
+								'https://bayleaf.s3.ap-southeast-1.amazonaws.com/property-images/fa7d4c8e-692e-4cc7-bf85-0fcad740b16c/2b271aa2-779e-4bb3-b9dc-0a730084fc22-46325561_1975119655915194_6045991570992267264_n.jpg'
+							}
+							alt="banner image room"
 						/>
+					</Box>
 
-						<Button onClick={handleCancelContract}>{t('Room.cancel_contract')}</Button>
-					</StyledContractDrawer>
-				</Drawer>
-			)}
-		</Fragment>
+					<Box className="roomItemContent">
+						<RoomItemHeading>{roomItem?.name || 'Updating...'}</RoomItemHeading>
+
+						<RoomPreviews>
+							<RoomPreviewItem>
+								<CottageOutlinedIcon style={{ fontSize: '24px' }} />
+								{typeOfRoom.find((type) => type.value === roomItem?.typeRoom)?.label ||
+									'Phòng cho thuê'}
+							</RoomPreviewItem>
+							<RoomPreviewItem>
+								<PersonOutlineOutlinedIcon style={{ fontSize: '24px' }} />
+								<div>
+									{roomItem?.gender === 'All' ? t('Room.gender') : t(`Room.${roomItem?.gender}`)}
+								</div>
+								<StraightenOutlinedIcon style={{ fontSize: '24px' }} />
+								{roomItem?.acreage}m2
+							</RoomPreviewItem>
+							<RoomPreviewItem>
+								<FmdGoodOutlinedIcon style={{ fontSize: '24px' }} />
+								{roomItem?.address?.fullText || 'Updating...'}
+							</RoomPreviewItem>
+						</RoomPreviews>
+					</Box>
+					{isRented ||
+						(isOwner && (
+							<StyledOwner>
+								{isOwner && (
+									<>
+										{roomItem?.status === 'already-rent' && (
+											<>
+												<StyledStatus className="green">
+													{t('Room.currently_being_rented')}
+												</StyledStatus>
+												{(roomItem.demandAt === 0 ||
+													roomItem.demandAt === getCurrentDate().month) && (
+													<StyledButtonOwner onClick={handleOpenService}>
+														{t('Room.service_declaration')}
+													</StyledButtonOwner>
+												)}
+												{ObjectCancelRequest?.[roomItem?._id] && (
+													<StyledButtonOwner
+														className="cancel_contract"
+														onClick={handleAcceptCancel}
+													>
+														{loadingAcceptCancel ? (
+															<CircularProgress size={12} />
+														) : (
+															'Chấp nhận yêu cầu huỷ hợp đồng'
+														)}
+													</StyledButtonOwner>
+												)}
+											</>
+										)}
+
+										{roomItem?.status === 'available' && (
+											<StyledStatus className="info">{t('Room.not_yet_hired')}</StyledStatus>
+										)}
+
+										{roomItem?.status === 'not-available' && (
+											<>
+												<StyledStatus className="red">{t('Room.unsuitable')}</StyledStatus>
+												<StyledButtonOwner
+													onClick={(e) => {
+														e.preventDefault()
+														e.stopPropagation()
+														setOpen(true)
+													}}
+												>
+													Re-open room
+												</StyledButtonOwner>
+											</>
+										)}
+									</>
+								)}
+
+								{roomItem?.status !== 'not-available' && (
+									<StyledButtonOwner onClick={handleWatchContract}>
+										{t('Room.view_contract')}
+									</StyledButtonOwner>
+								)}
+							</StyledOwner>
+						))}
+
+					<RoomPrice>
+						<span> {convertMoneyToVndText(roomItem?.basePrice)}</span>
+						vnđ / {t('Room.person')}
+					</RoomPrice>
+				</CardRoomItem>
+
+				{(isOwner || isRented) && (
+					<Drawer anchor={'left'} open={isOpenContract} onClose={() => setIsOpenContract(false)}>
+						<StyledContractDrawer>
+							<StyledCloseButton onClick={() => setIsOpenContract(false)}>X</StyledCloseButton>
+							<div
+								dangerouslySetInnerHTML={{
+									__html: getContract(
+										rentAndLessorInfo || {
+											lessor: (dataContract?.data.contract.lessor as IUser) || undefined,
+											renter: (dataContract?.data.contract.lessor as IUser) || undefined,
+											room: dataContract?.data.contract.room || undefined,
+											_id: dataContract?.data.contract._id || undefined,
+											dateRent: undefined,
+										}
+									),
+								}}
+							/>
+
+							<Button onClick={handleCancelContract}>{t('Room.cancel_contract')}</Button>
+						</StyledContractDrawer>
+					</Drawer>
+				)}
+			</Fragment>
+			{isOwner && <RoomItem.ModalReOpen open={open} setOpen={setOpen} roomItem={roomItem} />}
+		</>
 	)
 }
 
@@ -323,6 +372,107 @@ RoomItem.Skeleton = () => {
 				<Skeleton variant="text" sx={{ fontSize: '12px', width: '100%' }} />
 			</RoomPrice>
 		</CardRoomSkeleton>
+	)
+}
+
+export interface IFromValues {
+	basePrice: number | string
+	totalNbPeople: number | string
+	gender: string
+	typeRoom: string
+	deposit: string | number
+}
+
+interface IPropsModal {
+	open: boolean
+	setOpen: (val: boolean) => void
+	roomItem?: room
+}
+
+RoomItem.ModalReOpen = ({ open, setOpen, roomItem }: IPropsModal) => {
+	const { handleSubmit, register } = useForm<IFromValues>({
+		defaultValues: roomItem,
+	})
+	const queryClient = useQueryClient()
+	const reopenMutate = useMutation({
+		mutationFn: roomApi.doReOpenRoom,
+		onSuccess: (data) => {
+			queryClient.invalidateQueries({ queryKey: ['getRoomRented'] })
+			ShowNostis.success('Re-open room successfully !!!!')
+		},
+		onError: (error) => {
+			ShowNostis.error('Re-open room error  !!!!')
+		},
+	})
+
+	const handleReopenRoom = (values: IFromValues) => {
+		const { basePrice, gender, totalNbPeople, typeRoom } = values
+		const newValuesReopen = {
+			basePrice,
+			gender,
+			totalNbPeople,
+			typeRoom,
+			deposit: values.basePrice,
+			roomId: roomItem?._id,
+		}
+
+		reopenMutate.mutate(newValuesReopen)
+	}
+
+	return (
+		<Modal onClose={() => setOpen(false)} open={open}>
+			<StyledModalReOpenContract onSubmit={handleSubmit(handleReopenRoom)}>
+				<Box className="modal-heading">Edit information to reopen the room</Box>
+				<Box className="modal-body">
+					<div className="modal-body__textfeild">
+						<span className="modal-body__textfeild--label">Room price</span>
+						<input {...register('basePrice')} placeholder="Enter new room price" />
+					</div>
+					<div className="modal-body__textfeild">
+						<span className="modal-body__textfeild--label">TotalNbPeople</span>
+						<select {...register('totalNbPeople')}>
+							{ArrayFrom(10).map((item) => (
+								<option key={item} value={item + 1}>
+									{item + 1}
+								</option>
+							))}
+						</select>
+					</div>
+					<div className="modal-body__textfeild">
+						<span className="modal-body__textfeild--label">Room price</span>
+						<input {...register('deposit')} placeholder="Enter new room deposit price" />
+					</div>
+					<div className="modal-body__textfeild">
+						<span className="modal-body__textfeild--label">Room Type</span>
+						<select {...register('typeRoom')}>
+							{typeOfRoom.map((item) => (
+								<option key={item.value} value={item.value}>
+									{item.label}
+								</option>
+							))}
+						</select>
+					</div>
+					<div className="modal-body__textfeild">
+						<span className="modal-body__textfeild--label">Gender</span>
+						<select {...register('gender')}>
+							{typeGender.map((item) => (
+								<option key={item.value} value={item.value}>
+									{item.value}
+								</option>
+							))}
+						</select>
+					</div>
+				</Box>
+				<Box className="modal-footer">
+					<Button variant="outlined" disabled={reopenMutate.isLoading} onClick={() => setOpen(false)}>
+						Cancel
+					</Button>
+					<Button type="submit" variant="outlined" disabled={reopenMutate.isLoading}>
+						{reopenMutate.isLoading ? <CircularProgress size={14} /> : 'Confirm'}
+					</Button>
+				</Box>
+			</StyledModalReOpenContract>
+		</Modal>
 	)
 }
 

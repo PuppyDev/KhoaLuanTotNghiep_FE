@@ -126,10 +126,14 @@ export const ModalContract = styled(Box)({
 	},
 })
 
-export const SignName = styled(Grid)({
-	width: '100%',
-	textAlign: 'center',
-})
+export const SignName = styled(Grid)`
+	width: 100%;
+	text-align: center;
+	margin-top: 10px;
+
+	display: flex;
+	align-item: center;
+`
 
 export const SignNameItem = styled(Grid)({
 	'& > .headingSign': {
@@ -210,5 +214,59 @@ export const StyledItemListPayment = styled('li')`
 			width: 100%;
 			height: 50px;
 		}
+	}
+`
+
+export const StyledFeedbackRoom = styled('div')`
+	display: flex;
+	flex-direction: column;
+	gap: 32px;
+`
+
+export const StyledInputSendFeedback = styled('form')`
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 5px;
+
+	input,
+	select {
+		display: flex;
+		align-items: center;
+		width: 100%;
+		padding: 8px 10px;
+		gap: 8px;
+		border: 1px solid #c0ccda;
+		border-radius: 4px;
+		outline: none;
+
+		&:focus {
+			border: 1px solid #ccc;
+		}
+	}
+
+	button {
+		text-transform: unset;
+		padding: 5px 5px;
+		outline: none;
+		border: none;
+		cursor: pointer;
+		background: transparent;
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		min-width: 40px;
+	}
+`
+
+export const StyledActionButton = styled('div')`
+	margin-top: 20px;
+
+	& button {
+		height: 40px;
+		min-width: 80px;
+		text-transform: none;
 	}
 `

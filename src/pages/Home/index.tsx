@@ -130,15 +130,15 @@ const Home = () => {
 								<Typography className="heading">{t('Home.new_room')}</Typography>
 
 								<ListRoom>
-									{isLoading && ArrayFrom(10).map(() => <RoomItem.Skeleton key={randomId()} />)}
+									{isLoading && ArrayFrom(10).map((item) => <RoomItem.Skeleton key={item} />)}
 
 									{!isLoading &&
 										roomData &&
-										roomData.data.items?.map((room) => (
+										roomData.data.items?.map((item) => (
 											<RoomItem
-												key={room._id}
-												to={`/room/${room._id}`}
-												roomItem={room}
+												key={item.room._id}
+												to={`/room/${item.room._id}`}
+												roomItem={item.room}
 											></RoomItem>
 										))}
 
