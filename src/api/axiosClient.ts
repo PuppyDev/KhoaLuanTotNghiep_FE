@@ -3,7 +3,7 @@ import { LogError, LogRequest, LogResponse } from './../utils/logs'
 import ShowNostis from '@/utils/show-noti'
 import { NOT_AUTHORIZED } from '@/constants/index'
 import { ResponseSignIn } from '@/models/auth'
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios'
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios'
 import queryString from 'query-string'
 import { store } from '@/app/store'
 
@@ -40,7 +40,7 @@ const createAxiosInstance = () => {
 	)
 
 	axiosInstance.interceptors.request.use(
-		function (config: AxiosRequestConfig) {
+		async (config: InternalAxiosRequestConfig) => {
 			// Do something before request is sent
 			LogRequest(config)
 			const loginData = localStorage.getItem('dataUser')
