@@ -29,12 +29,15 @@ const RoomsLocation = () => {
 
 	useEffect(() => {
 		getRoomFromURL()
-	}, [location, searchFilter])
+	}, [location])
 
 	const getRoomFromURL = () => {
 		try {
 			const keySearch = decode(getPathNameAfterSlah(location.pathname))
+			console.log('🚀 ~ file: RoomsLocation.tsx:37 ~ getRoomFromURL ~ keySearch:', keySearch)
 			if (keySearch === '/all') {
+			} else {
+				setSearchFilter((preSearch) => ({ ...preSearch, key: keySearch }))
 			}
 			// const querySearch = location.search
 		} catch (error) {

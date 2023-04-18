@@ -73,14 +73,13 @@ export const HeadingRoomBlock = styled(Box)({
 
 export const ButtonRent = styled(Button)({
 	background: '#F73486',
-	padding: '10px 0',
+	padding: '5px 15px',
 	display: 'block',
-	minWidth: '150px',
-	borderRadius: '28px',
+	borderRadius: 15,
 
 	color: 'white',
 	textTransform: 'none',
-	fontSize: '16px',
+	fontSize: '14px',
 	transition: 'all .4s',
 
 	'&:hover': {

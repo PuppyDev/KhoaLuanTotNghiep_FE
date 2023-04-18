@@ -62,7 +62,9 @@ const MyRoomPage = () => {
 						/>
 					))}
 
-				{listForRent && listForRent?.data?.items?.length === 0 && <StyledMiddle>Nothing</StyledMiddle>}
+				{listForRent && listForRent?.data?.items?.length === 0 && (
+					<StyledMiddle>Bạn chưa cho thuê phòng nào</StyledMiddle>
+				)}
 			</ListRoom>
 		</>
 	)

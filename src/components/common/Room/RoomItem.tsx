@@ -1,5 +1,4 @@
 import { roomApi } from '@/api/roomApi'
-import { serviceApi } from '@/api/serviceApi'
 import { userApi } from '@/api/userApi'
 import { typeGender, typeOfRoom } from '@/constants/room'
 import { IResponseRented, room } from '@/models/room'
@@ -17,7 +16,7 @@ import StraightenOutlinedIcon from '@mui/icons-material/StraightenOutlined'
 import { Button, CircularProgress, Drawer, Modal, Skeleton, TextField } from '@mui/material'
 import { Box } from '@mui/system'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
@@ -53,25 +52,13 @@ const RoomItem = (props: IProps) => {
 	const { to, isRented, isOwner, roomItem, rentAndLessorInfo, ObjectCancelRequest } = props
 	const { t } = useTranslation()
 	const navigation = useNavigate()
-	const [numberOfService, setNumberOfService] = useState<IServiceRes[]>([])
 	const [isOpenContract, setIsOpenContract] = useState(false)
 	const [open, setOpen] = useState(false)
 	const queryClient = useQueryClient()
 	const [idRoomSelected, setIdRoomSelected] = useState('')
-	const { data: dataServices, isLoading: loadingServices } = useQuery({
-		queryKey: ['getServiceRemand', idRoomSelected, isOwner],
-		queryFn: () => {
-			if (idRoomSelected && isOwner) {
-				return serviceApi.getListServiceDemand(idRoomSelected)
-			}
-			return null
-		},
-		keepPreviousData: true,
-		staleTime: Infinity,
-	})
 
 	const { data: dataContract, isLoading: loadingContract } = useQuery({
-		queryKey: ['getServiceRemand', idRoomSelected, isOwner, isRented, isOpenContract],
+		queryKey: ['getDetailContract', idRoomSelected, isOwner, isRented, isOpenContract],
 		queryFn: () => {
 			if (idRoomSelected && isOpenContract) {
 				return userApi.getDetailContract(idRoomSelected)
@@ -81,9 +68,6 @@ const RoomItem = (props: IProps) => {
 		keepPreviousData: true,
 		staleTime: Infinity,
 	})
-	useEffect(() => {
-		if (dataServices) setNumberOfService(dataServices?.data)
-	}, [dataServices])
 
 	const handleWatchContract = (e: any) => {
 		e.preventDefault()
@@ -181,65 +165,64 @@ const RoomItem = (props: IProps) => {
 							</RoomPreviewItem>
 						</RoomPreviews>
 					</Box>
-					{isRented ||
-						(isOwner && (
-							<StyledOwner>
-								{isOwner && (
-									<>
-										{roomItem?.status === 'already-rent' && (
-											<>
-												<StyledStatus className="green">
-													{t('Room.currently_being_rented')}
-												</StyledStatus>
-												{(roomItem.demandAt === 0 ||
-													roomItem.demandAt === getCurrentDate().month) && (
-													<StyledButtonOwner onClick={handleOpenService}>
-														{t('Room.service_declaration')}
-													</StyledButtonOwner>
-												)}
-												{ObjectCancelRequest?.[roomItem?._id] && (
-													<StyledButtonOwner
-														className="cancel_contract"
-														onClick={handleAcceptCancel}
-													>
-														{loadingAcceptCancel ? (
-															<CircularProgress size={12} />
-														) : (
-															'Chấp nhận yêu cầu huỷ hợp đồng'
-														)}
-													</StyledButtonOwner>
-												)}
-											</>
-										)}
-
-										{roomItem?.status === 'available' && (
-											<StyledStatus className="info">{t('Room.not_yet_hired')}</StyledStatus>
-										)}
-
-										{roomItem?.status === 'not-available' && (
-											<>
-												<StyledStatus className="red">{t('Room.unsuitable')}</StyledStatus>
-												<StyledButtonOwner
-													onClick={(e) => {
-														e.preventDefault()
-														e.stopPropagation()
-														setOpen(true)
-													}}
-												>
-													Re-open room
+					{(isRented || isOwner) && (
+						<StyledOwner>
+							{isOwner && (
+								<>
+									{roomItem?.status === 'already-rent' && (
+										<>
+											<StyledStatus className="green">
+												{t('Room.currently_being_rented')}
+											</StyledStatus>
+											{(roomItem.demandAt === 0 ||
+												roomItem.demandAt === getCurrentDate().month) && (
+												<StyledButtonOwner onClick={handleOpenService}>
+													{t('Room.service_declaration')}
 												</StyledButtonOwner>
-											</>
-										)}
-									</>
-								)}
+											)}
+											{ObjectCancelRequest?.[roomItem?._id] && (
+												<StyledButtonOwner
+													className="cancel_contract"
+													onClick={handleAcceptCancel}
+												>
+													{loadingAcceptCancel ? (
+														<CircularProgress size={12} />
+													) : (
+														'Chấp nhận yêu cầu huỷ hợp đồng'
+													)}
+												</StyledButtonOwner>
+											)}
+										</>
+									)}
 
-								{roomItem?.status !== 'not-available' && (
-									<StyledButtonOwner onClick={handleWatchContract}>
-										{t('Room.view_contract')}
-									</StyledButtonOwner>
-								)}
-							</StyledOwner>
-						))}
+									{roomItem?.status === 'available' && (
+										<StyledStatus className="info">{t('Room.not_yet_hired')}</StyledStatus>
+									)}
+
+									{roomItem?.status === 'not-available' && (
+										<>
+											<StyledStatus className="red">{t('Room.unsuitable')}</StyledStatus>
+											<StyledButtonOwner
+												onClick={(e) => {
+													e.preventDefault()
+													e.stopPropagation()
+													setOpen(true)
+												}}
+											>
+												Mở lại phòng
+											</StyledButtonOwner>
+										</>
+									)}
+								</>
+							)}
+
+							{roomItem?.status !== 'not-available' && (
+								<StyledButtonOwner onClick={handleWatchContract}>
+									{t('Room.view_contract')}
+								</StyledButtonOwner>
+							)}
+						</StyledOwner>
+					)}
 
 					<RoomPrice>
 						<span> {convertMoneyToVndText(roomItem?.basePrice)}</span>
@@ -255,10 +238,10 @@ const RoomItem = (props: IProps) => {
 								dangerouslySetInnerHTML={{
 									__html: getContract(
 										rentAndLessorInfo || {
-											lessor: (dataContract?.data.contract.lessor as IUser) || undefined,
-											renter: (dataContract?.data.contract.lessor as IUser) || undefined,
-											room: dataContract?.data.contract.room || undefined,
-											_id: dataContract?.data.contract._id || undefined,
+											lessor: (dataContract?.data?.contract?.lessor as IUser) || undefined,
+											renter: (dataContract?.data?.contract?.renter as IUser) || undefined,
+											room: dataContract?.data?.contract?.room || undefined,
+											_id: dataContract?.data?.contract?._id || undefined,
 											dateRent: undefined,
 										}
 									),

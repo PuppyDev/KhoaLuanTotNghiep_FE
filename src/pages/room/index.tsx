@@ -1,9 +1,10 @@
 import { contractApi } from '@/api/contractApi'
 import { roomApi } from '@/api/roomApi'
+import { userApi } from '@/api/userApi'
 import { useAppSelector } from '@/app/hook'
 import Card from '@/components/common/Card'
 import RoomDetailInfo from '@/components/common/Room/RoomDetailInfo'
-import { StyledInfoOfOwner } from '@/components/common/Room/styles/RoomItemStyles'
+import { StyledInfoOfOwner, StyledModalReOpenContract } from '@/components/common/Room/styles/RoomItemStyles'
 import SEO from '@/components/seo'
 import { typeOfRoom } from '@/constants/room'
 import { IpropsRoomMaster } from '@/models/room'
@@ -61,6 +62,7 @@ export default function RoomDetail() {
 	const queryClient = useQueryClient()
 	const [isAcceptTerm, setIsAcceptTerm] = useState(false)
 	const [contractHash, setContractHash] = useState('')
+	const [showModalReport, setshowModalReport] = useState(false)
 
 	useEffect(() => {
 		window.scrollTo(0, 0)
@@ -150,19 +152,25 @@ export default function RoomDetail() {
 				<HeadingRoomBlock>
 					<Typography className="headingRoom">{RoomData?.data?.name || 'tên đang cập nhập'}</Typography>
 
-					{RoomData?.data?.owner?.username === user.username && RoomData.data.status !== 'already-rent' && (
-						<ButtonRent onClick={() => navigation(`/room/addRoom/${RoomData?.data._id}`)}>
-							{t('Room.edit_room')}
-						</ButtonRent>
-					)}
+					<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+						{RoomData?.data?.owner?.username === user.username &&
+							RoomData.data.status !== 'already-rent' && (
+								<ButtonRent onClick={() => navigation(`/room/addRoom/${RoomData?.data._id}`)}>
+									{t('Room.edit_room')}
+								</ButtonRent>
+							)}
 
-					{RoomData &&
-						RoomData?.data?.owner?.username !== user.username &&
-						RoomData.data.status !== 'already-rent' && (
-							<ButtonRent onClick={() => setIsShowContract(true)}>
-								{loadingContract ? <CircularProgress size={10} /> : t('Room.Rent')}
-							</ButtonRent>
-						)}
+						{RoomData &&
+							RoomData?.data?.owner?.username !== user.username &&
+							RoomData.data.status === 'available' && (
+								<>
+									<ButtonRent onClick={() => setIsShowContract(true)}>
+										{loadingContract ? <CircularProgress size={10} /> : t('Room.Rent')}
+									</ButtonRent>
+									<ButtonRent onClick={() => setshowModalReport(true)}>Báo cáo</ButtonRent>
+								</>
+							)}
+					</div>
 				</HeadingRoomBlock>
 
 				<DetailRoom container spacing="32px">
@@ -403,6 +411,8 @@ export default function RoomDetail() {
 					</ModalContract>
 				</Fade>
 			</Modal>
+
+			<RoomDetail.ReportModal open={showModalReport} setOpen={setshowModalReport} roomId={RoomData?.data._id} />
 		</WrapperBackground>
 	)
 }
@@ -524,3 +534,50 @@ RoomDetail.Carousel = memo(({ itemData }: { itemData: string[] }) => {
 		</Swiper>
 	)
 })
+
+interface IPropsModal {
+	open: boolean
+	setOpen: (val: boolean) => void
+	roomId?: string
+}
+
+RoomDetail.ReportModal = ({ open, setOpen, roomId }: IPropsModal) => {
+	const { register, handleSubmit } = useForm<{ content: string }>()
+
+	const reportMutate = useMutation({
+		mutationFn: userApi.postReport,
+		onSuccess: (data) => {
+			setOpen(false)
+			ShowNostis.success('Report room successfully !!!!')
+		},
+		onError: (error) => {
+			ShowNostis.error('Report room error  !!!!')
+		},
+	})
+
+	const handleReport = (values: { content: string }) => {
+		reportMutate.mutate({ ...values, roomId: roomId || '' })
+	}
+
+	return (
+		<Modal onClose={() => setOpen(false)} open={open}>
+			<StyledModalReOpenContract onSubmit={handleSubmit(handleReport)}>
+				<Box className="modal-heading">Report Room</Box>
+				<Box className="modal-body">
+					<div className="modal-body__textfeild">
+						<span className="modal-body__textfeild--label">Content</span>
+						<textarea rows={6} {...register('content')} />
+					</div>
+				</Box>
+				<Box className="modal-footer">
+					<Button variant="outlined" disabled={reportMutate.isLoading} onClick={() => setOpen(false)}>
+						Cancel
+					</Button>
+					<Button type="submit" variant="outlined" disabled={reportMutate.isLoading}>
+						{reportMutate.isLoading ? <CircularProgress size={14} /> : 'Confirm'}
+					</Button>
+				</Box>
+			</StyledModalReOpenContract>
+		</Modal>
+	)
+}

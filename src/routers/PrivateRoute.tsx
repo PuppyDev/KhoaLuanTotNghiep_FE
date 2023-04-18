@@ -1,7 +1,6 @@
 import { setUserInfo } from '@/app/authSlice'
 import { useAppDispatch, useAppSelector } from '@/app/hook'
-import { IUpdateID } from '@/models/auth'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
 
 const PrivateRoute = ({ children }: { children: any }) => {
@@ -12,9 +11,11 @@ const PrivateRoute = ({ children }: { children: any }) => {
 
 	let isAuthenticated = accessToken || userInfo
 
-	if (!accessToken && userInfo) {
-		dispatch(setUserInfo(userInfo))
-	}
+	useEffect(() => {
+		if (!accessToken && userInfo) {
+			dispatch(setUserInfo(userInfo))
+		}
+	}, [])
 
 	return isAuthenticated ? children : <Navigate to="/login" />
 }

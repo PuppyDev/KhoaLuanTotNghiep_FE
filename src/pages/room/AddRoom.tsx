@@ -19,7 +19,7 @@ import { PropsWithChildren, useCallback, useEffect, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { Controller, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { useLocation, useSearchParams } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { DisplayResultImages, FileManager, GroupButton, StyledBoxInput } from './styles/AddRoomStyle'
 
 export type FormValues = {
@@ -100,6 +100,7 @@ const AddRoom = () => {
 	const [searchParams] = useSearchParams()
 	const [districtName, setDistrictName] = useState(getValues('ditrictName') || 'Quận 1')
 	const { t } = useTranslation()
+	const navigate = useNavigate()
 
 	useEffect(() => {
 		// Edit Room handle here
@@ -215,6 +216,7 @@ const AddRoom = () => {
 			ShowNostis.success('Create a room successfully!!!')
 			reset(defaultValues)
 			setIsLoading(false)
+			navigate('/room/myRooms')
 		} catch (error) {
 			console.log(error)
 			ShowNostis.error('Something went wrong please contact an admin')

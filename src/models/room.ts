@@ -32,6 +32,8 @@ export interface IParamsGetRoom {
 	typeRoom?: string
 	gender?: string
 	search?: string
+	key?: string
+	district?: string
 }
 
 export interface room {

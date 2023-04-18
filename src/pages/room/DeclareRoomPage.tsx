@@ -13,7 +13,7 @@ import ShowNostis from '@/utils/show-noti'
 import { getCurrentDate } from '@/utils/time'
 import { CircularProgress } from '@mui/material'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -27,10 +27,9 @@ const DeclareRoomPage = () => {
 	const { register, getValues } = useForm()
 
 	const { data: dataServices, isLoading: loadingServices } = useQuery({
-		queryKey: ['getServiceRemand', idRoom],
+		queryKey: ['getServiceDemand', idRoom],
 		queryFn: () => {
 			if (idRoom) return serviceApi.getListServiceDemand(idRoom)
-
 			return null
 		},
 		keepPreviousData: true,
@@ -84,7 +83,7 @@ const DeclareRoomPage = () => {
 	}, [dataServices])
 
 	const handleUpdateService = () => {
-		if (invoiceLoading || isLoading || !idRoom || !dataServices || !dataServices.data) return
+		if (isLoading || invoiceLoading || loadingContract || !idRoom || !dataServices || !dataServices.data) return
 
 		updateServiceMutate({
 			roomId: idRoom,
@@ -124,7 +123,11 @@ const DeclareRoomPage = () => {
 
 				<StyledWrapServices>
 					<StyledButtonService onClick={handleUpdateService}>
-						{isLoading || invoiceLoading ? <CircularProgress size={14} /> : t('Room.confirm_service')}
+						{isLoading || invoiceLoading || loadingContract ? (
+							<CircularProgress size={14} />
+						) : (
+							t('Room.confirm_service')
+						)}
 					</StyledButtonService>
 				</StyledWrapServices>
 			</StyledModalForm>

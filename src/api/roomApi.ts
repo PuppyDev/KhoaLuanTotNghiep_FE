@@ -10,7 +10,7 @@ export const roomApi = {
 	},
 
 	getAllRoom(params: IParamsGetRoom) {
-		return axiosClient.get<CommonPagination<IResponseLessed[]>>(`${BASES_URL}/`, { params: params })
+		return axiosClient.get<CommonPagination<IResponseLessed[]>>(`${BASES_URL}`, { params: params })
 	},
 
 	getDetailRoom(roomId: string) {

@@ -63,7 +63,7 @@ const createAxiosInstance = () => {
 const deleteToken = () => {
 	localStorage.removeItem('dataUser')
 	store.dispatch(setUserInfo(null))
-	ShowNostis.error('Login expired !!! ')
+	return ShowNostis.error('Login expired !!! ')
 }
 
 export default createAxiosInstance()

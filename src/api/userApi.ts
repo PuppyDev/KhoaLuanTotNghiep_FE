@@ -52,4 +52,8 @@ export const userApi = {
 	getInvoices() {
 		return axiosClient.get<CommonPagination<IInvoiceItem[]>>(`${BASES_URL}/invoices/rented`)
 	},
+
+	postReport({ roomId, content }: { roomId: string; content: string }) {
+		return axiosClient.post(`${BASES_URL}/room/${roomId}/report`, { content })
+	},
 }

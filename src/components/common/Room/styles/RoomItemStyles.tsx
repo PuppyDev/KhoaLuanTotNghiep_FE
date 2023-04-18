@@ -96,6 +96,7 @@ export const RoomItemHeading = styled(Typography)({
 	fontFamily: 'Nunito',
 	fontWeight: '600',
 	margin: 0,
+	textTransform: 'capitalize',
 })
 
 export const RoomPreviews = styled(Box)({
@@ -350,7 +351,8 @@ export const StyledModalReOpenContract = styled('form')`
 			}
 
 			input,
-			select {
+			select,
+			textarea {
 				display: flex;
 				align-items: center;
 				width: 100%;
@@ -360,6 +362,7 @@ export const StyledModalReOpenContract = styled('form')`
 				border-radius: 4px;
 				margin-bottom: 10px;
 				outline: none;
+				resize: none;
 
 				&:focus {
 					border: 1px solid #ccc;

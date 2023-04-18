@@ -5,12 +5,12 @@ import { ArrayFrom, randomId } from '@/utils/index'
 import { encode } from '@/utils/super-function'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser'
-import { Grid } from '@mui/material'
+import { CircularProgress, Grid } from '@mui/material'
 import Typography from '@mui/material/Typography'
 import { Box } from '@mui/system'
 import { useQuery } from '@tanstack/react-query'
 import { debounce } from 'lodash'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import {
@@ -40,21 +40,24 @@ import {
 
 const Home = () => {
 	const [searchKeyWord, setSearchKeyWord] = useState('')
-	const [resultSearch, setResultSearch] = useState<string[]>([])
-
-	useEffect(() => {
-		if (searchKeyWord.trim().length === 0) setResultSearch([])
-		else {
-			// call API here
-			// setResultSearch(['binhthanh'])
-		}
-	}, [searchKeyWord])
 
 	const {
 		data: roomData,
 		isLoading,
 		isError,
-	} = useQuery(['getAllNewRoom'], () => roomApi.getAllRoom({ limit: 8, page: 1 }))
+	} = useQuery({
+		queryKey: ['getAllNewRoom'],
+		queryFn: () => roomApi.getAllRoom({ limit: 8, page: 1 }),
+		keepPreviousData: true,
+	})
+
+	const { data: roomDataSearch, isLoading: roomDataSearchLoading } = useQuery({
+		queryKey: ['getAllNewRoom', searchKeyWord],
+		queryFn: () =>
+			searchKeyWord.trim().length > 0 ? roomApi.getAllRoom({ district: searchKeyWord, limit: 8, page: 1 }) : null,
+		staleTime: 60 * 1000,
+		keepPreviousData: true,
+	})
 
 	const { t } = useTranslation()
 
@@ -79,18 +82,28 @@ const Home = () => {
 								}
 								onChange={debounce((e) => {
 									setSearchKeyWord(e.target.value)
-								}, 500)}
+								}, 1000)}
 							/>
 
 							<SearchResult>
-								{resultSearch.length > 0 &&
-									resultSearch.map((item) => (
-										<SearchResultItem key={randomId()} to={encode(item)}>
-											Quận 1
+								{roomDataSearch?.data &&
+									roomDataSearch.data.items &&
+									roomDataSearch.data.items.length > 0 &&
+									roomDataSearch.data.items.map((item) => (
+										<SearchResultItem key={randomId()} to={encode(searchKeyWord)}>
+											{item.room.name}
 										</SearchResultItem>
 									))}
-								{resultSearch.length === 0 && searchKeyWord.trim().length > 0 && (
-									<SearchResultNoData>{t('Home.search_result')}</SearchResultNoData>
+								{roomDataSearch &&
+									roomDataSearch.data.items.length === 0 &&
+									searchKeyWord.trim().length > 0 && (
+										<SearchResultNoData>{t('Home.search_result')}</SearchResultNoData>
+									)}
+
+								{roomDataSearchLoading && (
+									<SearchResultNoData>
+										<CircularProgress />
+									</SearchResultNoData>
 								)}
 							</SearchResult>
 						</SearchBanner>
