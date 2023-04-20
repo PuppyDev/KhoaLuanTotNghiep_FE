@@ -13,11 +13,11 @@ import CottageOutlinedIcon from '@mui/icons-material/CottageOutlined'
 import FmdGoodOutlinedIcon from '@mui/icons-material/FmdGoodOutlined'
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined'
 import StraightenOutlinedIcon from '@mui/icons-material/StraightenOutlined'
-import { Button, CircularProgress, Drawer, Modal, Skeleton, TextField } from '@mui/material'
+import { Button, CircularProgress, Drawer, Modal, Rating, Skeleton, TextField } from '@mui/material'
 import { Box } from '@mui/system'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Fragment, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
@@ -54,6 +54,7 @@ const RoomItem = (props: IProps) => {
 	const navigation = useNavigate()
 	const [isOpenContract, setIsOpenContract] = useState(false)
 	const [open, setOpen] = useState(false)
+	const [openFeedback, setOpenFeedback] = useState(false)
 	const queryClient = useQueryClient()
 	const [idRoomSelected, setIdRoomSelected] = useState('')
 
@@ -61,6 +62,7 @@ const RoomItem = (props: IProps) => {
 		queryKey: ['getDetailContract', idRoomSelected, isOwner, isRented, isOpenContract],
 		queryFn: () => {
 			if (idRoomSelected && isOpenContract) {
+				console.log('Vo day')
 				return userApi.getDetailContract(idRoomSelected)
 			}
 			return null
@@ -81,14 +83,16 @@ const RoomItem = (props: IProps) => {
 	}
 
 	const { mutate: mutateCancelContract, isLoading } = useMutation({
-		mutationFn: userApi.doCancelContract,
+		mutationFn: isOwner ? userApi.doCancelContractByLesser : userApi.doCancelContract,
 		mutationKey: ['handleCancelContract'],
 		onSuccess: () => {
-			Swal.fire(
-				t('Room.canceled_successfully') || 'Huỷ thành công !',
-				t('Room.date_cancel_contract') || 'Bạn đã huỷ hợp đồng và hợp đồng sẽ hết hiệu lực vào ngày ....',
-				'success'
-			)
+			if (isRented) {
+				setOpenFeedback(true)
+				queryClient.invalidateQueries(['getRoomRented'])
+			} else {
+				ShowNostis.success('Huỷ hợp đồng thành công')
+				queryClient.invalidateQueries(['getRoomForRent'])
+			}
 		},
 		onError: (error) => {
 			console.log('🚀 ~ file: RoomItem.tsx:108 ~ RoomItem ~ error:', error)
@@ -188,7 +192,7 @@ const RoomItem = (props: IProps) => {
 													{loadingAcceptCancel ? (
 														<CircularProgress size={12} />
 													) : (
-														'Chấp nhận yêu cầu huỷ hợp đồng'
+														t('Room.Accept_cancel')
 													)}
 												</StyledButtonOwner>
 											)}
@@ -218,7 +222,7 @@ const RoomItem = (props: IProps) => {
 
 							{roomItem?.status !== 'not-available' && (
 								<StyledButtonOwner onClick={handleWatchContract}>
-									{t('Room.view_contract')}
+									{isLoading ? <CircularProgress size={14} /> : t('Room.view_contract')}
 								</StyledButtonOwner>
 							)}
 						</StyledOwner>
@@ -254,6 +258,7 @@ const RoomItem = (props: IProps) => {
 				)}
 			</Fragment>
 			{isOwner && <RoomItem.ModalReOpen open={open} setOpen={setOpen} roomItem={roomItem} />}
+			<RoomItem.ModalFeedback open={openFeedback} setOpen={setOpenFeedback} roomItem={roomItem} />
 		</>
 	)
 }
@@ -306,7 +311,7 @@ RoomItem.Service = ({
 				<TextField
 					className="text"
 					variant="outlined"
-					label={serviceData?.type === 1 ? 'Chỉ số mới' : 'Số người '}
+					label={serviceData?.type === 1 ? t('Room.New_indicator') : t('Room.Amount_of_people')}
 					onChange={(e) => {
 						if (e && e.target.value && +e.target.value > (serviceData?.oldIndicator || 0))
 							setnewIndicator(Number(e.target.value))
@@ -316,16 +321,24 @@ RoomItem.Service = ({
 			</StyledWrapInfo>
 
 			<StyledWrapInfo>
-				<div>Đơn giá cho {serviceName} </div>
+				<div>
+					{t('Room.Unit_price_for')} {serviceName}{' '}
+				</div>
 
 				{serviceData?.type === 1 ? (
 					<div className="right">
-						<StyledText>Chỉ số cũ : {serviceData?.oldIndicator}</StyledText>
-						<StyledText>Chỉ số mới : {newIndicator}</StyledText>
+						<StyledText>
+							{t('Room.Old_indicator')}: {serviceData?.oldIndicator}
+						</StyledText>
+						<StyledText>
+							{t('Room.New_indicator')} : {newIndicator}
+						</StyledText>
 					</div>
 				) : (
 					<div className="right">
-						<StyledText>Tiền dịch vụ {serviceData?.service?.basePrice}</StyledText>
+						<StyledText>
+							{t('Room.Service_fee')} {serviceData?.service?.basePrice}
+						</StyledText>
 					</div>
 				)}
 			</StyledWrapInfo>
@@ -452,6 +465,60 @@ RoomItem.ModalReOpen = ({ open, setOpen, roomItem }: IPropsModal) => {
 					</Button>
 					<Button type="submit" variant="outlined" disabled={reopenMutate.isLoading}>
 						{reopenMutate.isLoading ? <CircularProgress size={14} /> : 'Confirm'}
+					</Button>
+				</Box>
+			</StyledModalReOpenContract>
+		</Modal>
+	)
+}
+
+RoomItem.ModalFeedback = ({ open, setOpen, roomItem }: IPropsModal) => {
+	const { handleSubmit, register, control } = useForm<{ content: string; rating: number }>({
+		defaultValues: {
+			content: '',
+			rating: 5,
+		},
+	})
+
+	const feedbackMutate = useMutation({
+		mutationKey: ['handleAddFeedback'],
+		mutationFn: userApi.postFeedback,
+		onSuccess: () => {
+			setOpen(false)
+			ShowNostis.success('Đánh giá phòng thành công!')
+		},
+		onError: () => {},
+	})
+
+	const onPostFeedback = (values: any) => {
+		feedbackMutate.mutate({ ...values, roomId: roomItem?._id })
+	}
+
+	return (
+		<Modal onClose={() => setOpen(false)} open={open}>
+			<StyledModalReOpenContract onSubmit={handleSubmit(onPostFeedback)}>
+				<Box className="modal-heading">Feedback room</Box>
+				<Box className="modal-body">
+					<div className="modal-body__textfeild">
+						<span className="modal-body__textfeild--label">Content</span>
+						<textarea rows={7} {...register('content')} />
+					</div>
+
+					<div className="modal-body__textfeild">
+						<span className="modal-body__textfeild--label">Rating</span>
+						<Controller
+							name="rating"
+							control={control}
+							render={({ field }) => <Rating {...field} value={+field.value} />}
+						/>
+					</div>
+				</Box>
+				<Box className="modal-footer">
+					<Button variant="outlined" disabled={feedbackMutate.isLoading} onClick={() => setOpen(false)}>
+						Đóng
+					</Button>
+					<Button type="submit" variant="outlined" disabled={feedbackMutate.isLoading}>
+						{feedbackMutate.isLoading ? <CircularProgress size={14} /> : 'Đánh giá'}
 					</Button>
 				</Box>
 			</StyledModalReOpenContract>

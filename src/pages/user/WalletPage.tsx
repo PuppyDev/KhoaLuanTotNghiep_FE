@@ -20,7 +20,7 @@ import {
 	StyledWrapRightWallet,
 } from './style'
 import { ITransaction, IUserWallet } from '@/models/user'
-import { convertToTitleCase, randomId } from '@/utils/index'
+import { convertStringToTitleCase, convertToTitleCase, randomId } from '@/utils/index'
 import SEO from '@/components/seo'
 
 const WalletPage = () => {
@@ -169,6 +169,8 @@ const WalletPage = () => {
 }
 
 WalletPage.ItemTransaction = ({ transaction }: { transaction: ITransaction }) => {
+	const { i18n } = useTranslation()
+
 	return (
 		<Grid container alignItems="center" spacing={2}>
 			<Grid item xs={1.5} alignItems="center" container justifyContent="center">
@@ -179,11 +181,12 @@ WalletPage.ItemTransaction = ({ transaction }: { transaction: ITransaction }) =>
 
 			<Grid item xs>
 				<Typography style={{ fontSize: '18px' }} color="initial">
-					{convertToTitleCase(transaction?.action) || 'Updating...'}
+					{convertToTitleCase(convertStringToTitleCase(transaction?.action)) || 'Updating...'}
 				</Typography>
 
 				<Typography style={{ fontSize: '18px' }} color="#84878B">
-					{transaction?.action} ID <span style={{ color: 'black' }}>{transaction?._id}</span>
+					{convertStringToTitleCase(transaction?.action)} ID{' '}
+					<span style={{ color: 'black' }}>{transaction?._id}</span>
 				</Typography>
 
 				<Typography style={{ fontSize: '14px' }} color="#84878B">
@@ -193,7 +196,9 @@ WalletPage.ItemTransaction = ({ transaction }: { transaction: ITransaction }) =>
 
 			<Grid item xs={2}>
 				<Typography style={{ fontSize: '18px' }} color="#222529" fontWeight="Bold">
-					{convertVNDtoUSD(transaction?.actionAmount)}
+					{i18n.language === 'en'
+						? convertVNDtoUSD(transaction?.actionAmount)
+						: convertMoneyToVndText(transaction?.actionAmount)}
 				</Typography>
 			</Grid>
 		</Grid>

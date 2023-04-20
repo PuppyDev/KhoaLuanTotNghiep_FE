@@ -269,3 +269,33 @@ export const StyledActionButton = styled('div')`
 		text-transform: none;
 	}
 `
+
+export const StyledWrapFeedback = styled(Box)``
+
+export const StyledHeadingFeedback = styled('p')`
+	margin-bottom: 10px;
+	font-size: 18px;
+	border-bottom: 1px solid #ccc;
+	padding-bottom: 10px;
+`
+
+export const StyledItemFeedback = styled('div')`
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 20px;
+
+	& .item__feedback--content {
+		display: flex;
+		flex-direction: column;
+
+		p:first-child {
+			text-transform: capitalize;
+			font-weight: bold;
+		}
+
+		p:last-child {
+			font-size: 14px;
+		}
+	}
+`

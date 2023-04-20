@@ -76,23 +76,24 @@ const InvoiceContainer = () => {
 										<ReceiptIcon />
 									</div>
 									<Box className="invoice-content">
-										<p className="invoice-content__heading">Thanh toans tien dich vu</p>
+										<p className="invoice-content__heading">{t('Invoices.bill_payment')}</p>
 										{invoiceItem.txhash && (
 											<Tooltip title={invoiceItem.txhash}>
 												<p className="invoice-content__idTrans">
-													Ma giao dich : {invoiceItem.txhash.slice(0, 15) + '...'}
+													{t('Invoices.Transaction_hash')} :{' '}
+													{invoiceItem.txhash.slice(0, 15) + '...'}
 												</p>
 											</Tooltip>
 										)}
 										<p className="invoice-content__sub">
-											So tien can thanh toan :{' '}
+											{t('Invoices.Amount_of_payment')} :{' '}
 											{i18n.language === 'en'
 												? convertVNDtoUSD(invoiceItem.amount)
 												: convertMoneyToVndText(invoiceItem.amount)}
 										</p>
 
 										<p className="invoice-content__time">
-											Thoi gian tao :
+											{t('Invoices.Invoice_creation_time')} :
 											{moment(invoiceItem.createdAt).format(
 												i18n.language === 'en' ? DATE_FORMAT_DEFAULT_EN : DATE_FORMAT_DEFAULT_VI
 											)}
@@ -102,7 +103,7 @@ const InvoiceContainer = () => {
 										<Box className="invoice-estimate">Con lai {dayLeft} ngay</Box>
 									)}
 									{invoiceItem.payStatus === 'Complete' && (
-										<Box className="invoice-estimate">Da thanh toan</Box>
+										<Box className="invoice-estimate paid">{t('Invoices.paid')}</Box>
 									)}
 								</StyledWrapTop>
 								{invoiceItem.payStatus !== 'Complete' && (
@@ -116,7 +117,7 @@ const InvoiceContainer = () => {
 												{extendInvoiceMutate.isLoading ? (
 													<CircularProgress size={14} />
 												) : (
-													'Gia han'
+													t('Invoices.payment_extension')
 												)}
 											</Button>
 										)}
@@ -125,7 +126,11 @@ const InvoiceContainer = () => {
 											disabled={payInvoiceMutate.isLoading || extendInvoiceMutate.isLoading}
 											onClick={() => payInvoiceMutate.mutate(invoiceItem._id)}
 										>
-											{payInvoiceMutate.isLoading ? <CircularProgress size={14} /> : 'Thanh toan'}
+											{payInvoiceMutate.isLoading ? (
+												<CircularProgress size={14} />
+											) : (
+												t('Invoices.Pay')
+											)}
 										</Button>
 									</StyledWrapBottom>
 								)}

@@ -1,26 +1,28 @@
 import { HomeLayout } from '@/components/layout/HomeLayout'
-import AuthenPage from 'pages/auth/AuthenPage'
-import ForgotPassPage from 'pages/auth/ForgotPassPage'
-import SignIn from 'pages/auth/SignIn'
-import SignUp from 'pages/auth/SignUp'
-import UpdateId from 'pages/auth/UpdateId'
-import Home from 'pages/Home'
-import PageNotFound from 'pages/notFoundPage'
-import PaymentPageHandle from 'pages/payment'
-import InvoicePage from 'pages/payment/InvoicePage'
-import RoomDetail from 'pages/room'
-import AddRoom from 'pages/room/AddRoom'
-import DeclareRoomPage from 'pages/room/DeclareRoomPage'
-import RoomsLocation from 'pages/room/RoomsLocation'
 import { ProfilePage } from 'pages/user'
-import BookingPage from 'pages/user/BookingPage'
-import MyRoomPage from 'pages/user/MyRoomPage'
-import WalletPage from 'pages/user/WalletPage'
+import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { randomId } from '../utils'
 import AdminRoute from './AdminRoute'
 import PrivateRoute from './PrivateRoute'
 import RenderRouteHeader from './RenderRouteHeader'
+
+const AuthenPage = React.lazy(() => import('pages/auth/AuthenPage'))
+const ForgotPassPage = React.lazy(() => import('pages/auth/ForgotPassPage'))
+const SignIn = React.lazy(() => import('pages/auth/SignIn'))
+const SignUp = React.lazy(() => import('pages/auth/SignUp'))
+const UpdateId = React.lazy(() => import('pages/auth/UpdateId'))
+const Home = React.lazy(() => import('pages/Home'))
+const PaymentPageHandle = React.lazy(() => import('pages/payment'))
+const InvoicePage = React.lazy(() => import('pages/payment/InvoicePage'))
+const RoomDetail = React.lazy(() => import('pages/room'))
+const AddRoom = React.lazy(() => import('pages/room/AddRoom'))
+const DeclareRoomPage = React.lazy(() => import('pages/room/DeclareRoomPage'))
+const RoomsLocation = React.lazy(() => import('pages/room/RoomsLocation'))
+const BookingPage = React.lazy(() => import('pages/user/BookingPage'))
+const MyRoomPage = React.lazy(() => import('pages/user/MyRoomPage'))
+const WalletPage = React.lazy(() => import('pages/user/WalletPage'))
+const PageNotFound = React.lazy(() => import('pages/notFoundPage'))
 
 const mainRoutes = [
 	{

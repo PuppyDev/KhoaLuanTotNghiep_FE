@@ -17,8 +17,7 @@ import CottageOutlinedIcon from '@mui/icons-material/CottageOutlined'
 import DeckIcon from '@mui/icons-material/Deck'
 import ErrorIcon from '@mui/icons-material/Error'
 import PersonIcon from '@mui/icons-material/Person'
-import SendIcon from '@mui/icons-material/Send'
-import { Box, Button, CircularProgress, Fade, Grid, Modal, Typography } from '@mui/material'
+import { Avatar, Box, Button, CircularProgress, Fade, Grid, Modal, Typography } from '@mui/material'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { HomePageContent, WrapperBackground } from 'pages/Home/HomeStyles'
 import { memo, useEffect, useRef, useState } from 'react'
@@ -46,8 +45,10 @@ import {
 	StyledButtonAcceptTerm,
 	StyledCheckBox,
 	StyledFeedbackRoom,
-	StyledInputSendFeedback,
+	StyledHeadingFeedback,
+	StyledItemFeedback,
 	StyledLabelAcceptTerm,
+	StyledWrapFeedback,
 } from './styles/RoomDetail'
 
 export default function RoomDetail() {
@@ -64,9 +65,9 @@ export default function RoomDetail() {
 	const [contractHash, setContractHash] = useState('')
 	const [showModalReport, setshowModalReport] = useState(false)
 
-	useEffect(() => {
-		window.scrollTo(0, 0)
-	}, [])
+	// useEffect(() => {
+	// 	window.scrollTo(0, 0)
+	// }, [])
 
 	// i will add loading after
 	const { data: RoomData, isLoading } = useQuery({
@@ -445,7 +446,7 @@ RoomDetail.InfoOfMaster = ({ dataOwner, postDate }: IpropsRoomMaster) => {
 
 			<StyledInfoOfOwner>
 				<div className="img">
-					<img src={`https://api.multiavatar.com/${randomId()}.png`} />
+					<img src={`https://api.multiavatar.com/${dataOwner?._id}.png`} />
 				</div>
 				<div className="main-content">
 					<p>{dataOwner?.name || dataOwner?.username || 'Đang cập nhập'}</p>
@@ -495,14 +496,28 @@ RoomDetail.Feedback = ({ roomId }: { roomId: string }) => {
 
 	return (
 		<Card>
-			<Box>{isLoading && <div>loading....</div>}</Box>
+			{/* <Box>{isLoading && <StyledItemFeedback></StyledItemFeedback>}</Box> */}
+			<StyledHeadingFeedback>Phản hồi từ khách hàng</StyledHeadingFeedback>
+			<StyledWrapFeedback>
+				{data?.data &&
+					data?.data.items &&
+					data.data.items.map((item) => (
+						<StyledItemFeedback key={item._id}>
+							<Avatar src={item.user.avatar || `https://api.multiavatar.com/${item._id}.png`} />
+							<div className="item__feedback--content">
+								<p>{item.user.name || item.user.username}</p>
+								<p>{item.content}</p>
+							</div>
+						</StyledItemFeedback>
+					))}
+			</StyledWrapFeedback>
 
-			<StyledInputSendFeedback onSubmit={handleSubmit(handleAddFeedback)}>
+			{/* <StyledInputSendFeedback onSubmit={handleSubmit(handleAddFeedback)}>
 				<input {...register('content')} placeholder="Typing..." disabled={isLoading} />
 				<button type="submit" disabled={mutateFeedback.isLoading || isLoading}>
 					{mutateFeedback.isLoading ? <CircularProgress size={14} /> : <SendIcon />}
 				</button>
-			</StyledInputSendFeedback>
+			</StyledInputSendFeedback> */}
 		</Card>
 	)
 }
@@ -562,7 +577,7 @@ RoomDetail.ReportModal = ({ open, setOpen, roomId }: IPropsModal) => {
 	return (
 		<Modal onClose={() => setOpen(false)} open={open}>
 			<StyledModalReOpenContract onSubmit={handleSubmit(handleReport)}>
-				<Box className="modal-heading">Report Room</Box>
+				<Box className="modal-heading">Báo cáo phòng</Box>
 				<Box className="modal-body">
 					<div className="modal-body__textfeild">
 						<span className="modal-body__textfeild--label">Content</span>
@@ -571,10 +586,10 @@ RoomDetail.ReportModal = ({ open, setOpen, roomId }: IPropsModal) => {
 				</Box>
 				<Box className="modal-footer">
 					<Button variant="outlined" disabled={reportMutate.isLoading} onClick={() => setOpen(false)}>
-						Cancel
+						Đóng
 					</Button>
 					<Button type="submit" variant="outlined" disabled={reportMutate.isLoading}>
-						{reportMutate.isLoading ? <CircularProgress size={14} /> : 'Confirm'}
+						{reportMutate.isLoading ? <CircularProgress size={14} /> : ''}
 					</Button>
 				</Box>
 			</StyledModalReOpenContract>

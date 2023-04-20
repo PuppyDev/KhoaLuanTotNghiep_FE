@@ -60,7 +60,7 @@ const createAxiosInstance = () => {
 
 	return axiosInstance
 }
-const deleteToken = () => {
+export const deleteToken = () => {
 	localStorage.removeItem('dataUser')
 	store.dispatch(setUserInfo(null))
 	return ShowNostis.error('Login expired !!! ')

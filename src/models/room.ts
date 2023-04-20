@@ -132,3 +132,19 @@ export interface IReOpenRoom {
 	gender: string
 	roomId?: string
 }
+
+export interface IRoomFeedback {
+	_id: string
+	user: IUser
+	content: string
+	rating: number
+	room: {
+		_id: string
+		name: string
+	}
+	images: []
+	totalLikes: number
+	enable: boolean
+	createdAt: string
+	updatedAt: string
+}

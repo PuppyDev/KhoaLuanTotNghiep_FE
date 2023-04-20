@@ -1,4 +1,12 @@
-import { IParamsGetRoom, IReOpenRoom, IResponseLessed, IResponseRented, IRoomParams, room } from '@/models/room'
+import {
+	IParamsGetRoom,
+	IReOpenRoom,
+	IResponseLessed,
+	IResponseRented,
+	IRoomFeedback,
+	IRoomParams,
+	room,
+} from '@/models/room'
 import { CommonPagination } from './../models/common'
 
 import axiosClient from './axiosClient'
@@ -30,7 +38,7 @@ export const roomApi = {
 	},
 
 	getRoomFeedback(roomId: string) {
-		return axiosClient.get(`${BASES_URL}/${roomId}/feedback`)
+		return axiosClient.get<CommonPagination<IRoomFeedback[]>>(`${BASES_URL}/${roomId}/feedback`)
 	},
 
 	addFeedback(params: { roomId: string; content: string }) {

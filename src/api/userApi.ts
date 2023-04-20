@@ -33,6 +33,10 @@ export const userApi = {
 		return axiosClient.post(`${BASES_URL}/contract/${contractId}/cancel-by-renter`, {})
 	},
 
+	doCancelContractByLesser(contractId: string) {
+		return axiosClient.post(`${BASES_URL}/contract/${contractId}/cancel-by-lessor`, {})
+	},
+
 	getDetailContract(roomId: string) {
 		return axiosClient.get<IResContract>(`${BASES_URL}/contract/${roomId}`)
 	},
@@ -55,5 +59,9 @@ export const userApi = {
 
 	postReport({ roomId, content }: { roomId: string; content: string }) {
 		return axiosClient.post(`${BASES_URL}/room/${roomId}/report`, { content })
+	},
+
+	postFeedback({ roomId, content, rating }: { roomId: string; content: string; rating: number | string }) {
+		return axiosClient.post(`${BASES_URL}/room/${roomId}/feedback`, { content, rating })
 	},
 }

@@ -280,7 +280,7 @@ export const StyledInfoOfOwner = styled(Box)`
 	margin-top: 24px;
 	gap: 8px;
 	display: flex;
-	align-items: flex-end;
+	align-items: center;
 
 	img,
 	.img {
@@ -298,6 +298,15 @@ export const StyledInfoOfOwner = styled(Box)`
 		border-right: 1px solid #cdcdcd;
 		padding-right: 24px;
 		text-transform: lowercase;
+
+		p:first-child {
+			text-transform: capitalize;
+			font-weight: bold;
+		}
+
+		p:last-child {
+			font-size: 14px;
+		}
 	}
 `
 
@@ -367,7 +376,24 @@ export const StyledModalReOpenContract = styled('form')`
 				&:focus {
 					border: 1px solid #ccc;
 				}
+
+				&.error {
+					border: 1px solid red;
+
+					&::placeholder {
+						color: red;
+					}
+				}
 			}
+		}
+
+		.modal-body__error {
+			display: block;
+			margin-top: -10px;
+			margin-bottom: 10px;
+			font-size: 14px;
+			font-style: italic;
+			color: red;
 		}
 	}
 

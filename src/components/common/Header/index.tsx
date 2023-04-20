@@ -20,7 +20,9 @@ import {
 	Logout,
 	NotificationsActiveOutlined,
 	PaymentsOutlined,
+	PersonAdd,
 	ReceiptLongOutlined,
+	Settings,
 } from '@mui/icons-material'
 import CheckIcon from '@mui/icons-material/Check'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
@@ -31,8 +33,10 @@ import {
 	Box,
 	Button,
 	CircularProgress,
+	Divider,
 	Drawer,
 	FormControl,
+	ListItemIcon,
 	Menu,
 	MenuItem,
 	Modal,
@@ -40,10 +44,12 @@ import {
 	Typography,
 } from '@mui/material'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import classNames from 'classnames'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom'
+import { StyledModalReOpenContract } from '../Room/styles/RoomItemStyles'
 import {
 	HeaderContainer,
 	NavHeader,
@@ -69,12 +75,16 @@ const Header = () => {
 		refetchOnWindowFocus: false,
 	})
 
-	const handleClick = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget)
+	const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+		setAnchorEl(event.currentTarget || null)
+	}
 
 	const handleClose = (to?: string, callBack?: any) => {
-		if (to) navigate(to)
-		if (callBack) callBack()
 		setAnchorEl(null)
+		setTimeout(() => {
+			if (to) navigate(to)
+		}, 200)
+		if (callBack) callBack()
 	}
 	const { t, i18n } = useTranslation()
 	const [isOpen, setIsOpen] = useState(false)
@@ -122,7 +132,7 @@ const Header = () => {
 
 			<Menu
 				anchorEl={anchorEl}
-				id="account-menu"
+				id="menu"
 				open={open}
 				onClose={() => handleClose()}
 				onClick={() => handleClose()}
@@ -172,91 +182,98 @@ const Header = () => {
 				</MenuItem>
 			</Menu>
 
-			<Header.ChangePasswordForm isOpen={isOpen} handleClose={() => setIsOpen(false)} />
+			<Header.ModalChangePass open={isOpen} setOpen={setIsOpen} />
 		</>
 	)
 }
 
-Header.ChangePasswordForm = ({ isOpen, handleClose }: { isOpen: boolean; handleClose: () => void }) => {
+Header.ModalChangePass = ({ open, setOpen }: { open: boolean; setOpen: (val: boolean) => void }) => {
 	const {
-		register,
 		handleSubmit,
-		formState: { errors, isSubmitting },
-	} = useForm({
-		resolver: yupResolver(ResetPassSchema),
+		register,
+		formState: { errors },
+	} = useForm<{ currentPass: string; confirmPass: string; newPass: string }>({
+		defaultValues: {},
 	})
+
 	const { t } = useTranslation()
-	const handleChangePass = async (data: any) => {
-		try {
-			handleClose()
-			ShowNostis.success('Oke đổi được pass gòi á nha ^^')
-		} catch (error) {
-			ShowNostis.error('Lỗi gòi bạn ơi :))) ')
-		}
+	const queryClient = useQueryClient()
+	// const changepassMutate = useMutation({
+	// 	mutationFn: () => {},
+	// 	onSuccess: (data) => {
+	// 		queryClient.invalidateQueries({ queryKey: ['getRoomRented'] })
+	// 		ShowNostis.success('Re-open room successfully !!!!')
+	// 	},
+	// 	onError: (error) => {
+	// 		ShowNostis.error('Re-open room error  !!!!')
+	// 	},
+	// })
+
+	const handleChangePass = (values: {}) => {
+		// const { basePrice, gender, totalNbPeople, typeRoom } = values
+		// const newValuesReopen = {
+		// 	basePrice,
+		// 	gender,
+		// 	totalNbPeople,
+		// 	typeRoom,
+		// 	deposit: values.basePrice,
+		// 	roomId: roomItem?._id,
+		// }
+		// reopenMutate.mutate(newValuesReopen)
 	}
 
 	return (
-		<>
-			<Modal open={isOpen} onClose={handleClose}>
-				<StyledWrapModal>
-					<p className="heading_changepassword">{t('Header.Change_password')}</p>
-					<form className="form" onSubmit={handleSubmit(handleChangePass)}>
-						<FormControl fullWidth margin="dense">
-							<TextField
-								label={
-									errors.currentPass
-										? (errors.currentPass?.message as string)
-										: t('Header.Current_pass')
-								}
-								variant="standard"
-								type="password"
-								{...register('currentPass')}
-								error={Boolean(errors.currentPass)}
-							/>
-						</FormControl>
-						<FormControl fullWidth margin="dense" error={Boolean(errors.newPass)}>
-							<TextField
-								label={errors.newPass ? (errors.newPass?.message as string) : t('Header.New_pass')}
-								variant="standard"
-								type="password"
-								{...register('newPass')}
-								error={Boolean(errors.newPass)}
-							/>
-						</FormControl>
-						<FormControl fullWidth margin="dense" error={Boolean(errors.confirmPass)}>
-							<TextField
-								label={
-									errors.confirmPass
-										? (errors.confirmPass?.message as string)
-										: t('Header.Confirm_pass')
-								}
-								variant="standard"
-								type="password"
-								{...register('confirmPass')}
-								error={Boolean(errors.confirmPass)}
-							/>
-						</FormControl>
-						<div
-							style={{
-								display: 'flex',
-								alignItems: 'center',
-								justifyContent: 'center',
-							}}
-						>
-							<Button
-								type="submit"
-								variant="contained"
-								color="primary"
-								disabled={Boolean(isSubmitting)}
-								style={{ margin: '16px auto', textTransform: 'none' }}
-							>
-								{t('Header.Change')}
-							</Button>
-						</div>
-					</form>
-				</StyledWrapModal>
-			</Modal>
-		</>
+		<Modal onClose={() => setOpen(false)} open={open}>
+			<StyledModalReOpenContract onSubmit={handleSubmit(handleChangePass)}>
+				<Box className="modal-heading">{t('Header.Change_password')}</Box>
+				<Box className="modal-body">
+					<div className="modal-body__textfeild">
+						<span className="modal-body__textfeild--label">{t('Header.Current_pass')}</span>
+						<input
+							type="password"
+							{...register('currentPass')}
+							placeholder="*******"
+							className={classNames({
+								error: errors.currentPass,
+							})}
+						/>
+						{errors.currentPass && <span className="modal-body__error">{errors.currentPass.message}</span>}
+					</div>
+					<div className="modal-body__textfeild">
+						<span className="modal-body__textfeild--label">{t('Header.New_pass')}</span>
+						<input
+							type="password"
+							{...register('newPass')}
+							placeholder="*******"
+							className={classNames({
+								error: errors.newPass,
+							})}
+						/>
+						{errors.newPass && <span className="modal-body__error">{errors.newPass.message}</span>}
+					</div>
+					<div className="modal-body__textfeild">
+						<span className="modal-body__textfeild--label">{t('Header.Confirm_pass')}</span>
+						<input
+							type="password"
+							{...register('confirmPass')}
+							placeholder="*******"
+							className={classNames({
+								error: errors.confirmPass,
+							})}
+						/>
+						{errors.confirmPass && <span className="modal-body__error">{errors.confirmPass.message}</span>}
+					</div>
+				</Box>
+				<Box className="modal-footer">
+					<Button variant="outlined" onClick={() => setOpen(false)}>
+						{t('Room.cancel')}
+					</Button>
+					<Button type="submit" variant="outlined">
+						{t('Header.Change')}
+					</Button>
+				</Box>
+			</StyledModalReOpenContract>
+		</Modal>
 	)
 }
 

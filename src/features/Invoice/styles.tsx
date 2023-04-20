@@ -53,6 +53,17 @@ export const StyledWrapTop = styled.div`
 	}
 
 	& .invoice-estimate {
+		&.paid {
+			min-height: 60px;
+			min-width: 60px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			border-radius: 50%;
+			border: 1px solid #ccc;
+			padding: 10px;
+			color: #909090;
+		}
 	}
 `
 
@@ -70,4 +81,6 @@ export const StyledNothing = styled.div`
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	height: 60vh;
+	font-size: 20px;
 `

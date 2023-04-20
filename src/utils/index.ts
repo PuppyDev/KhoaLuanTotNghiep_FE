@@ -78,3 +78,13 @@ export function convertToTitleCase(str: string): string {
 		.map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize the first letter of each word
 		.join(' ') // Join the words back together with a space
 }
+
+export function convertStringToTitleCase(input: string): string {
+	// Split the input string by underscores or hyphens
+	const words = input.split(/[_-]/)
+
+	// Capitalize the first letter of each word and join them with a space
+	const titleCase = words.map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+
+	return titleCase
+}

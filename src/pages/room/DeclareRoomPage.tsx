@@ -1,6 +1,7 @@
 import { invoiceApi } from '@/api/invoiceApi'
 import { serviceApi } from '@/api/serviceApi'
 import { userApi } from '@/api/userApi'
+import LoadingFallBack from '@/components/common/LoadingFallback'
 import RoomItem from '@/components/common/Room/RoomItem'
 import {
 	StyledButtonService,
@@ -104,33 +105,40 @@ const DeclareRoomPage = () => {
 
 	return (
 		<>
-			<SEO title="Bughoue 🤡 - Declare service" />
-			<StyledModalForm>
-				<p className="headerForm">
-					{t('Room.service_declaration')} <br />
-				</p>
-				<p className="descriptionForm">{t('Room.Notice')}</p>
+			{' '}
+			{loadingServices ? (
+				<LoadingFallBack />
+			) : (
+				<>
+					<SEO title="Bughoue 🤡 - Declare service" />
+					<StyledModalForm>
+						<p className="headerForm">
+							{t('Room.service_declaration')} <br />
+						</p>
+						<p className="descriptionForm">{t('Room.Notice')}</p>
 
-				{numberOfService &&
-					numberOfService.map((item) => (
-						<RoomItem.Service
-							key={item._id}
-							register={register}
-							serviceData={item}
-							loading={loadingServices}
-						/>
-					))}
+						{numberOfService &&
+							numberOfService.map((item) => (
+								<RoomItem.Service
+									key={item._id}
+									register={register}
+									serviceData={item}
+									loading={loadingServices}
+								/>
+							))}
 
-				<StyledWrapServices>
-					<StyledButtonService onClick={handleUpdateService}>
-						{isLoading || invoiceLoading || loadingContract ? (
-							<CircularProgress size={14} />
-						) : (
-							t('Room.confirm_service')
-						)}
-					</StyledButtonService>
-				</StyledWrapServices>
-			</StyledModalForm>
+						<StyledWrapServices>
+							<StyledButtonService onClick={handleUpdateService}>
+								{isLoading || invoiceLoading || loadingContract ? (
+									<CircularProgress size={14} />
+								) : (
+									t('Room.confirm_service')
+								)}
+							</StyledButtonService>
+						</StyledWrapServices>
+					</StyledModalForm>
+				</>
+			)}
 		</>
 	)
 }

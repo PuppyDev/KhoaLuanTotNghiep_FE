@@ -22,8 +22,8 @@ export const paperProps = {
 	sx: {
 		filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
 		mt: 1.5,
-		width: '260px',
-		borderRadius: '8px',
+		minWidth: '240px',
+		borderRadius: '3px',
 		overflow: 'hidden',
 		gap: 2,
 
@@ -36,11 +36,31 @@ export const paperProps = {
 		},
 
 		'& .MuiButtonBase-root': {
-			gap: '20px',
+			gap: '10px',
 		},
 
 		'& .MuiMenuItem-root': {
 			padding: '15px 20px',
+		},
+
+		'& .MuiAvatar-root': {
+			width: 32,
+			height: 32,
+			ml: -0.5,
+			mr: 1,
+		},
+
+		'&:before': {
+			content: '""',
+			display: 'block',
+			position: 'absolute',
+			top: 0,
+			right: 14,
+			width: 10,
+			height: 10,
+			bgcolor: 'background.paper',
+			transform: 'translateY(-50%) rotate(45deg)',
+			zIndex: 0,
 		},
 	},
 }
@@ -122,6 +142,7 @@ export const StyledWrapHeader = styled(Box)`
 		font-weight: 600;
 		font-size: 14px;
 		margin-right: 2px;
+		text-transform: capitalize;
 	}
 `
 

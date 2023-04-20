@@ -152,7 +152,18 @@
 		"edit_room": "Edit your room",
 		"Notice": "Note: If you do not declare the index, the system will automatically get the index of the previous month (Free / Monthly) in case of index calculation, it will be calculated = 0",
 		"unsuitable": "unsuitable",
-		"roomRented": "Your room rented"
+		"roomRented": "Your room rented",
+		"NoRoom": "You haven't rented any rooms yet",
+		"NoRoomForRent": "No room for rent",
+
+
+		"Unit_price_for": "Unit price for",
+		"Old_indicator": "Old indicator",
+		"New_indicator": "New indicator",
+		"Amount_of_people":"Amount of people",
+		"Service_fee": "Service fee",
+
+		"Accept_cancel": "Accept the request to cancel the contract"
 	},
 	"Header": {
 		"Notifications": "Notifications",
@@ -177,5 +188,14 @@
 		"Sub_no_notices": "You're up-to-date ! would work well",
 		"Invoices": "Your invoices",
 		"CONTINUE_RENTAL": "Contract extension"
+	},
+	"Invoices": {
+		"bill_payment": "Bill payment",
+		"Amount_of_payment": "Amount of payment",
+		"Transaction_hash": "Transaction_hash",
+		"Invoice_creation_time": "Invoice creation time",
+		"paid": "Paid",
+		"payment_extension": "Pay extension",
+		"pay": "Pay"
 	}
 }

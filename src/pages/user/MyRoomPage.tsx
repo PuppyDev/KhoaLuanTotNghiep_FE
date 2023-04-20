@@ -13,7 +13,7 @@ const MyRoomPage = () => {
 	const { t } = useTranslation()
 
 	const { data: listForRent, isLoading } = useQuery({
-		queryKey: ['getRoomRented'],
+		queryKey: ['getRoomForRent'],
 		queryFn: () => roomApi.getRoomForRent(),
 		refetchOnWindowFocus: false,
 	})
@@ -61,11 +61,10 @@ const MyRoomPage = () => {
 							ObjectCancelRequest={ObjectCancelRequest}
 						/>
 					))}
-
-				{listForRent && listForRent?.data?.items?.length === 0 && (
-					<StyledMiddle>Bạn chưa cho thuê phòng nào</StyledMiddle>
-				)}
 			</ListRoom>
+			{listForRent && listForRent?.data?.items?.length === 0 && (
+				<StyledMiddle>{t('Room.NoRoomForRent')}</StyledMiddle>
+			)}
 		</>
 	)
 }

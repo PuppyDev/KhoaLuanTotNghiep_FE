@@ -2,6 +2,7 @@ import { roomApi } from '@/api/roomApi'
 import HeadingTitle from '@/components/common/Heading/HeadingTitle'
 import RoomItem from '@/components/common/Room/RoomItem'
 import SEO from '@/components/seo'
+import { StyledNothing } from '@/features/Invoice/styles'
 import { ArrayFrom, randomId } from '@/utils/index'
 import { useQuery } from '@tanstack/react-query'
 import { ListRoom } from 'pages/Home/HomeStyles'
@@ -31,7 +32,6 @@ const BookingPage = () => {
 
 			<ListRoom>
 				{isLoading && ArrayFrom(4).map((item) => <RoomItem.Skeleton key={item} />)}
-
 				{isRenderItem &&
 					listRoomRented.data.items.map((item) => (
 						<RoomItem
@@ -43,6 +43,9 @@ const BookingPage = () => {
 						/>
 					))}
 			</ListRoom>
+			{!isLoading && listRoomRented && listRoomRented.data && listRoomRented.data.items.length === 0 && (
+				<StyledNothing>{t('Room.NoRoom')}</StyledNothing>
+			)}
 		</StyledWrapPage>
 	)
 }

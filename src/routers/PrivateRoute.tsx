@@ -1,3 +1,4 @@
+import { deleteToken } from '@/api/axiosClient'
 import { setUserInfo } from '@/app/authSlice'
 import { useAppDispatch, useAppSelector } from '@/app/hook'
 import React, { useEffect } from 'react'
@@ -14,6 +15,10 @@ const PrivateRoute = ({ children }: { children: any }) => {
 	useEffect(() => {
 		if (!accessToken && userInfo) {
 			dispatch(setUserInfo(userInfo))
+		}
+
+		if (!accessToken && !userInfo) {
+			deleteToken()
 		}
 	}, [])
 

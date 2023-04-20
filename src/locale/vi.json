@@ -126,7 +126,7 @@
 		"Female": "Nữ",
 
 		"Upadate_info": "Cập nhập thông tin phòng ",
-		"Create_room": "Tạo phòng",
+		"Create_room": "Đăng phòng",
 		"Title_room": "Tiêu đề phòng",
 		"Acreage": "Diện tích phòng",
 		"Room_price": "Tiền phòng",
@@ -152,7 +152,10 @@
 		"edit_room": "Chỉnh sửa phòng",
 		"Notice": "Lưu ý : Nếu không khai báo chỉ số thì hệ thống sẽ tự động lấy chỉ số của tháng trước (Miễn Phí / Theo Tháng) trường hợp tính theo chỉ số thì sẽ được tính = 0",
 		"unsuitable": "Hết hợp đồng",
-		"roomRented": "Phòng của bạn đã được thuê"
+		"roomRented": "Phòng của bạn đã được thuê",
+		"NoRoom": "Bạn chưa thuê bất cứ phòng nào",
+		"NoRoomForRent": "Bạn chưa cho thuê phòng nào",
+		"Accept_cancel": "Chấp nhận yêu cầu huỷ hợp đồng"
 	},
 	"Header": {
 		"Notifications": "Thông báo",
@@ -161,7 +164,7 @@
 		"Room_for_rent": "Phòng cho thuê",
 		"Room_rented": "Phòng đã thuê",
 		"Wallet": "Ví của tôi",
-		"Post": "Đăng tin",
+		"Post": "Đăng phòng",
 		"Change_password": "Thay đổi mật khẩu",
 		"Logout": "Đăng xuất",
 		"Current_pass": "Mật khẩu hiện tại",
@@ -176,6 +179,21 @@
 		"No_notices": "Không có thông báo ngay bây giờ!",
 		"Sub_no_notices": "Quay lại sau khi có thông báo",
 		"Invoices": "Hoá đơn của bạn",
-		"CONTINUE_RENTAL": "Gia hạn hợp đồng"
+		"CONTINUE_RENTAL": "Gia hạn hợp đồng",
+
+		"Unit_price_for": "Đơn giá cho",
+		"Old_indicator": "Chỉ số cũ",
+		"New_indicator": "Chỉ số mới",
+		"Amount_of_people":"Số người",
+		"Service_fee": "Tiền dịch vụ"
+	},
+	"Invoices": {
+		"bill_payment": "Thanh toán hoá đơn",
+		"Amount_of_payment": "Số tiền cần thanh toán",
+		"Transaction_hash": "Mã giao dịch",
+		"Invoice_creation_time": "Thời gian tạo",
+		"paid": "Đã thanh toán",
+		"payment_extension": "Gia hạn",
+		"Pay": "Thanh toán"
 	}
 }

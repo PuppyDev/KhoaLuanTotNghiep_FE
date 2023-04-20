@@ -54,7 +54,7 @@ const Home = () => {
 	const { data: roomDataSearch, isLoading: roomDataSearchLoading } = useQuery({
 		queryKey: ['getAllNewRoom', searchKeyWord],
 		queryFn: () =>
-			searchKeyWord.trim().length > 0 ? roomApi.getAllRoom({ district: searchKeyWord, limit: 8, page: 1 }) : null,
+			searchKeyWord.trim().length > 0 ? roomApi.getAllRoom({ key: searchKeyWord, limit: 8, page: 1 }) : null,
 		staleTime: 60 * 1000,
 		keepPreviousData: true,
 	})
@@ -90,7 +90,7 @@ const Home = () => {
 									roomDataSearch.data.items &&
 									roomDataSearch.data.items.length > 0 &&
 									roomDataSearch.data.items.map((item) => (
-										<SearchResultItem key={randomId()} to={encode(searchKeyWord)}>
+										<SearchResultItem key={randomId()} to={`/room/${item.room._id}`}>
 											{item.room.name}
 										</SearchResultItem>
 									))}
