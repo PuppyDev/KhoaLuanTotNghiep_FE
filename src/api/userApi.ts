@@ -33,6 +33,10 @@ export const userApi = {
 		return axiosClient.post(`${BASES_URL}/contract/${contractId}/cancel-by-renter`, {})
 	},
 
+	doRequestExtendContract({ contractId, newPeriod }: { newPeriod: string | number; contractId: string }) {
+		return axiosClient.post(`${BASES_URL}/contract/${contractId}/extend-by-renter`, { newPeriod })
+	},
+
 	doCancelContractByLesser(contractId: string) {
 		return axiosClient.post(`${BASES_URL}/contract/${contractId}/cancel-by-lessor`, {})
 	},
@@ -63,5 +67,9 @@ export const userApi = {
 
 	postFeedback({ roomId, content, rating }: { roomId: string; content: string; rating: number | string }) {
 		return axiosClient.post(`${BASES_URL}/room/${roomId}/feedback`, { content, rating })
+	},
+
+	doExtendRoomContact(requestId: string) {
+		return axiosClient.post(`${BASES_URL}/contract/accept-extend/${requestId}`)
 	},
 }

@@ -1,16 +1,17 @@
-import UploadImage from '@/components/common/UploadImage'
-import { Box, Button, Typography } from '@mui/material'
-import axios from 'axios'
-import { useForm } from 'react-hook-form'
-import ImageIcon from '@mui/icons-material/Image'
-import { StyledButtonUpdateId, StyledMiddle, StyledWrapUpdateID } from './styles'
-import { useTranslation } from 'react-i18next'
-import { IInfoFPT } from '@/models/auth'
 import { authApi } from '@/api/authApi'
-import { useAppDispatch, useAppSelector } from '@/app/hook'
-import ShowNostis from '@/utils/show-noti'
 import { setUserInfo } from '@/app/authSlice'
+import { useAppDispatch, useAppSelector } from '@/app/hook'
+import UploadImage from '@/components/common/UploadImage'
 import SEO from '@/components/seo'
+import { IInfoFPT } from '@/models/auth'
+import ShowNostis from '@/utils/show-noti'
+import ImageIcon from '@mui/icons-material/Image'
+import axios from 'axios'
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
+import { StyledButtonUpdateId, StyledMiddle, StyledWrapUpdateID } from './styles'
 type FormValues = {
 	front: any
 	back: any
@@ -23,9 +24,16 @@ const UpdateId = () => {
 			back: '',
 		},
 	})
-
-	const { userId } = useAppSelector((state) => state.authSlice.verifyInfo)
+	const navigate = useNavigate()
+	const verifyInfo = useAppSelector((state) => state.authSlice.verifyInfo)
 	const dispatch = useAppDispatch()
+
+	useEffect(() => {
+		if (!verifyInfo) {
+			navigate('/login')
+		}
+	}, [verifyInfo])
+
 	const sendIDProfile = handleSubmit(async (values) => {
 		const formData = new FormData()
 		const file = values.front[0]
@@ -45,7 +53,7 @@ const UpdateId = () => {
 
 	const handleUpdateInfo = async (data: { data: IInfoFPT[] }) => {
 		try {
-			const dataRequest = { ...data.data[0], userId }
+			const dataRequest = { ...data.data[0], userId: verifyInfo?.userId || '' }
 			const response = await authApi.verifyInfo(dataRequest)
 
 			localStorage.setItem('dataUser', JSON.stringify(response.data.data))

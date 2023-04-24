@@ -9,7 +9,7 @@ import { decode } from '@/utils/super-function'
 import { Box, Grid, Pagination } from '@mui/material'
 import Typography from '@mui/material/Typography/Typography'
 import { useQuery } from '@tanstack/react-query'
-import { HomePageContent, ListRoom, WrapperBackground } from 'pages/Home/HomeStyles'
+import { HomePageContent, ListRoom, StyledNoRoomData, WrapperBackground } from 'pages/Home/HomeStyles'
 import queryString from 'query-string'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -34,10 +34,9 @@ const RoomsLocation = () => {
 	const getRoomFromURL = () => {
 		try {
 			const keySearch = decode(getPathNameAfterSlah(location.pathname))
-			console.log('🚀 ~ file: RoomsLocation.tsx:37 ~ getRoomFromURL ~ keySearch:', keySearch)
 			if (keySearch === '/all') {
 			} else {
-				setSearchFilter((preSearch) => ({ ...preSearch, key: keySearch }))
+				setSearchFilter((preSearch) => ({ ...preSearch, district: keySearch }))
 			}
 			// const querySearch = location.search
 		} catch (error) {
@@ -102,6 +101,13 @@ const RoomsLocation = () => {
 												roomItem={room.room}
 											></RoomItem>
 										))}
+
+									{roomData &&
+										roomData.data &&
+										roomData.data.items &&
+										roomData.data.items.length === 0 && (
+											<StyledNoRoomData>{t('Room.NoRoomFound')}</StyledNoRoomData>
+										)}
 								</ListRoom>
 								<Box
 									style={{
@@ -111,13 +117,17 @@ const RoomsLocation = () => {
 										justifyContent: 'center',
 									}}
 								>
-									{!isLoading && (
-										<Pagination
-											onChange={(_, page) => setSearchFilter((pre) => ({ ...pre, page }))}
-											count={roomData?.data?.totalPages || 0}
-											page={searchFilter.page}
-										/>
-									)}
+									{!isLoading &&
+										roomData &&
+										roomData.data &&
+										roomData.data.items &&
+										roomData.data.items.length > 0 && (
+											<Pagination
+												onChange={(_, page) => setSearchFilter((pre) => ({ ...pre, page }))}
+												count={roomData?.data?.totalPages || 0}
+												page={searchFilter.page}
+											/>
+										)}
 								</Box>
 							</Card>
 						</Grid>

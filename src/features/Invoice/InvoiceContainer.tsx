@@ -54,7 +54,7 @@ const InvoiceContainer = () => {
 
 	return (
 		<>
-			{!ruleRender && !isLoading && <StyledNothing>You're not have invoice to pay</StyledNothing>}
+			{!ruleRender && !isLoading && <StyledNothing>{t('Invoices.NoInvoices')}</StyledNothing>}
 			<StytledWrapContent>
 				{isLoading && ArrayFrom(6).map((item) => <InvoiceContainer.InvoiceSkeleton key={item} />)}
 

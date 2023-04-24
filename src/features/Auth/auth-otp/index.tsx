@@ -1,18 +1,25 @@
-import React, { useState } from 'react'
-import { StyledButtonOtp, StyledHeading, StyledMainOtp, StyledWrapOTP } from './styles'
-import Illustration from '@/assets/images/Illustration.svg'
-import { Box, Button } from '@mui/material'
-import OtpInput from 'react-otp-input'
-import { maskEmail, maskPhone } from '@/utils/index'
 import { authApi } from '@/api/authApi'
-import ShowNostis from '@/utils/show-noti'
+import { deleteToken } from '@/api/axiosClient'
 import { useAppSelector } from '@/app/hook'
-import PageNotFound from 'pages/notFoundPage'
+import Illustration from '@/assets/images/Illustration.svg'
+import { maskPhone } from '@/utils/index'
+import ShowNostis from '@/utils/show-noti'
+import { Box, Button } from '@mui/material'
+import { useEffect, useState } from 'react'
+import OtpInput from 'react-otp-input'
+import { useNavigate } from 'react-router-dom'
+import { StyledButtonOtp, StyledHeading, StyledMainOtp, StyledWrapOTP } from './styles'
 const AuthOtpContainer = () => {
 	const [otp, setOtp] = useState('')
 	const [isResent, setIsResent] = useState<any>()
 
-	const { phone, username } = useAppSelector((state) => state.authSlice.verifyInfo)
+	const navigate = useNavigate()
+	const verifyInfo = useAppSelector((state) => state.authSlice.verifyInfo)
+	useEffect(() => {
+		if (!verifyInfo) {
+			navigate('/login')
+		}
+	}, [verifyInfo])
 
 	const handleChange = (otpTyping: string) => {
 		setOtp(otpTyping)
@@ -20,7 +27,7 @@ const AuthOtpContainer = () => {
 
 	const handleResetOtp = async () => {
 		try {
-			const response = await authApi.resetOtp({ username })
+			const response = await authApi.resetOtp({ username: verifyInfo?.username || '' })
 			//@ts-ignore
 			ShowNostis.success(response?.message)
 			setIsResent(Date.now())
@@ -35,7 +42,7 @@ const AuthOtpContainer = () => {
 
 			<StyledHeading>
 				<Box className="main-heading">OTP Verification</Box>
-				<Box className="sub-heading">Code sent via phone to {maskPhone(phone)}</Box>
+				<Box className="sub-heading">Code sent via phone to {maskPhone(verifyInfo?.phone || '')}</Box>
 			</StyledHeading>
 
 			<StyledMainOtp>
@@ -76,6 +83,10 @@ const AuthOtpContainer = () => {
 
 				<p className="button-resend" onClick={handleResetOtp}>
 					Resend code
+				</p>
+
+				<p className="button-resend" onClick={deleteToken}>
+					Logout
 				</p>
 			</StyledButtonOtp>
 		</StyledWrapOTP>

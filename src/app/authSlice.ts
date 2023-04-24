@@ -5,12 +5,7 @@ export const initialState: AuthState = {
 	isLoading: false,
 	isLogin: false,
 	isDisabled: false,
-	verifyInfo: {
-		isVerifiedOtp: false,
-		username: '',
-		phone: '',
-		userId: '',
-	},
+	verifyInfo: null,
 	userInfo: {
 		accessToken: '',
 		refreshToken: '',
@@ -53,9 +48,12 @@ export const authSlice = createSlice({
 		setLogin: (state, action: PayloadAction<boolean>) => {
 			state.isLogin = action.payload
 		},
-		setVerifiedInfo: (state, action: PayloadAction<VerifyType>) => {
-			const { isVerifiedOtp, phone, username, userId } = action.payload
-			state.verifyInfo = { isVerifiedOtp, phone, username, userId }
+		setVerifiedInfo: (state, action: PayloadAction<VerifyType | null>) => {
+			if (!action.payload) {
+				state.verifyInfo = null
+			} else {
+				state.verifyInfo = action.payload
+			}
 		},
 		setUserInfo: (state, action: PayloadAction<ResponseSignIn | null>) => {
 			if (action.payload) {

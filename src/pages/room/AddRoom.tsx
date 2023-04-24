@@ -144,6 +144,7 @@ const AddRoom = () => {
 		staleTime: Infinity,
 		keepPreviousData: true,
 	})
+	console.log('🚀 ~ file: AddRoom.tsx:147 ~ AddRoom ~ dataDistric:', dataDistric)
 
 	const { data: dataWards } = useQuery({
 		queryKey: ['getAllWards', districtName],

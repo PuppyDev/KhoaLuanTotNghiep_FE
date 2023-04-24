@@ -280,3 +280,5 @@ export const ListRoom = styled('ul')({
 export const StyledNoRoom = styled(Box)`
 	text-align: center;
 `
+
+export const StyledNoRoomData = styled(Box)``

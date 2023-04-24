@@ -22,11 +22,17 @@ const MyRoomPage = () => {
 		queryKey: ['getAllRequestsCancelRoom'],
 		queryFn: () => userApi.getAllRequest(),
 	})
-
+	const ObjectExtendsRequest: { [x: string]: string }[] = []
 	const ObjectCancelRequest = dataRequests?.data
 		.map((item) => {
 			const key = item.roomId
 			const value = item.requestId
+			if (item.type === 'CONTINUE_RENTAL') {
+				ObjectExtendsRequest.push({
+					[key]: value,
+				})
+				return null
+			}
 			return item.type === 'CANCEL_RENTAL'
 				? {
 						[key]: value,
@@ -59,6 +65,12 @@ const MyRoomPage = () => {
 							roomItem={item.room}
 							isOwner
 							ObjectCancelRequest={ObjectCancelRequest}
+							ObjectExtendsRequest={ObjectExtendsRequest?.reduce(function (result, item) {
+								if (!item || !result) return result
+								var key = Object.keys(item)[0]
+								result[key] = item[key]
+								return result
+							}, {})}
 						/>
 					))}
 			</ListRoom>

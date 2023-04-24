@@ -53,13 +53,18 @@ export type VerifyType = {
 	username: string
 	phone: string
 	userId: string
+	email: string
+	otp: string
+	avatar: string
+	isOTP: boolean
+	isIdentity: boolean
 }
 
 export interface AuthState {
 	isLoading: boolean
 	isLogin: boolean
 	isDisabled: boolean
-	verifyInfo: VerifyType
+	verifyInfo: VerifyType | null
 	userInfo: ResponseSignIn
 }
 

@@ -30,6 +30,7 @@ export const CardRoomItem = styled(Link)({
 		alignItems: 'flex-start',
 		height: '100%',
 		gap: '20px',
+		fontWeight: 'bold',
 
 		'@media only screen and (max-width: 765px)': {
 			gap: '5px',
@@ -92,9 +93,9 @@ export const CardRoomSkeleton = styled(Box)({
 
 export const RoomItemHeading = styled(Typography)({
 	color: 'black',
-	fontSize: '20px',
+	fontSize: '18px',
 	fontFamily: 'Nunito',
-	fontWeight: '600',
+	fontWeight: 'bold',
 	margin: 0,
 	textTransform: 'capitalize',
 })
@@ -187,6 +188,14 @@ export const StyledStatus = styled('span')`
 
 	&.info {
 		color: #385898;
+	}
+
+	&.rented {
+		color: #ff6f91;
+	}
+
+	&.request {
+		color: #d65db1;
 	}
 `
 
@@ -299,7 +308,7 @@ export const StyledInfoOfOwner = styled(Box)`
 		padding-right: 24px;
 		text-transform: lowercase;
 
-		p:first-child {
+		p:first-of-type {
 			text-transform: capitalize;
 			font-weight: bold;
 		}

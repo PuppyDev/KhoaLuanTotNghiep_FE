@@ -80,9 +80,12 @@
 		"date_cancel_contract": "Bạn đã huỷ hợp đồng và hợp đồng sẽ hết hiệu lực vào ngày ",
 		"gender":"Nam / Nữ",
 		"service_declaration": "Khai báo Dịch Vụ",
+		"contract_extension": "Gia hạn hợp đồng",
 		"view_contract": "Xem hợp đồng",
 		"currently_being_rented": "Đang được thuê",
+		"request_extension": "Yêu cầu từ người thuê",
 		"not_yet_hired": "Chưa được thuê",
+		"rented": "Đã thuê, hết thời hạn",
 		"person": "người",
 		"more_services": "Thêm dịch vụ",
 		"confirm_service": "Khai báo",
@@ -152,10 +155,13 @@
 		"edit_room": "Chỉnh sửa phòng",
 		"Notice": "Lưu ý : Nếu không khai báo chỉ số thì hệ thống sẽ tự động lấy chỉ số của tháng trước (Miễn Phí / Theo Tháng) trường hợp tính theo chỉ số thì sẽ được tính = 0",
 		"unsuitable": "Hết hợp đồng",
+		"Re_open": "Mở lại phòng",
 		"roomRented": "Phòng của bạn đã được thuê",
 		"NoRoom": "Bạn chưa thuê bất cứ phòng nào",
 		"NoRoomForRent": "Bạn chưa cho thuê phòng nào",
-		"Accept_cancel": "Chấp nhận yêu cầu huỷ hợp đồng"
+		"Accept_cancel": "Chấp nhận yêu cầu huỷ hợp đồng",
+		"Accept_extends": "Chấp nhận yêu cầu gia hạn hợp đồng",
+		"NoRoomFound": "Không tìm thấy phòng nào"
 	},
 	"Header": {
 		"Notifications": "Thông báo",
@@ -194,6 +200,7 @@
 		"Invoice_creation_time": "Thời gian tạo",
 		"paid": "Đã thanh toán",
 		"payment_extension": "Gia hạn",
-		"Pay": "Thanh toán"
+		"Pay": "Thanh toán",
+		"NoInvoices": "Bạn không có hoá đơn nào cần phải thanh toán"
 	}
 }

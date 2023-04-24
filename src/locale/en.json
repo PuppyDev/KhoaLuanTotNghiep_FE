@@ -80,9 +80,12 @@
 		"date_cancel_contract": "You have canceled the contract and the contract will expire on",
 		"gender":"Male / Female",
 		"service_declaration": "Service Declaration",
+		"contract_extension": "Contract extension",
 		"view_contract": "View contract",
 		"currently_being_rented": "Currently being rented",
+		"request_extension": "Request from tenant",
 		"not_yet_hired": "Availabed",
+		"rented": "leased, expired",
 		"person": "person",
 		"more_services": "More services",
 		"confirm_service": "Confirm",
@@ -152,6 +155,7 @@
 		"edit_room": "Edit your room",
 		"Notice": "Note: If you do not declare the index, the system will automatically get the index of the previous month (Free / Monthly) in case of index calculation, it will be calculated = 0",
 		"unsuitable": "unsuitable",
+		"Re_open": "Reopen room",
 		"roomRented": "Your room rented",
 		"NoRoom": "You haven't rented any rooms yet",
 		"NoRoomForRent": "No room for rent",
@@ -163,7 +167,9 @@
 		"Amount_of_people":"Amount of people",
 		"Service_fee": "Service fee",
 
-		"Accept_cancel": "Accept the request to cancel the contract"
+		"Accept_cancel": "Accept the request to cancel the contract",
+		"Accept_extends": "Accept the request to extend the contract",
+		"NoRoomFound": "No room can be found"
 	},
 	"Header": {
 		"Notifications": "Notifications",
@@ -196,6 +202,7 @@
 		"Invoice_creation_time": "Invoice creation time",
 		"paid": "Paid",
 		"payment_extension": "Pay extension",
-		"pay": "Pay"
+		"pay": "Pay",
+		"NoInvoices": "You're not have invoice to pay"
 	}
 }

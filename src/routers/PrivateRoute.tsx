@@ -10,15 +10,11 @@ const PrivateRoute = ({ children }: { children: any }) => {
 	const dispatch = useAppDispatch()
 	const userInfo = JSON.parse(localStorage.getItem('dataUser') as string)
 
-	let isAuthenticated = accessToken || userInfo
+	let isAuthenticated = accessToken || userInfo?.accessToken || userInfo?.refreshToken
 
 	useEffect(() => {
 		if (!accessToken && userInfo) {
 			dispatch(setUserInfo(userInfo))
-		}
-
-		if (!accessToken && !userInfo) {
-			deleteToken()
 		}
 	}, [])
 

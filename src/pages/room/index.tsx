@@ -65,9 +65,9 @@ export default function RoomDetail() {
 	const [contractHash, setContractHash] = useState('')
 	const [showModalReport, setshowModalReport] = useState(false)
 
-	// useEffect(() => {
-	// 	window.scrollTo(0, 0)
-	// }, [])
+	useEffect(() => {
+		window.scrollTo(0, 0)
+	}, [])
 
 	// i will add loading after
 	const { data: RoomData, isLoading } = useQuery({
@@ -151,7 +151,9 @@ export default function RoomDetail() {
 				</RoomDetailGallary>
 
 				<HeadingRoomBlock>
-					<Typography className="headingRoom">{RoomData?.data?.name || 'tên đang cập nhập'}</Typography>
+					<Typography className="headingRoom">
+						{RoomData?.data?.name.replace(/,/g, '') || 'tên đang cập nhập'}
+					</Typography>
 
 					<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
 						{RoomData?.data?.owner?.username === user.username &&
@@ -164,12 +166,12 @@ export default function RoomDetail() {
 						{RoomData &&
 							RoomData?.data?.owner?.username !== user.username &&
 							RoomData.data.status === 'available' && (
-								<>
+								<div style={{ minWidth: '200px', display: 'flex', alignItems: 'center', gap: 10 }}>
 									<ButtonRent onClick={() => setIsShowContract(true)}>
 										{loadingContract ? <CircularProgress size={10} /> : t('Room.Rent')}
 									</ButtonRent>
 									<ButtonRent onClick={() => setshowModalReport(true)}>Báo cáo</ButtonRent>
-								</>
+								</div>
 							)}
 					</div>
 				</HeadingRoomBlock>
@@ -589,7 +591,7 @@ RoomDetail.ReportModal = ({ open, setOpen, roomId }: IPropsModal) => {
 						Đóng
 					</Button>
 					<Button type="submit" variant="outlined" disabled={reportMutate.isLoading}>
-						{reportMutate.isLoading ? <CircularProgress size={14} /> : ''}
+						{reportMutate.isLoading ? <CircularProgress size={14} /> : 'Gửi'}
 					</Button>
 				</Box>
 			</StyledModalReOpenContract>

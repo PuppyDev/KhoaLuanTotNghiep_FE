@@ -16,6 +16,7 @@ import StraightenOutlinedIcon from '@mui/icons-material/StraightenOutlined'
 import { Button, CircularProgress, Drawer, Modal, Rating, Skeleton, TextField } from '@mui/material'
 import { Box } from '@mui/system'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import moment from 'moment'
 import { Fragment, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -46,14 +47,16 @@ interface IProps {
 	roomItem: room | undefined
 	rentAndLessorInfo?: IResponseRented | undefined
 	ObjectCancelRequest?: any
+	ObjectExtendsRequest?: any
 }
 
 const RoomItem = (props: IProps) => {
-	const { to, isRented, isOwner, roomItem, rentAndLessorInfo, ObjectCancelRequest } = props
+	const { to, isRented, isOwner, roomItem, rentAndLessorInfo, ObjectCancelRequest, ObjectExtendsRequest } = props
 	const { t } = useTranslation()
 	const navigation = useNavigate()
 	const [isOpenContract, setIsOpenContract] = useState(false)
 	const [open, setOpen] = useState(false)
+	const [openExtend, setOpenExtend] = useState(false)
 	const [openFeedback, setOpenFeedback] = useState(false)
 	const queryClient = useQueryClient()
 	const [idRoomSelected, setIdRoomSelected] = useState('')
@@ -61,10 +64,7 @@ const RoomItem = (props: IProps) => {
 	const { data: dataContract, isLoading: loadingContract } = useQuery({
 		queryKey: ['getDetailContract', idRoomSelected, isOwner, isRented, isOpenContract],
 		queryFn: () => {
-			if (idRoomSelected && isOpenContract) {
-				console.log('Vo day')
-				return userApi.getDetailContract(idRoomSelected)
-			}
+			if (roomItem?._id || idRoomSelected) return userApi.getDetailContract(idRoomSelected || roomItem?._id || '')
 			return null
 		},
 		keepPreviousData: true,
@@ -88,6 +88,7 @@ const RoomItem = (props: IProps) => {
 		onSuccess: () => {
 			if (isRented) {
 				setOpenFeedback(true)
+				ShowNostis.success('Gửi huỷ hợp đồng thành công')
 				queryClient.invalidateQueries(['getRoomRented'])
 			} else {
 				ShowNostis.success('Huỷ hợp đồng thành công')
@@ -102,8 +103,19 @@ const RoomItem = (props: IProps) => {
 	const { mutate: mutateAcceptCancel, isLoading: loadingAcceptCancel } = useMutation({
 		mutationFn: userApi.doAcceptCancelRent,
 		mutationKey: ['handleAcceptContract'],
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ['getRoomRented'] })
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({ queryKey: ['getRoomForRent'] })
+			ShowNostis.success('Thành công')
+		},
+	})
+
+	const { mutate: mutateExtendRoom, isLoading: loadingExtendRoom } = useMutation({
+		mutationFn: userApi.doExtendRoomContact,
+		mutationKey: ['handleExtendRoom'],
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({ queryKey: ['getRoomForRent'] })
+			await queryClient.invalidateQueries({ queryKey: ['getAllRequestsCancelRoom'] })
+			ShowNostis.success('Thành công')
 		},
 	})
 
@@ -120,7 +132,7 @@ const RoomItem = (props: IProps) => {
 			cancelButtonText: t('Room.cancel') || 'Huỷ hợp đồng',
 			html: `<div><p>Bạn có muốn chấm dứt hợp đông này không ?</p><p style="color: red; font-size: 14px; font-style: italic">Hợp đồng chưa hết kỳ hạn. nếu huỷ bạn sẽ ${
 				isOwner ? 'phải chịu 1 khoản phạt ' : 'mất tiền cọc . <br/>'
-			}. Hợp đồng của bạn kết thúc vào ngày : 12/2/2023</p> </div>`,
+			}. Hợp đồng của bạn kết thúc vào ngày : ${moment().format('DD/MM/YYYY')}</p> </div>`,
 		}).then((result) => {
 			if (result.isConfirmed && dataContract?.data) mutateCancelContract(dataContract?.data.contract._id)
 		})
@@ -129,7 +141,13 @@ const RoomItem = (props: IProps) => {
 	const handleAcceptCancel = (e: any) => {
 		e.preventDefault()
 		if (roomItem) mutateAcceptCancel(ObjectCancelRequest[roomItem._id])
-		else ShowNostis.error('Something went wrong')
+		else ShowNostis.error('Có 1 lỗi nào đó vui lòng liên hệ quản trị viên')
+	}
+
+	const handleAcceptExtend = (e: any) => {
+		e.preventDefault()
+		if (roomItem && ObjectExtendsRequest[roomItem._id]) mutateExtendRoom(ObjectExtendsRequest[roomItem._id])
+		else ShowNostis.error('Không thể gia hạn phòng')
 	}
 
 	return (
@@ -147,7 +165,7 @@ const RoomItem = (props: IProps) => {
 					</Box>
 
 					<Box className="roomItemContent">
-						<RoomItemHeading>{roomItem?.name || 'Updating...'}</RoomItemHeading>
+						<RoomItemHeading>{roomItem?.name?.replace(/,/g, '') || 'Updating...'}</RoomItemHeading>
 
 						<RoomPreviews>
 							<RoomPreviewItem>
@@ -175,9 +193,16 @@ const RoomItem = (props: IProps) => {
 								<>
 									{roomItem?.status === 'already-rent' && (
 										<>
-											<StyledStatus className="green">
-												{t('Room.currently_being_rented')}
-											</StyledStatus>
+											{ObjectExtendsRequest?.[roomItem?._id] ||
+											ObjectCancelRequest?.[roomItem?._id] ? (
+												<StyledStatus className="request">
+													{t('Room.request_extension')}
+												</StyledStatus>
+											) : (
+												<StyledStatus className="green">
+													{t('Room.currently_being_rented')}
+												</StyledStatus>
+											)}
 											{(roomItem.demandAt === 0 ||
 												roomItem.demandAt === getCurrentDate().month) && (
 												<StyledButtonOwner onClick={handleOpenService}>
@@ -193,6 +218,18 @@ const RoomItem = (props: IProps) => {
 														<CircularProgress size={12} />
 													) : (
 														t('Room.Accept_cancel')
+													)}
+												</StyledButtonOwner>
+											)}
+											{ObjectExtendsRequest?.[roomItem?._id] && (
+												<StyledButtonOwner
+													className="cancel_contract"
+													onClick={handleAcceptExtend}
+												>
+													{loadingExtendRoom ? (
+														<CircularProgress size={12} />
+													) : (
+														t('Room.Accept_extends')
 													)}
 												</StyledButtonOwner>
 											)}
@@ -213,18 +250,38 @@ const RoomItem = (props: IProps) => {
 													setOpen(true)
 												}}
 											>
-												Mở lại phòng
+												{t('Room.Re_open')}
 											</StyledButtonOwner>
 										</>
 									)}
 								</>
 							)}
 
-							{roomItem?.status !== 'not-available' && (
+							{roomItem?.status !== 'already-rent' && isRented && (
+								<StyledStatus className="rented">{t('Room.rented')}</StyledStatus>
+							)}
+
+							{roomItem?.status === 'already-rent' && (
 								<StyledButtonOwner onClick={handleWatchContract}>
 									{isLoading ? <CircularProgress size={14} /> : t('Room.view_contract')}
 								</StyledButtonOwner>
 							)}
+
+							{isRented &&
+								roomItem &&
+								roomItem?.status === 'already-rent' &&
+								// getCurrentDate().month - (moment(roomItem?.createdAt).month() + roomItem.period) >= 0 &&
+								getCurrentDate().month - (moment(roomItem?.createdAt).month() + roomItem.period) <=
+									2 && (
+									<StyledButtonOwner
+										onClick={(e) => {
+											e.preventDefault()
+											setOpenExtend(true)
+										}}
+									>
+										{t('Room.contract_extension')}
+									</StyledButtonOwner>
+								)}
 						</StyledOwner>
 					)}
 
@@ -240,15 +297,20 @@ const RoomItem = (props: IProps) => {
 							<StyledCloseButton onClick={() => setIsOpenContract(false)}>X</StyledCloseButton>
 							<div
 								dangerouslySetInnerHTML={{
-									__html: getContract(
-										rentAndLessorInfo || {
-											lessor: (dataContract?.data?.contract?.lessor as IUser) || undefined,
-											renter: (dataContract?.data?.contract?.renter as IUser) || undefined,
-											room: dataContract?.data?.contract?.room || undefined,
-											_id: dataContract?.data?.contract?._id || undefined,
-											dateRent: undefined,
-										}
-									),
+									__html: getContract({
+										lessor:
+											rentAndLessorInfo?.lessor ||
+											(dataContract?.data?.contract?.lessor as IUser) ||
+											undefined,
+										renter:
+											rentAndLessorInfo?.renter ||
+											(dataContract?.data?.contract?.renter as IUser) ||
+											undefined,
+										room:
+											rentAndLessorInfo?.room || dataContract?.data?.contract?.room || undefined,
+										_id: dataContract?.data?.contract?._id || undefined,
+										dateRent: undefined,
+									}),
 								}}
 							/>
 
@@ -259,6 +321,13 @@ const RoomItem = (props: IProps) => {
 			</Fragment>
 			{isOwner && <RoomItem.ModalReOpen open={open} setOpen={setOpen} roomItem={roomItem} />}
 			<RoomItem.ModalFeedback open={openFeedback} setOpen={setOpenFeedback} roomItem={roomItem} />
+			{isRented && dataContract && (
+				<RoomItem.ModalExtend
+					open={openExtend}
+					setOpen={setOpenExtend}
+					contractId={dataContract?.data?.contract?._id}
+				/>
+			)}
 		</>
 	)
 }
@@ -383,6 +452,7 @@ interface IPropsModal {
 	open: boolean
 	setOpen: (val: boolean) => void
 	roomItem?: room
+	contractId?: string
 }
 
 RoomItem.ModalReOpen = ({ open, setOpen, roomItem }: IPropsModal) => {
@@ -519,6 +589,52 @@ RoomItem.ModalFeedback = ({ open, setOpen, roomItem }: IPropsModal) => {
 					</Button>
 					<Button type="submit" variant="outlined" disabled={feedbackMutate.isLoading}>
 						{feedbackMutate.isLoading ? <CircularProgress size={14} /> : 'Đánh giá'}
+					</Button>
+				</Box>
+			</StyledModalReOpenContract>
+		</Modal>
+	)
+}
+
+RoomItem.ModalExtend = ({ open, setOpen, contractId }: IPropsModal) => {
+	const { mutate: mutateExtendContract, isLoading: isLoadingExtendContract } = useMutation({
+		mutationFn: userApi.doRequestExtendContract,
+		mutationKey: ['handleDoRequestExtendContract'],
+		onSuccess: () => {
+			ShowNostis.success('Gửi yêu cầu gia hạn thành công')
+			setOpen(false)
+		},
+		onError: (error) => {
+			console.log('🚀 ~ file: RoomItem.tsx:108 ~ RoomItem ~ error:', error)
+		},
+	})
+
+	const { handleSubmit, register, control } = useForm<{ newPeriod: number | string }>({
+		defaultValues: {
+			newPeriod: 6,
+		},
+	})
+
+	const handleExtend = ({ newPeriod }: { newPeriod: number | string }) => {
+		mutateExtendContract({ contractId: contractId || '', newPeriod })
+	}
+
+	return (
+		<Modal onClose={() => setOpen(false)} open={open}>
+			<StyledModalReOpenContract onSubmit={handleSubmit(handleExtend)}>
+				<Box className="modal-heading">Gia hạn phòng </Box>
+				<Box className="modal-body">
+					<div className="modal-body__textfeild">
+						<span className="modal-body__textfeild--label">Số tháng gia hạn</span>
+						<input {...register('newPeriod')} placeholder="Enter new period" />
+					</div>
+				</Box>
+				<Box className="modal-footer">
+					<Button variant="outlined" disabled={isLoadingExtendContract} onClick={() => setOpen(false)}>
+						Đóng
+					</Button>
+					<Button type="submit" variant="outlined" disabled={isLoadingExtendContract}>
+						{isLoadingExtendContract ? <CircularProgress size={14} /> : 'Gia hạn'}
 					</Button>
 				</Box>
 			</StyledModalReOpenContract>

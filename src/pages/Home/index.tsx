@@ -117,22 +117,22 @@ const Home = () => {
 						<TrendingHeader>{t('Home.search_trends')}</TrendingHeader>
 						<TrendingList>
 							<TrendingItem>
-								<Link to={'/search/' + encode('binhthanh')}>Bình Thạnh</Link>
+								<Link to={'/search/' + encode('Bình Thạnh')}>Bình Thạnh</Link>
 							</TrendingItem>
 							<TrendingItem>
-								<Link to={'/search/' + encode('quan10')}>Quận 10</Link>
+								<Link to={'/search/' + encode('Quận 10')}>Quận 10</Link>
 							</TrendingItem>
 							<TrendingItem>
-								<Link to={'/search/' + encode('quan1')}>Quận 1</Link>
+								<Link to={'/search/' + encode('Quận 1')}>Quận 1</Link>
 							</TrendingItem>
 							<TrendingItem>
-								<Link to={'/search/' + encode('quan7')}>Quận 7</Link>
+								<Link to={'/search/' + encode('Quận 7')}>Quận 7</Link>
 							</TrendingItem>
 							<TrendingItem>
-								<Link to={'/search/' + encode('thuduc')}>Thủ Đức</Link>
+								<Link to={'/search/' + encode('Thủ Đức')}>Thủ Đức</Link>
 							</TrendingItem>
 							<TrendingItem>
-								<Link to={'/search/' + encode('quan3')}>Quận 3</Link>
+								<Link to={'/search/' + encode('Quận 3')}>Quận 3</Link>
 							</TrendingItem>
 						</TrendingList>
 					</TrendingSearch>

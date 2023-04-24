@@ -1,4 +1,4 @@
-import { setUserInfo } from '@/app/authSlice'
+import { setUserInfo, setVerifiedInfo } from '@/app/authSlice'
 import { LogError, LogRequest, LogResponse } from './../utils/logs'
 import ShowNostis from '@/utils/show-noti'
 import { NOT_AUTHORIZED } from '@/constants/index'
@@ -62,7 +62,9 @@ const createAxiosInstance = () => {
 }
 export const deleteToken = () => {
 	localStorage.removeItem('dataUser')
+	localStorage.removeItem('dataVerified')
 	store.dispatch(setUserInfo(null))
+	store.dispatch(setVerifiedInfo(null))
 	return ShowNostis.error('Login expired !!! ')
 }
 

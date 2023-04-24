@@ -65,9 +65,10 @@ export const HeadingRoomBlock = styled(Box)({
 	'& > .headingRoom': {
 		margin: 0,
 		padding: 0,
-		fontSize: '32px',
+		fontSize: '30px',
 		color: '#333333',
-		fontWeight: '600',
+		fontWeight: 'bold',
+		textTransform: 'capitalize',
 	},
 })
 
@@ -289,12 +290,12 @@ export const StyledItemFeedback = styled('div')`
 		display: flex;
 		flex-direction: column;
 
-		p:first-child {
+		p:first-of-type {
 			text-transform: capitalize;
 			font-weight: bold;
 		}
 
-		p:last-child {
+		p:last-of-type {
 			font-size: 14px;
 		}
 	}

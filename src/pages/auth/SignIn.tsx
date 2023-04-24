@@ -1,11 +1,12 @@
 import { authApi } from '@/api/authApi'
 import { setUserInfo, setVerifiedInfo } from '@/app/authSlice'
-import { useAppDispatch } from '@/app/hook'
+import { useAppDispatch, useAppSelector } from '@/app/hook'
 import FormInputText from '@/components/common/Input/FormInputText'
 import SEO from '@/components/seo'
 import { FormValuesSignIn, ResponseSignIn, VerifyType } from '@/models/auth'
 import ShowNostis from '@/utils/show-noti'
 import { CircularProgress, Grid } from '@mui/material'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom'
@@ -19,29 +20,51 @@ const SignIn = () => {
 	} = useForm<FormValuesSignIn>({
 		// resolver: yupResolver(schema),
 	})
+
+	const { verifyInfo } = useAppSelector((state) => ({
+		verifyInfo: state.authSlice.verifyInfo,
+	}))
+
+	const dataVerified = JSON.parse(localStorage.getItem('dataVerified') as string)
+	useEffect(() => {
+		if (!verifyInfo && dataVerified) {
+			dispatch(setVerifiedInfo(dataVerified))
+		}
+
+		if (dataVerified && !dataVerified.isOtp) {
+			if (dataVerified.isIdentity) {
+				navigate('/registerAuth')
+			}
+			navigate('/authOtp')
+		}
+	}, [verifyInfo, dataVerified])
+
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
 	const handleSignIn = async (data: FormValuesSignIn) => {
 		try {
 			const response = await authApi.login(data)
-			console.log('🚀 ~ file: SignIn.tsx:28 ~ handleSignIn ~ response:', response)
-
 			// @ts-ignore
-			if (response?.message === 'You must update your identity!') {
-				dispatch(setVerifiedInfo(response.data as VerifyType))
-				return navigate('/registerAuth')
-			}
-			// if (response) {
-			// 	dispatch(setVerifiedInfo(response?.data as VerifyType))
-			// 	navigate('/authOtp')
-			// }
-
-			if (response) {
+			if (response.data.accessToken) {
 				dispatch(setUserInfo(response.data as ResponseSignIn))
 
 				localStorage.setItem('dataUser', JSON.stringify(response?.data as ResponseSignIn))
 				ShowNostis.success('Login successfully!!!')
 				return navigate('/')
+			}
+
+			// @ts-ignore
+			if (!response.data.isOTP) {
+				localStorage.setItem('dataVerified', JSON.stringify(response?.data as VerifyType))
+				dispatch(setVerifiedInfo(response?.data as VerifyType))
+				return navigate('/authOtp')
+			}
+
+			// @ts-ignore
+			if (!response.data.isIdentity) {
+				localStorage.setItem('dataVerified', JSON.stringify(response?.data as VerifyType))
+				dispatch(setVerifiedInfo(response.data as VerifyType))
+				return navigate('/registerAuth')
 			}
 		} catch (error: any) {
 			if (error) ShowNostis.error(error?.data.message || 'something went wrong')

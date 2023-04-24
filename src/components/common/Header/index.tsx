@@ -4,10 +4,8 @@ import { useAppDispatch, useAppSelector } from '@/app/hook'
 import BugHouseLogo from '@/assets/images/LogoBugHouse1.png'
 import { CommonPagination } from '@/models/common'
 import { INotification } from '@/models/notification'
-import { ResetPassSchema } from '@/schemas/Auth'
 import ShowNostis from '@/utils/show-noti'
 import { formatDate } from '@/utils/time'
-import { yupResolver } from '@hookform/resolvers/yup'
 import {
 	AccountCircleOutlined,
 	AddHomeOutlined,
@@ -20,29 +18,12 @@ import {
 	Logout,
 	NotificationsActiveOutlined,
 	PaymentsOutlined,
-	PersonAdd,
 	ReceiptLongOutlined,
-	Settings,
 } from '@mui/icons-material'
 import CheckIcon from '@mui/icons-material/Check'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'
-import {
-	Avatar,
-	Badge,
-	Box,
-	Button,
-	CircularProgress,
-	Divider,
-	Drawer,
-	FormControl,
-	ListItemIcon,
-	Menu,
-	MenuItem,
-	Modal,
-	TextField,
-	Typography,
-} from '@mui/material'
+import { Avatar, Badge, Box, Button, CircularProgress, Drawer, Menu, MenuItem, Modal, Typography } from '@mui/material'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import classNames from 'classnames'
 import { useState } from 'react'
@@ -58,14 +39,13 @@ import {
 	StyledMiddleContent,
 	StyledNotificationItem,
 	StyledWrapHeader,
-	StyledWrapModal,
 } from './HeaderStyle'
 
 const Header = () => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 	const navigate = useNavigate()
 	const open = Boolean(anchorEl)
-	const { user } = useAppSelector((state) => state.authSlice.userInfo)
+	const { user } = useAppSelector((state) => state?.authSlice.userInfo)
 	const [openDrawer, setOpenDrawer] = useState(false)
 
 	const { data: notificationList, isLoading } = useQuery({
@@ -83,7 +63,7 @@ const Header = () => {
 		setAnchorEl(null)
 		setTimeout(() => {
 			if (to) navigate(to)
-		}, 200)
+		}, 300)
 		if (callBack) callBack()
 	}
 	const { t, i18n } = useTranslation()
