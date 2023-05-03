@@ -161,7 +161,9 @@
 		"NoRoomForRent": "Bạn chưa cho thuê phòng nào",
 		"Accept_cancel": "Chấp nhận yêu cầu huỷ hợp đồng",
 		"Accept_extends": "Chấp nhận yêu cầu gia hạn hợp đồng",
-		"NoRoomFound": "Không tìm thấy phòng nào"
+		"NoRoomFound": "Không tìm thấy phòng nào",
+		"Status_rented": "Đã thuê",
+		"Status_Available": "Còn phòng"
 	},
 	"Header": {
 		"Notifications": "Thông báo",

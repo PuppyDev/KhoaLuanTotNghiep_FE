@@ -109,7 +109,7 @@ const SignUp = () => {
 							/>
 							<ButtonAuth
 								style={{ marginTop: 20 }}
-								disabled={!isValid || isSubmitting}
+								disabled={isSubmitting}
 								type="submit"
 								variant="contained"
 								loading={isSubmitting}

@@ -78,6 +78,7 @@ export default function RoomDetail() {
 		},
 		staleTime: 60 * 1000,
 	})
+	console.log('🚀 ~ file: index.tsx:81 ~ RoomDetail ~ RoomData:', RoomData)
 
 	const { mutate: mutateContract, isLoading: loadingContract } = useMutation({
 		mutationFn: contractApi.createContract,
@@ -189,7 +190,11 @@ export default function RoomDetail() {
 								<RoomDetailContent container spacing="20px">
 									<RoomDetailInfo
 										label={t('Room.status')}
-										value={RoomData?.data?.status === 'already-rent' ? 'Đã Thuê' : 'Còn phòng'}
+										value={
+											RoomData?.data?.status === 'already-rent'
+												? t('Room.Status_rented')
+												: t('Room.Status_Available')
+										}
 										xs={4}
 										md={3}
 										highlight={RoomData?.data?.status === 'already-rent' ? 'unactive' : 'active'}
@@ -202,7 +207,7 @@ export default function RoomDetail() {
 									/>
 									<RoomDetailInfo
 										label={t('Room.acreage')}
-										value={RoomData?.data?.acreage + ' mét vuông'}
+										value={RoomData?.data?.acreage + ' m^2'}
 										xs={4}
 										md={3}
 									/>
@@ -222,7 +227,12 @@ export default function RoomDetail() {
 										xs={4}
 										md={3}
 									/>
-									<RoomDetailInfo label={t('Room.electricity')} value="500,000 đồng" xs={4} md={3} />
+									<RoomDetailInfo
+										label={t('Room.electricity')}
+										value={RoomData?.data.services[1].basePrice + ' đồng' || 'Free'}
+										xs={4}
+										md={3}
+									/>
 									<RoomDetailInfo
 										label={t('Room.electricity')}
 										value={

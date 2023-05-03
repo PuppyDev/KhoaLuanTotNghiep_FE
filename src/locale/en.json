@@ -160,7 +160,6 @@
 		"NoRoom": "You haven't rented any rooms yet",
 		"NoRoomForRent": "No room for rent",
 
-
 		"Unit_price_for": "Unit price for",
 		"Old_indicator": "Old indicator",
 		"New_indicator": "New indicator",
@@ -169,7 +168,9 @@
 
 		"Accept_cancel": "Accept the request to cancel the contract",
 		"Accept_extends": "Accept the request to extend the contract",
-		"NoRoomFound": "No room can be found"
+		"NoRoomFound": "No room can be found",
+		"Status_rented": "Rented",
+		"Status_Available": "Availabe"
 	},
 	"Header": {
 		"Notifications": "Notifications",
