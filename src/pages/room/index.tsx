@@ -50,6 +50,7 @@ import {
 	StyledLabelAcceptTerm,
 	StyledWrapFeedback,
 } from './styles/RoomDetail'
+import { IUser } from '@/models/user'
 
 export default function RoomDetail() {
 	const [isShowContract, setIsShowContract] = useState(false)
@@ -78,7 +79,6 @@ export default function RoomDetail() {
 		},
 		staleTime: 60 * 1000,
 	})
-	console.log('🚀 ~ file: index.tsx:81 ~ RoomDetail ~ RoomData:', RoomData)
 
 	const { mutate: mutateContract, isLoading: loadingContract } = useMutation({
 		mutationFn: contractApi.createContract,
@@ -145,7 +145,7 @@ export default function RoomDetail() {
 
 	return (
 		<WrapperBackground>
-			<SEO title={`Bughoue 🤡 - ${RoomData?.data.name || 'Room detail'}`} />
+			<SEO title={`Bughouse 🤡 - ${RoomData?.data.name || 'Room detail'}`} />
 			<HomePageContent style={{ paddingTop: '32px' }}>
 				<RoomDetailGallary>
 					<RoomDetail.Carousel itemData={RoomData?.data?.roomAttachment?.url || []} />
@@ -340,10 +340,10 @@ export default function RoomDetail() {
 									dangerouslySetInnerHTML={{
 										__html: getContract({
 											dateRent: '',
-											room: undefined,
-											_id: '',
-											lessor: undefined,
-											renter: undefined,
+											room: RoomData?.data || undefined,
+											_id: RoomData?.data?._id || '',
+											lessor: (RoomData?.data?.owner as IUser) || '',
+											renter: user || undefined,
 										}),
 									}}
 								/>

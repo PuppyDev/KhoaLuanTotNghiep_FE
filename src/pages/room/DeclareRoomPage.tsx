@@ -110,7 +110,7 @@ const DeclareRoomPage = () => {
 				<LoadingFallBack />
 			) : (
 				<>
-					<SEO title="Bughoue 🤡 - Declare service" />
+					<SEO title="Bughouse 🤡 - Declare service" />
 					<StyledModalForm>
 						<p className="headerForm">
 							{t('Room.service_declaration')} <br />

@@ -48,7 +48,7 @@ const MyRoomPage = () => {
 
 	return (
 		<>
-			<SEO title="Bughoue 🤡 - For rent" />
+			<SEO title="Bughouse 🤡 - For rent" />
 
 			<HeadingTitle>{t('My_room_page')}</HeadingTitle>
 

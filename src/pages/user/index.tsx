@@ -24,7 +24,7 @@ export const ProfilePage = () => {
 
 	return (
 		<Grid container alignItems="flex-start" justifyContent="space-between">
-			<SEO title={`Bughoue 🤡 - ${user.name || user.username || 'Your information'}`} />
+			<SEO title={`Bughouse 🤡 - ${user.name || user.username || 'Your information'}`} />
 			<StyledGridLayout item sm={12} md={4} lg={3} container>
 				<StyledWrapInfoUser>
 					<Avatar

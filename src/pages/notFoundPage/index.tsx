@@ -9,7 +9,7 @@ const PageNotFound = () => {
 	const { t } = useTranslation()
 	return (
 		<StyledWrapNotFound>
-			<SEO title="Bughoue 🤡404" />
+			<SEO title="Bughouse 🤡404" />
 			<Lottie loop animationData={loadingJson} play className="pageNotFound_animation" />
 			<p>
 				{t('NOT_FOUND_PAGE.TOP')} <br />

@@ -71,7 +71,7 @@ const UpdateId = () => {
 
 	return (
 		<StyledWrapUpdateID>
-			<SEO title="Bughoue 🤡 - Update your ID" />
+			<SEO title="Bughouse 🤡 - Update your ID" />
 
 			<p className="heading">{t('Update_id.More_info')}</p>
 

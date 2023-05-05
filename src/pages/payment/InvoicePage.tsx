@@ -9,7 +9,7 @@ const InvoicePage = () => {
 
 	return (
 		<>
-			<SEO title="Bughoue 🤡 - Your invoices" />
+			<SEO title="Bughouse 🤡 - Your invoices" />
 
 			<HeadingTitle>{t('Header.Invoices')}</HeadingTitle>
 			<InvoiceContainer />

@@ -67,7 +67,7 @@ const WalletPage = () => {
 			})
 		},
 		onSuccess: (response: any) => {
-			window.open(response?.paymentUrl, '_blank')
+			window.location.replace(response?.paymentUrl)
 		},
 		onError: (error) => {
 			console.log('🚀 ~ file: WalletPage.tsx:68 ~ WalletPage ~ error:', error)
@@ -89,7 +89,7 @@ const WalletPage = () => {
 
 	return (
 		<>
-			<SEO title="Bughoue 🤡 - Manage wallet" />
+			<SEO title="Bughouse 🤡 - Manage wallet" />
 
 			<HeadingTitle>{t('Wallet.Heading')}</HeadingTitle>
 

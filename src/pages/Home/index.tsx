@@ -63,7 +63,7 @@ const Home = () => {
 
 	return (
 		<>
-			<SEO title="Bughoue 🤡" />
+			<SEO title="Bughouse 🤡" />
 
 			<HomeBanner>
 				<WrapperBanner>

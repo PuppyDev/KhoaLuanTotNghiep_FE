@@ -26,7 +26,7 @@ const BookingPage = () => {
 
 	return (
 		<StyledWrapPage>
-			<SEO title="Bughoue 🤡 - Room rented" />
+			<SEO title="Bughouse 🤡 - Room rented" />
 
 			<HeadingTitle>{t('ROOM_RENTED')}</HeadingTitle>
 

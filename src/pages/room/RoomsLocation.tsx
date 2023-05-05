@@ -66,7 +66,7 @@ const RoomsLocation = () => {
 
 	return (
 		<WrapperBackground style={{ minHeight: '92vh' }}>
-			<SEO title="Bughoue 🤡 - Search..." />
+			<SEO title="Bughouse 🤡 - Search..." />
 			<HomePageContent>
 				<Box style={{ paddingTop: '40px' }}>
 					<Grid container spacing="32px">

@@ -227,7 +227,7 @@ const AddRoom = () => {
 
 	return (
 		<WrapperBackground className="min__height90">
-			<SEO title="Bughoue 🤡 - Post room" />
+			<SEO title="Bughouse 🤡 - Post room" />
 			<HomePageContent>
 				<p className="heading__homepage">{isEdit ? t('Room.Upadate_info') : t('Room.Create_room')}</p>
 
